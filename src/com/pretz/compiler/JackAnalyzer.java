@@ -19,19 +19,31 @@ public class JackAnalyzer {
     private List<String> outputFileNameFrom(String fileName) {
         File inputFile = new File(fileName);
         if (inputFile.isDirectory()) {
-            File[] inputFiles = inputFile.listFiles(new JackFileFilter());
-            if (inputFiles.length == 0) {
-                throw new IllegalArgumentException("No .jack files in given directory!");
-            } else {
-                return Arrays.stream(inputFiles)
-                        .map(file -> file.getName().replaceAll("\\.jack", ".xml"))
-                        .collect(Collectors.toList());
-            }
+            return outputFromDirectory(inputFile);
         }
         if (inputFile.isFile()) {
-            if (inputFile.getName().endsWith(".jack")) {
-                return List.of(inputFile.getName().replaceAll("\\.jack", ".xml"));
-            } else throw new IllegalArgumentException("Not a .jack file!");
+            return outputFromFile(inputFile);
         } else throw new IllegalArgumentException("File parsing error!");
+    }
+
+    private List<String> outputFromFile(File inputFile) {
+        if (inputFile.getName().endsWith(".jack")) {
+            return List.of(toXml(inputFile));
+        } else throw new IllegalArgumentException("Not a .jack file!");
+    }
+
+    private List<String> outputFromDirectory(File inputFile) {
+        File[] inputFiles = inputFile.listFiles(new JackFileFilter());
+        if (inputFiles.length == 0) {
+            throw new IllegalArgumentException("No .jack files in given directory!");
+        } else {
+            return Arrays.stream(inputFiles)
+                    .map(this::toXml)
+                    .collect(Collectors.toList());
+        }
+    }
+
+    private String toXml(File file) {
+        return file.getName().replaceAll("\\.jack", ".xml");
     }
 }
