@@ -3,7 +3,6 @@ package com.pretz.compiler;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class JackAnalyzer {
 
@@ -12,35 +11,43 @@ public class JackAnalyzer {
             throw new IllegalArgumentException("Empty file name - nothing to compile");
         }
         String fileName = args[0];
-        new JackAnalyzer().outputFileNameFrom(fileName)
-                .forEach(System.out::println);
+
+        new JackAnalyzer().validate(fileName)
+                .stream()
+                .map(file -> new JackTokenizer().tokenize(file))
+                .map(tokenList -> new CompilationEngine().compile(tokenList))//TODO what does it actually return?
+                .forEach(System.out::println);//TODO write results to xml
     }
 
-    private List<String> outputFileNameFrom(String fileName) {
+    /**
+     * Validates if input filename parameter is correct.
+     *
+     * @param fileName input path or filename
+     * @return list of input .jack files
+     */
+    private List<File> validate(String fileName) {
         File inputFile = new File(fileName);
         if (inputFile.isDirectory()) {
-            return outputFromDirectory(inputFile);
+            return validateDirectory(inputFile);
         }
         if (inputFile.isFile()) {
-            return outputFromFile(inputFile);
+            return validateFile(inputFile);
         } else throw new IllegalArgumentException("File parsing error!");
     }
 
-    private List<String> outputFromFile(File inputFile) {
-        if (inputFile.getName().endsWith(".jack")) {
-            return List.of(toXml(inputFile));
-        } else throw new IllegalArgumentException("Not a .jack file!");
-    }
-
-    private List<String> outputFromDirectory(File inputFile) {
+    private List<File> validateDirectory(File inputFile) {
         File[] inputFiles = inputFile.listFiles(new JackFileFilter());
         if (inputFiles.length == 0) {
             throw new IllegalArgumentException("No .jack files in given directory!");
         } else {
-            return Arrays.stream(inputFiles)
-                    .map(this::toXml)
-                    .collect(Collectors.toList());
+            return Arrays.asList(inputFiles);
         }
+    }
+
+    private List<File> validateFile(File inputFile) {
+        if (inputFile.getName().endsWith(".jack")) {
+            return List.of(inputFile);
+        } else throw new IllegalArgumentException("Not a .jack file!");
     }
 
     private String toXml(File file) {
