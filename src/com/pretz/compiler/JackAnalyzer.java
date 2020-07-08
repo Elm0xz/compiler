@@ -1,5 +1,7 @@
 package com.pretz.compiler;
 
+import com.pretz.compiler.input.JackFileFilter;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;

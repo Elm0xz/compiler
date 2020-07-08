@@ -1,4 +1,4 @@
-package com.pretz.compiler;
+package com.pretz.compiler.input;
 
 import java.io.BufferedReader;
 import java.io.File;
