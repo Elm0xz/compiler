@@ -14,14 +14,18 @@ import static io.vavr.Predicates.anyOf;
 public class JackTokenizer {
 
     public List<Token> tokenize(File file) {
-        String result = Stream.ofAll(new JackInputReader().read(file))
-                .foldLeft(new TokenAccumulator(), this::removeComments)
-                .tokens();
-        System.out.print(result);
+
+        List<Character> tokens = Stream.ofAll(new JackInputReader().read(file))
+                .foldLeft(new TokenAccumulator(), this::removeCommentsAndGroupByWhitespace)
+                .tokens()
+                //TODO remove whitespaces except for these in string literals
+                //TODO prepare tokens
+                .toJavaList();
+        tokens.forEach(System.out::print);
         return List.of();
     }
 
-    private TokenAccumulator removeComments(TokenAccumulator acc, Character ch) {
+    private TokenAccumulator removeCommentsAndGroupByWhitespace(TokenAccumulator acc, Character ch) {
         return Match(new TokenizingStep(acc, ch)).of(
                 Case($(isPotentialCommentStart()), st -> st.acc.potentialCommentStart(st.ch)),
                 Case($(isNotCommentStart()), st -> st.acc.notCommentStart(st.ch)),
@@ -36,8 +40,12 @@ public class JackTokenizer {
     }
 
     private Predicate<TokenizingStep> isPotentialCommentStart() {
-        return (it) -> !(it.acc.pFlags().isBlockComment() || it.acc.pFlags().isLineComment())
+        return (it) -> !isComment(it.acc.pFlags())
                 && !it.acc.pFlags().isPotentialCommentStart() && it.ch == '/';
+    }
+
+    private boolean isComment(TokenizingFlags flags) {
+        return flags.isBlockComment() || flags.isLineComment();
     }
 
     private Predicate<TokenizingStep> isNotCommentStart() {
