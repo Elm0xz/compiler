@@ -1,5 +1,8 @@
 package com.pretz.compiler;
 
+import com.pretz.compiler.comments.CommentAccumulator;
+import com.pretz.compiler.comments.CommentFlags;
+import com.pretz.compiler.tokenizing.TokenizingAccumulator;
 import io.vavr.collection.Stream;
 
 import java.io.File;
@@ -15,18 +18,19 @@ public class JackTokenizer {
 
     public List<Token> tokenize(File file) {
 
-        List<Character> tokens = Stream.ofAll(new JackInputReader().read(file))
-                .foldLeft(new TokenAccumulator(), this::removeCommentsAndGroupByWhitespace)
+        List<String> tokens = Stream.ofAll(new JackInputReader().read(file))
+                .foldLeft(new CommentAccumulator(), this::removeComments)
+                .tokens().toStream()
+                .foldLeft(new TokenizingAccumulator(), this::tokenize)
                 .tokens()
-                //TODO remove whitespaces except for these in string literals
-                //TODO prepare tokens
+                .map(Object::toString)
                 .toJavaList();
-        tokens.forEach(System.out::print);
+        tokens.forEach(System.out::println);
         return List.of();
     }
 
-    private TokenAccumulator removeCommentsAndGroupByWhitespace(TokenAccumulator acc, Character ch) {
-        return Match(new TokenizingStep(acc, ch)).of(
+    private CommentAccumulator removeComments(CommentAccumulator acc, Character ch) {
+        return Match(new CommentStep(acc, ch)).of(
                 Case($(isPotentialCommentStart()), st -> st.acc.potentialCommentStart(st.ch)),
                 Case($(isNotCommentStart()), st -> st.acc.notCommentStart(st.ch)),
                 Case($(isBlockCommentStart()), st -> st.acc.blockCommentStart()),
@@ -39,51 +43,80 @@ public class JackTokenizer {
                 Case($(), st -> st.acc.token(st.ch)));
     }
 
-    private Predicate<TokenizingStep> isPotentialCommentStart() {
-        return (it) -> !isComment(it.acc.pFlags())
-                && !it.acc.pFlags().isPotentialCommentStart() && it.ch == '/';
+    private TokenizingAccumulator tokenize(TokenizingAccumulator acc, Character ch) {
+        return Match(new TokenizingStep(acc, ch)).of(
+                Case($(isStringConstStart()), st -> st.acc.stringConstStart()),
+                Case($(isStringConstEnd()), st -> st.acc.stringConstEnd()),
+                Case($(isStringConst()), st -> st.acc.add(st.ch)),
+                Case($(isWhitespace()), st -> st.acc),
+                Case($(), st -> st.acc.add(st.ch)));
+        //TODO prepare tokens
     }
 
-    private boolean isComment(TokenizingFlags flags) {
+    private Predicate<CommentStep> isPotentialCommentStart() {
+        return (it) -> !isComment(it.acc.flags())
+                && !it.acc.flags().isPotentialCommentStart() && it.ch == '/';
+    }
+
+    private boolean isComment(CommentFlags flags) {
         return flags.isBlockComment() || flags.isLineComment();
     }
 
-    private Predicate<TokenizingStep> isNotCommentStart() {
-        return (it) -> it.acc.pFlags().isPotentialCommentStart() && !(it.ch == '*' || it.ch == '/');
+    private Predicate<CommentStep> isNotCommentStart() {
+        return (it) -> it.acc.flags().isPotentialCommentStart() && !(it.ch == '*' || it.ch == '/');
     }
 
-    private Predicate<TokenizingStep> isBlockCommentStart() {
-        return (it) -> it.acc.pFlags().isPotentialCommentStart() && it.ch == '*';
+    private Predicate<CommentStep> isBlockCommentStart() {
+        return (it) -> it.acc.flags().isPotentialCommentStart() && it.ch == '*';
     }
 
-    private Predicate<TokenizingStep> isLineCommentStart() {
-        return (it) -> it.acc.pFlags().isPotentialCommentStart() && it.ch == '/';
+    private Predicate<CommentStep> isLineCommentStart() {
+        return (it) -> it.acc.flags().isPotentialCommentStart() && it.ch == '/';
     }
 
-    private Predicate<TokenizingStep> isLineCommentEnd() {
-        return (it) -> it.acc.pFlags().isLineComment() && it.ch == '\r';
+    private Predicate<CommentStep> isLineCommentEnd() {
+        return (it) -> it.acc.flags().isLineComment() && it.ch == '\r';
     }
 
-    private Predicate<TokenizingStep> isLineComment() {
-        return (it) -> it.acc.pFlags().isLineComment();
+    private Predicate<CommentStep> isLineComment() {
+        return (it) -> it.acc.flags().isLineComment();
     }
 
-    private Predicate<TokenizingStep> isBlockComment() {
-        return (it) -> it.acc.pFlags().isBlockComment();
+    private Predicate<CommentStep> isBlockComment() {
+        return (it) -> it.acc.flags().isBlockComment();
     }
 
-    private Predicate<TokenizingStep> isPotentialBlockCommentEnd() {
-        return (it) -> it.acc.pFlags().isBlockComment() && it.ch == '*';
+    private Predicate<CommentStep> isPotentialBlockCommentEnd() {
+        return (it) -> it.acc.flags().isBlockComment() && it.ch == '*';
     }
 
-    private Predicate<TokenizingStep> isBlockCommentEnd() {
-        return (it) -> it.acc.pFlags().isBlockComment() && it.acc.pFlags().isPotentialBlockCommentEnd() && it.ch == '/';
+    private Predicate<CommentStep> isBlockCommentEnd() {
+        return (it) -> it.acc.flags().isBlockComment() && it.acc.flags().isPotentialBlockCommentEnd() && it.ch == '/';
     }
 
-    private Predicate<TokenizingStep> isNotBlockCommentEnd() {
-        return (it) -> it.acc.pFlags().isBlockComment() && it.acc.pFlags().isPotentialBlockCommentEnd() && it.ch != '/';
+    private Predicate<CommentStep> isNotBlockCommentEnd() {
+        return (it) -> it.acc.flags().isBlockComment() && it.acc.flags().isPotentialBlockCommentEnd() && it.ch != '/';
     }
 
-    private record TokenizingStep(TokenAccumulator acc, Character ch) {
+    private Predicate<TokenizingStep> isStringConstStart() {
+        return (it) -> it.ch == '\"' && !it.acc.flags().isStringConst();
+    }
+
+    private Predicate<TokenizingStep> isStringConstEnd() {
+        return (it) -> it.ch == '\"' && it.acc.flags().isStringConst();
+    }
+
+    private Predicate<TokenizingStep> isStringConst() {
+        return (it) -> it.acc.flags().isStringConst();
+    }
+
+    private Predicate<TokenizingStep> isWhitespace() {
+        return (it) -> Character.isWhitespace(it.ch) && !it.acc.flags().isStringConst();
+    }
+
+    private record CommentStep(CommentAccumulator acc, Character ch) {
+    }
+
+    private record TokenizingStep(TokenizingAccumulator acc, Character ch) {
     }
 }
