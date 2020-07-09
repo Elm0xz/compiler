@@ -1,8 +1,8 @@
-package com.pretz.compiler.tokenizing;
+package com.pretz.compiler.tokenizer.tokenizing;
 
-import com.pretz.compiler.Lexicals;
-import com.pretz.compiler.Token;
-import com.pretz.compiler.TokenType;
+import com.pretz.compiler.tokenizer.Lexicals;
+import com.pretz.compiler.tokenizer.Token;
+import com.pretz.compiler.tokenizer.TokenType;
 import io.vavr.collection.List;
 
 import java.util.function.Predicate;

@@ -1,6 +1,7 @@
 package com.pretz.compiler;
 
 import com.pretz.compiler.input.JackFileFilter;
+import com.pretz.compiler.tokenizer.JackTokenizer;
 
 import java.io.File;
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package com.pretz.compiler.comments;
+package com.pretz.compiler.tokenizer.comments;
 
 import io.vavr.collection.List;
 

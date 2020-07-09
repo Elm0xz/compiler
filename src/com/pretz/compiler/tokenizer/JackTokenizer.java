@@ -1,9 +1,9 @@
-package com.pretz.compiler;
+package com.pretz.compiler.tokenizer;
 
-import com.pretz.compiler.comments.CommentAccumulator;
-import com.pretz.compiler.comments.CommentFlags;
+import com.pretz.compiler.tokenizer.comments.CommentAccumulator;
+import com.pretz.compiler.tokenizer.comments.CommentFlags;
 import com.pretz.compiler.input.JackInputReader;
-import com.pretz.compiler.tokenizing.TokenizingAccumulator;
+import com.pretz.compiler.tokenizer.tokenizing.TokenizingAccumulator;
 import io.vavr.collection.Stream;
 
 import java.io.File;

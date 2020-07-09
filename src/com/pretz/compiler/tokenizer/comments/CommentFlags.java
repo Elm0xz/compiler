@@ -1,4 +1,4 @@
-package com.pretz.compiler.comments;
+package com.pretz.compiler.tokenizer.comments;
 
 public class CommentFlags {
     private final boolean potentialCommentStart;

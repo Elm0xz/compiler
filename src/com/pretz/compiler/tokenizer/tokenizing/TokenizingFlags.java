@@ -1,4 +1,4 @@
-package com.pretz.compiler.tokenizing;
+package com.pretz.compiler.tokenizer.tokenizing;
 
 public class TokenizingFlags {
     private final boolean stringLiteral;

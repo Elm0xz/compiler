@@ -1,4 +1,4 @@
-package com.pretz.compiler;
+package com.pretz.compiler.tokenizer;
 
 public class Token {
     private final TokenType type;
