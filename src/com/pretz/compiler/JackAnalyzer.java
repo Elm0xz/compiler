@@ -6,6 +6,9 @@ import com.pretz.compiler.tokenizer.JackTokenizer;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static io.vavr.API.Tuple;
 
 public class JackAnalyzer {
 
@@ -17,9 +20,11 @@ public class JackAnalyzer {
 
         new JackAnalyzer().validate(fileName)
                 .stream()
-                .map(file -> new JackTokenizer().tokenize(file))
-                .map(tokenList -> new CompilationEngine().compile(tokenList))//TODO what does it actually return?
-                .forEach(System.out::println);//TODO write results to xml
+                .map(file -> Tuple(new JackTokenizer().tokenize(file), file))
+                .collect(Collectors.toList())
+                .forEach(fileTokens -> new JackXmlWriter().write(fileTokens._1, fileTokens._2));
+                /*.map(tokenList -> new CompilationEngine().compile(tokenList))//TODO what does it actually return?
+                .forEach(System.out::println);//TODO write results to xml*/
     }
 
     /**
@@ -51,9 +56,5 @@ public class JackAnalyzer {
         if (inputFile.getName().endsWith(".jack")) {
             return List.of(inputFile);
         } else throw new IllegalArgumentException("Not a .jack file!");
-    }
-
-    private String toXml(File file) {
-        return file.getName().replaceAll("\\.jack", ".xml");
     }
 }

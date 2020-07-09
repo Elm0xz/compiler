@@ -35,6 +35,9 @@ public class TokenizingAccumulator {
     }
 
     public TokenizingAccumulator stringConstStart() {
+        if (tokens.last().token().isEmpty()) {
+            return new TokenizingAccumulator(changeCurrentTokenType(TokenType.STRING_CONST), flags.stringConstStart());
+        }
         return new TokenizingAccumulator(startStringConstToken(), flags.stringConstStart());
     }
 
@@ -43,7 +46,7 @@ public class TokenizingAccumulator {
     }
 
     public TokenizingAccumulator add(Character ch) {
-        return new TokenizingAccumulator(appendToCurrentToken(ch), flags);
+        return new TokenizingAccumulator(addCharacterToCurrentToken(ch), flags);
     }
 
     public TokenizingAccumulator whitespace() {
@@ -59,7 +62,7 @@ public class TokenizingAccumulator {
 
     public TokenizingAccumulator symbol(Character ch) {
         if (tokens.last().token().isEmpty()) {
-            return new TokenizingAccumulator(appendToCurrentTokenAndChangeType(ch, TokenType.SYMBOL), flags);
+            return new TokenizingAccumulator(addCharacterToCurrentTokenAndChangeType(ch, TokenType.SYMBOL), flags);
         } else if (tokens.last().type() == TokenType.NEW) {
             return new TokenizingAccumulator(classifyCurrentToken().append(symbolToken(ch)), flags);
         }
@@ -74,14 +77,15 @@ public class TokenizingAccumulator {
         return tokens.append(new Token("", TokenType.NEW));
     }
 
-    private List<Token> appendToCurrentToken(Character ch) {
+    private List<Token> addCharacterToCurrentToken(Character ch) {
         if (tokens.isEmpty() || tokens.last().type() == TokenType.SYMBOL) {
             return tokens.append(new Token("" + ch, TokenType.NEW));
         }
         return removeLastFrom(tokens).append(tokens.last().add(ch));
     }
 
-    private List<Token> appendToCurrentTokenAndChangeType(Character ch, TokenType newType) {
+    //TODO maybe it would be better to just remove "empty new" tokens?
+    private List<Token> addCharacterToCurrentTokenAndChangeType(Character ch, TokenType newType) {
         if (tokens.isEmpty()) {
             return tokens.append(new Token("" + ch, newType));
         }

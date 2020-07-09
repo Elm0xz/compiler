@@ -76,7 +76,7 @@ public class JackTokenizer {
     }
 
     private Predicate<CommentStep> isLineCommentEnd() {
-        return (it) -> it.acc.flags().isLineComment() && it.ch == '\r';
+        return (it) -> it.acc.flags().isLineComment() && (it.ch == '\r' || it.ch == '\n');
     }
 
     private Predicate<CommentStep> isLineComment() {
