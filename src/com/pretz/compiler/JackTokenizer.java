@@ -15,19 +15,19 @@ import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 import static io.vavr.Predicates.anyOf;
 
+//TODO a little cleanup
 public class JackTokenizer {
 
     public List<Token> tokenize(File file) {
 
-        List<String> tokens = Stream.ofAll(new JackInputReader().read(file))
+        List<Token> tokens = Stream.ofAll(new JackInputReader().read(file))
                 .foldLeft(new CommentAccumulator(), this::removeComments)
                 .tokens().toStream()
                 .foldLeft(new TokenizingAccumulator(), this::tokenize)
-                .tokens()
-                .map(Object::toString)
+                .tokens().dropRight(1)
                 .toJavaList();
         tokens.forEach(System.out::println);
-        return List.of();
+        return tokens;
     }
 
     private CommentAccumulator removeComments(CommentAccumulator acc, Character ch) {
@@ -49,9 +49,9 @@ public class JackTokenizer {
                 Case($(isStringConstStart()), st -> st.acc.stringConstStart()),
                 Case($(isStringConstEnd()), st -> st.acc.stringConstEnd()),
                 Case($(isStringConst()), st -> st.acc.add(st.ch)),
-                Case($(isWhitespace()), st -> st.acc),
+                Case($(isWhitespace()), st -> st.acc.whitespace()),
+                Case($(isSymbol()), st -> st.acc.symbol(st.ch)),
                 Case($(), st -> st.acc.add(st.ch)));
-        //TODO prepare tokens
     }
 
     private Predicate<CommentStep> isPotentialCommentStart() {
@@ -113,6 +113,10 @@ public class JackTokenizer {
 
     private Predicate<TokenizingStep> isWhitespace() {
         return (it) -> Character.isWhitespace(it.ch) && !it.acc.flags().isStringConst();
+    }
+
+    private Predicate<TokenizingStep> isSymbol() {
+        return (it) -> Lexicals.symbols().contains(it.ch);
     }
 
     private record CommentStep(CommentAccumulator acc, Character ch) {

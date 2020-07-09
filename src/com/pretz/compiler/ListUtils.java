@@ -2,7 +2,7 @@ package com.pretz.compiler;
 
 import io.vavr.collection.List;
 
-public class TokenizingUtils {
+public class ListUtils {
 
     public static <T> List<T> appendTo(List<T> list, T el) {
         return list.append(el);

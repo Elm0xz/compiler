@@ -6,5 +6,6 @@ public enum TokenType {
     IDENTIFIER,
     INT_CONST,
     STRING_CONST,
-    UNKNOWN
+    NEW,
+    UNKNOWN;
 }
