@@ -119,9 +119,23 @@ public class JackTokenizer {
         return (it) -> Lexicals.symbols().contains(it.ch);
     }
 
-    private record CommentStep(CommentAccumulator acc, Character ch) {
+    private class CommentStep {
+        public CommentAccumulator acc;
+        public Character ch;
+
+        public CommentStep(CommentAccumulator acc, Character ch) {
+            this.acc = acc;
+            this.ch = ch;
+        }
     }
 
-    private record TokenizingStep(TokenizingAccumulator acc, Character ch) {
+    private class TokenizingStep {
+        public TokenizingAccumulator acc;
+        public Character ch;
+
+        public TokenizingStep(TokenizingAccumulator acc, Character ch) {
+            this.acc = acc;
+            this.ch = ch;
+        }
     }
 }

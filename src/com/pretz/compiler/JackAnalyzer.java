@@ -13,6 +13,7 @@ import static io.vavr.API.Tuple;
 public class JackAnalyzer {
 
     public static void main(String[] args) {
+        System.out.println(args[0]); //for debugging evaluator input
         if (args.length == 0) {
             throw new IllegalArgumentException("Empty file name - nothing to compile");
         }
