@@ -1,13 +1,13 @@
 package com.pretz.compiler.tokenizer;
 
+import com.pretz.compiler.input.JackInputReader;
 import com.pretz.compiler.tokenizer.comments.CommentAccumulator;
 import com.pretz.compiler.tokenizer.comments.CommentFlags;
-import com.pretz.compiler.input.JackInputReader;
 import com.pretz.compiler.tokenizer.tokenizing.TokenizingAccumulator;
+import io.vavr.collection.List;
 import io.vavr.collection.Stream;
 
 import java.io.File;
-import java.util.List;
 import java.util.function.Predicate;
 
 import static io.vavr.API.$;
@@ -18,16 +18,15 @@ import static io.vavr.Predicates.anyOf;
 //TODO a little cleanup
 public class JackTokenizer {
 
-    public List<Token> tokenize(File file) {
+    public Tokens tokenize(File file) {
 
         List<Token> tokens = Stream.ofAll(new JackInputReader().read(file))
                 .foldLeft(new CommentAccumulator(), this::removeComments)
                 .tokens().toStream()
                 .foldLeft(new TokenizingAccumulator(), this::tokenize)
-                .tokens().dropRight(1)
-                .toJavaList();
+                .tokens().dropRight(1);
         tokens.forEach(System.out::println);
-        return tokens;
+        return new Tokens(tokens);
     }
 
     private CommentAccumulator removeComments(CommentAccumulator acc, Character ch) {

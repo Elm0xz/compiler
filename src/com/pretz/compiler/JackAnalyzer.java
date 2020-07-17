@@ -6,7 +6,6 @@ import com.pretz.compiler.tokenizer.JackTokenizer;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static io.vavr.API.Tuple;
 
@@ -22,16 +21,18 @@ public class JackAnalyzer {
         new JackAnalyzer().validate(fileName)
                 .stream()
                 .map(file -> Tuple(new JackTokenizer().tokenize(file), file))
-                .collect(Collectors.toList())
-                .forEach(fileTokens -> new JackXmlWriter().write(fileTokens._1, fileTokens._2));
-                /*.map(tokenList -> new CompilationEngine().compile(tokenList))//TODO what does it actually return?
-                .forEach(System.out::println);//TODO write results to xml*/
+                /*.collect(Collectors.toList())*/
+                /*.forEach(fileTokens -> new JackXmlWriter().write(fileTokens._1, fileTokens._2));*/
+                .map(tokensAndFile -> new CompilationEngine().compileClass(tokensAndFile._1))//TODO what does it actually return?
+                .forEach(System.out::println);//TODO write results to xml
     }
 
     /**
-     * Validates if input filename parameter is correct.
+     * Validates input filename.
      *
      * @param fileName input path or filename
+     * @throws IllegalArgumentException if cannot parse input successfully because of malformed path,
+     * input file not being of .jack extension or directory not containing any .jack files.
      * @return list of input .jack files
      */
     private List<File> validate(String fileName) {

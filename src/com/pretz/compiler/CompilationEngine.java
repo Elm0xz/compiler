@@ -1,12 +1,11 @@
 package com.pretz.compiler;
 
-import com.pretz.compiler.tokenizer.Token;
-
-import java.util.List;
+import com.pretz.compiler.tokenizer.Tokens;
+import io.vavr.collection.List;
 
 public class CompilationEngine {
 
-    public List<Construct> compile(List<Token> tokenList) {
+    public List<Construct> compileClass(Tokens tokens) {
         return List.of();
     }
 }
