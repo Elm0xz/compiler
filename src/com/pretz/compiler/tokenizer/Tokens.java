@@ -16,7 +16,8 @@ public class Tokens {
     }
 
     public void advance() {
-        index++;
+        if (!(index >= tokens.size() - 1))
+            index++;
     }
 
     public Token current() {

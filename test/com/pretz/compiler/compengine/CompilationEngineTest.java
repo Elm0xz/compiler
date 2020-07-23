@@ -35,12 +35,15 @@ public class CompilationEngineTest {
 
     @Test
     public void shouldAcceptValidClassIdentifier() {
+        Token newClassToken = new Token("NewClass", TokenType.IDENTIFIER);
         Tokens tokens = new Tokens(List.of(
                 new Token("class", TokenType.KEYWORD),
-                new Token("NewClass", TokenType.IDENTIFIER)));
+                newClassToken,
+                new Token("{", TokenType.SYMBOL),
+                new Token("}", TokenType.SYMBOL)));
 
         Assertions.assertThat(engine.compileClass(tokens)).isEqualTo(
-                new Class("NewClass", List.empty(), List.empty()));
+                new Class(newClassToken, List.empty(), List.empty()));
     }
 
     @ParameterizedTest()
@@ -48,11 +51,27 @@ public class CompilationEngineTest {
     public void shouldThrowOnInvalidClassIdentifier(Token invalidClassIdentifier) {
         Tokens tokens = new Tokens(List.of(
                 new Token("class", TokenType.KEYWORD),
-                invalidClassIdentifier));
+                invalidClassIdentifier,
+                new Token("{", TokenType.SYMBOL),
+                new Token("}", TokenType.SYMBOL)));
 
         Assertions.assertThatThrownBy(() -> engine.compileClass(tokens))
                 .isInstanceOf(CompilationException.class)
                 .hasMessage(CompilationException.INVALID_CLASS_IDENTIFIER);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideMissingBracketSets")
+    public void shouldThrowOnMissingClassBrackets(Token openingBracket, Token closingBracket, String excMsg) {
+        Tokens tokens = new Tokens(List.of(
+                new Token("class", TokenType.KEYWORD),
+                new Token("NewClass", TokenType.IDENTIFIER),
+                openingBracket,
+                closingBracket));
+
+        Assertions.assertThatThrownBy(() -> engine.compileClass(tokens))
+                .isInstanceOf(CompilationException.class)
+                .hasMessage(excMsg);
     }
 
     private static Stream<Arguments> provideInvalidClassIdentifiers() {
@@ -61,5 +80,15 @@ public class CompilationEngineTest {
                 Arguments.of(new Token("void", TokenType.KEYWORD)),
                 Arguments.of(new Token("53", TokenType.INT_CONST)),
                 Arguments.of(new Token("{", TokenType.SYMBOL)));
+    }
+
+    private static Stream<Arguments> provideMissingBracketSets() {
+        return Stream.of(
+                Arguments.of(new Token("{", TokenType.SYMBOL), new Token("x", TokenType.UNKNOWN),
+                        CompilationException.NOT_A_CLOSING_BRACKET),
+                Arguments.of(new Token("x", TokenType.UNKNOWN), new Token("}", TokenType.SYMBOL),
+                        CompilationException.NOT_AN_OPENING_BRACKET),
+                Arguments.of(new Token("y", TokenType.UNKNOWN), new Token("x", TokenType.UNKNOWN),
+                        CompilationException.NOT_AN_OPENING_BRACKET));
     }
 }

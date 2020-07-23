@@ -21,10 +21,12 @@ public class CompilationEngine {
     public Class compileClass(Tokens tokens) {
         validateClassToken(tokens.current());
         tokens.advance();
-        String identifier = validateClassIdentifier(tokens.current());
+        Token identifier = validateClassIdentifier(tokens.current());
         tokens.advance();
-        /*validateOpeningBracket(tokens.advance());
-        validateClosingBracket(tokens.advance());*/
+        validateOpeningBracket(tokens.current());
+        tokens.advance();
+        //TODO check expression to assess if it is class variable, subroutine or closing bracket
+        validateClosingBracket(tokens.current());
         return new Class(identifier, compileClassVarDecs(tokens), compileSubroutines());
     }
 
@@ -33,19 +35,19 @@ public class CompilationEngine {
             throw new CompilationException(CompilationException.NOT_A_CLASS);
     }
 
-    private String validateClassIdentifier(Token token) {
+    private Token validateClassIdentifier(Token token) {
         if (!token.type().equals(TokenType.IDENTIFIER))
             throw new CompilationException(CompilationException.INVALID_CLASS_IDENTIFIER);
-        return token.token();
+        return token;
     }
 
     private void validateOpeningBracket(Token token) {
-        if (!token.token().equals("{"))
+        if (!(token.token().equals("{") && token.type().equals(TokenType.SYMBOL)))
             throw new CompilationException(CompilationException.NOT_AN_OPENING_BRACKET);
     }
 
     private void validateClosingBracket(Token token) {
-        if (!token.token().equals("{"))
+        if (!(token.token().equals("}") && token.type().equals(TokenType.SYMBOL)))
             throw new CompilationException(CompilationException.NOT_A_CLOSING_BRACKET);
     }
 

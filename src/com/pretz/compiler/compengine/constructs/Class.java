@@ -1,15 +1,16 @@
 package com.pretz.compiler.compengine.constructs;
 
+import com.pretz.compiler.tokenizer.Token;
 import io.vavr.collection.List;
 
 import java.util.Objects;
 
 public class Class implements Construct {
-    private final String identifier;
+    private final Token identifier;
     private final List<ClassVarDec> variableDeclarations;
     private final List<SubroutineDec> subroutineDeclarations;
 
-    public Class(String identifier, List<ClassVarDec> variableDeclarations, List<SubroutineDec> subroutineDeclarations) {
+    public Class(Token identifier, List<ClassVarDec> variableDeclarations, List<SubroutineDec> subroutineDeclarations) {
         this.identifier = identifier;
         this.variableDeclarations = variableDeclarations;
         this.subroutineDeclarations = subroutineDeclarations;
