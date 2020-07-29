@@ -1,6 +1,7 @@
 package com.pretz.compiler;
 
 import com.pretz.compiler.compengine.CompilationEngine;
+import com.pretz.compiler.compengine.CompilationValidator;
 import com.pretz.compiler.input.JackFileFilter;
 import com.pretz.compiler.tokenizer.JackTokenizer;
 
@@ -24,7 +25,7 @@ public class JackAnalyzer {
                 .map(file -> Tuple(new JackTokenizer().tokenize(file), file))
                 /*.collect(Collectors.toList())*/
                 /*.forEach(fileTokens -> new JackXmlWriter().write(fileTokens._1, fileTokens._2));*/
-                .map(tokensAndFile -> new CompilationEngine().compileClass(tokensAndFile._1))//TODO what does it actually return?
+                .map(tokensAndFile -> new CompilationEngine(new CompilationValidator()).compileClass(tokensAndFile._1))//TODO what does it actually return?
                 .forEach(System.out::println);//TODO write results to xml
     }
 

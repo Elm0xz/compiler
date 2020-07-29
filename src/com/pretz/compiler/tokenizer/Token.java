@@ -1,5 +1,7 @@
 package com.pretz.compiler.tokenizer;
 
+import java.util.Objects;
+
 public class Token {
     private final TokenType type;
     private final KeywordType keywordType;
@@ -8,10 +10,15 @@ public class Token {
     public Token(String token, TokenType type) {
         this.token = token;
         this.type = type;
-        this.keywordType = KeywordType.NOT_A_KEYWORD;
+        if (type != TokenType.KEYWORD)
+            this.keywordType = KeywordType.NOT_A_KEYWORD;
+        else
+            this.keywordType = setKeywordType(token);
     }
 
-    /** this constructor is only used to update tokens that are keywords and set corresponding KeywordType.*/
+    /**
+     * this constructor is only used to update tokens that are keywords and set corresponding KeywordType.
+     */
     private Token(String token, TokenType type, KeywordType keywordType) {
         this.token = token;
         this.type = type;
@@ -26,8 +33,18 @@ public class Token {
         return type;
     }
 
+    public KeywordType keyword() {
+        return keywordType;
+    }
+
     public Token add(Character ch) {
         return new Token(token + ch, type);
+    }
+
+    private KeywordType setKeywordType(String token) {
+        if (Lexicals.keywords().contains(token))
+            return Enum.valueOf(KeywordType.class, token.toUpperCase());
+        else throw new IllegalArgumentException("Invalid keyword type");
     }
 
     public Token changeType(TokenType newType) {
@@ -44,5 +61,20 @@ public class Token {
                 ", keywordType=" + keywordType +
                 ", token='" + token + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Token token1 = (Token) o;
+        return type == token1.type &&
+                keywordType == token1.keywordType &&
+                token.equals(token1.token);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, keywordType, token);
     }
 }

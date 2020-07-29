@@ -7,21 +7,18 @@ import java.util.Objects;
 
 public class Class implements Construct {
     private final Token identifier;
-    private final List<ClassVarDec> variableDeclarations;
-    private final List<SubroutineDec> subroutineDeclarations;
+    private final List<Construct> declarations;
 
-    public Class(Token identifier, List<ClassVarDec> variableDeclarations, List<SubroutineDec> subroutineDeclarations) {
+    public Class(Token identifier, List<Construct> declarations) {
         this.identifier = identifier;
-        this.variableDeclarations = variableDeclarations;
-        this.subroutineDeclarations = subroutineDeclarations;
+        this.declarations = declarations;
     }
 
     @Override
     public String toString() { //TODO format this to return XML formatted output
         return "Class{" +
                 "identifier='" + identifier + '\'' +
-                ", variableDeclarations=" + variableDeclarations +
-                ", subroutineDeclarations=" + subroutineDeclarations +
+                ", declarations=" + declarations +
                 '}';
     }
 
@@ -31,12 +28,11 @@ public class Class implements Construct {
         if (o == null || getClass() != o.getClass()) return false;
         Class aClass = (Class) o;
         return identifier.equals(aClass.identifier) &&
-                variableDeclarations.equals(aClass.variableDeclarations) &&
-                subroutineDeclarations.equals(aClass.subroutineDeclarations);
+                declarations.equals(aClass.declarations);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(identifier, variableDeclarations, subroutineDeclarations);
+        return Objects.hash(identifier, declarations);
     }
 }

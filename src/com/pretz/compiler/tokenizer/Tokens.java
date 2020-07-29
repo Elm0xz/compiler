@@ -16,11 +16,15 @@ public class Tokens {
     }
 
     public void advance() {
-        if (!(index >= tokens.size() - 1))
+        if (!(isLast()))
             index++;
     }
 
     public Token current() {
         return tokens.get(index);
+    }
+
+    public boolean isLast() {
+        return index == tokens.size() - 1;
     }
 }
