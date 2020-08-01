@@ -11,60 +11,119 @@ public class CompilationValidator {
     }
 
     protected void validateClassKeyword(Token token) {
-        if (!token.type().equals(TokenType.KEYWORD) && !token.keyword().equals(KeywordType.CLASS))
+        if (token.isNot(TokenType.KEYWORD) && token.isNot(KeywordType.CLASS))
             throw new CompilationException(CompilationException.NOT_A_CLASS);
     }
 
     protected Token validateClassIdentifier(Token token) {
-        if (!token.type().equals(TokenType.IDENTIFIER))
+        if (token.isNot(TokenType.IDENTIFIER))
             throw new CompilationException(CompilationException.INVALID_CLASS_IDENTIFIER);
         return token;
     }
 
-    protected void validateOpeningBracket(Token token) {
-        if (isNotOpeningBracket(token))
-            throw new CompilationException(CompilationException.NOT_AN_OPENING_BRACKET);
+    protected void validateOpeningCurlyBracket(Token token) {
+        if (isNotOpeningCurlyBracket(token))
+            throw new CompilationException(CompilationException.NOT_AN_OPENING_CURLY_BRACKET);
     }
 
-    private boolean isNotOpeningBracket(Token token) {
-        return !token.token().equals("{") || !token.type().equals(TokenType.SYMBOL);
+    private boolean isNotOpeningCurlyBracket(Token token) {
+        return token.isNot("{") || token.isNot(TokenType.SYMBOL);
     }
 
-    protected void validateClosingBracket(Token token) {
-        if (isNotClosingBracket(token))
-            throw new CompilationException(CompilationException.NOT_A_CLOSING_BRACKET);
+    protected void validateClosingCurlyBracket(Token token) {
+        if (isNotClosingCurlyBracket(token))
+            throw new CompilationException(CompilationException.NOT_A_CLOSING_CURLY_BRACKET);
     }
 
-    private boolean isNotClosingBracket(Token token) {
-        return !token.token().equals("}") || !token.type().equals(TokenType.SYMBOL);
+    protected boolean isNotClosingCurlyBracket(Token token) {
+        return token.isNot("}") || token.isNot(TokenType.SYMBOL);
     }
 
     protected Predicate<Token> isClassVarDec() {
-        return it -> it.keyword().equals(KeywordType.STATIC) || it.keyword().equals(KeywordType.FIELD);
+        return it -> it.is(KeywordType.STATIC) || it.is(KeywordType.FIELD);
     }
 
     protected Predicate<Token> isSubroutineDec() {
-        return it -> false;
+        return it -> it.is(KeywordType.CONSTRUCTOR)
+                || it.is(KeywordType.FUNCTION)
+                || it.is(KeywordType.METHOD);
+    }
+
+    protected void validateVarName(Token token) {
+        if (token.isNot(TokenType.IDENTIFIER))
+            throw new CompilationException(CompilationException.INVALID_VARNAME);
     }
 
     protected void validateCommaOrSemicolon(Token token) {
-        if (!token.type().equals(TokenType.SYMBOL) && !token.token().equals(",") && !token.token().equals(";"))
-            throw new CompilationException(CompilationException.MISSING_COMMA);
+        if (isNotComma(token) && isNotSemicolon(token))
+            throw new CompilationException(CompilationException.MISSING_VAR_COMMA);
+    }
+
+    private boolean isNotComma(Token token) {
+        return token.isNot(TokenType.SYMBOL) || token.isNot(",");
+    }
+
+    protected void validateCommaOrClosingRoundBracket(Token token) {
+        if (isNotComma(token) && isNotClosingRoundBracket(token))
+            throw new CompilationException(CompilationException.MISSING_PARAMETER_COMMA_OR_CLOSING_ROUND_BRACKET);
     }
 
     protected boolean isNotSemicolon(Token token) {
-        return !token.type().equals(TokenType.SYMBOL) || !token.token().equals(";");
+        return token.isNot(TokenType.SYMBOL) || token.isNot(";");
     }
 
     protected void validateType(Token token) {
-        if (!isPrimitiveType(token) && !token.type().equals(TokenType.IDENTIFIER))
+        if (isNotPrimitiveType(token) && token.isNot(TokenType.IDENTIFIER))
             throw new CompilationException(CompilationException.INVALID_TYPE);
     }
 
-    private boolean isPrimitiveType(Token token) {
-        return token.type().equals(TokenType.KEYWORD) &&
-                (token.keyword().equals(KeywordType.INT) ||
-                token.keyword().equals(KeywordType.BOOLEAN) ||
-                token.keyword().equals(KeywordType.CHAR));
+    protected void validateTypeOrVoid(Token token) {
+        if (isNotPrimitiveType(token) && token.isNot(TokenType.IDENTIFIER) && token.isNot(KeywordType.VOID))
+            throw new CompilationException(CompilationException.INVALID_TYPE);
+    }
+
+    private boolean isNotPrimitiveType(Token token) {
+        return token.isNot(TokenType.KEYWORD) ||
+                (token.isNot(KeywordType.INT) &&
+                        token.isNot(KeywordType.BOOLEAN) &&
+                        token.isNot(KeywordType.CHAR));
+    }
+
+    protected void validateOpeningRoundBracket(Token token) {
+        if (isNotOpeningRoundBracket(token))
+            throw new CompilationException(CompilationException.NOT_AN_OPENING_ROUND_BRACKET);
+    }
+
+    private boolean isNotOpeningRoundBracket(Token token) {
+        return token.isNot("(") || token.isNot(TokenType.SYMBOL);
+    }
+
+    protected void validateSubroutineName(Token token) {
+        if (token.isNot(TokenType.IDENTIFIER))
+            throw new CompilationException(CompilationException.INVALID_SUBROUTINE_NAME);
+    }
+
+    protected boolean isNotClosingRoundBracket(Token token) {
+        return token.isNot(")") || token.isNot(TokenType.SYMBOL);
+    }
+
+    protected Predicate<Token> isVarDec() {
+        return it -> it.is(KeywordType.VAR);
+    }
+
+    public Predicate<Token> isStatement() {
+        return this::isStatementKeyword;
+    }
+
+    public boolean isStatement(Token token) {
+        return token.is(TokenType.KEYWORD) && isStatementKeyword(token);
+    }
+
+    private boolean isStatementKeyword(Token token) {
+        return token.is(KeywordType.LET) ||
+                token.is(KeywordType.IF) ||
+                token.is(KeywordType.WHILE) ||
+                token.is(KeywordType.DO) ||
+                token.is(KeywordType.RETURN);
     }
 }

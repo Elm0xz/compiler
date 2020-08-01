@@ -41,6 +41,26 @@ public class Token {
         return new Token(token + ch, type);
     }
 
+    public boolean is(TokenType tokenType) {
+        return type().equals(tokenType);
+    }
+
+    public boolean isNot(TokenType tokenType) {
+        return !is(tokenType);
+    }
+
+    public boolean is(KeywordType keywordType) {
+        return keyword().equals(keywordType);
+    }
+
+    public boolean isNot(KeywordType keywordType) {
+        return !is(keywordType);
+    }
+
+    public boolean isNot(String token) {
+        return !token().equals(token);
+    }
+
     private KeywordType setKeywordType(String token) {
         if (Lexicals.keywords().contains(token))
             return Enum.valueOf(KeywordType.class, token.toUpperCase());
