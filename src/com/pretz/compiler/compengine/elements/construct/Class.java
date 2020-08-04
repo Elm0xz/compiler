@@ -1,15 +1,15 @@
-package com.pretz.compiler.compengine.constructs;
+package com.pretz.compiler.compengine.elements.construct;
 
-import com.pretz.compiler.tokenizer.Token;
+import com.pretz.compiler.compengine.elements.terminal.Terminal;
 import io.vavr.collection.List;
 
 import java.util.Objects;
 
 public class Class implements Construct {
-    private final Token identifier;
+    private final Terminal identifier;
     private final List<Construct> declarations;
 
-    public Class(Token identifier, List<Construct> declarations) {
+    public Class(Terminal identifier, List<Construct> declarations) {
         this.identifier = identifier;
         this.declarations = declarations;
     }

@@ -1,16 +1,17 @@
 package com.pretz.compiler.compengine;
 
-import com.pretz.compiler.compengine.constructs.Class;
-import com.pretz.compiler.compengine.constructs.ClassVarDec;
-import com.pretz.compiler.compengine.constructs.Construct;
-import com.pretz.compiler.compengine.constructs.Parameter;
-import com.pretz.compiler.compengine.constructs.ParameterList;
-import com.pretz.compiler.compengine.constructs.Statement;
-import com.pretz.compiler.compengine.constructs.SubroutineBody;
-import com.pretz.compiler.compengine.constructs.SubroutineDec;
-import com.pretz.compiler.compengine.constructs.Type;
-import com.pretz.compiler.compengine.constructs.VarDec;
-import com.pretz.compiler.compengine.constructs.VarNames;
+import com.pretz.compiler.compengine.elements.construct.Class;
+import com.pretz.compiler.compengine.elements.construct.ClassVarDec;
+import com.pretz.compiler.compengine.elements.construct.Construct;
+import com.pretz.compiler.compengine.elements.construct.Parameter;
+import com.pretz.compiler.compengine.elements.construct.ParameterList;
+import com.pretz.compiler.compengine.elements.statement.ReturnStatement;
+import com.pretz.compiler.compengine.elements.construct.SubroutineBody;
+import com.pretz.compiler.compengine.elements.construct.SubroutineDec;
+import com.pretz.compiler.compengine.elements.terminal.TerminalMapper;
+import com.pretz.compiler.compengine.elements.construct.Type;
+import com.pretz.compiler.compengine.elements.construct.VarDec;
+import com.pretz.compiler.compengine.elements.construct.VarNames;
 import com.pretz.compiler.tokenizer.Token;
 import com.pretz.compiler.tokenizer.TokenType;
 import com.pretz.compiler.tokenizer.Tokens;
@@ -25,9 +26,14 @@ import java.util.stream.Stream;
 
 import static com.pretz.compiler.compengine.CompilationException.NOT_A_CLASS;
 
+//TODO maybe split "integration" (using statement) and unit (basic test cases) tests
 public class CompilationEngineTest {
 
-    private final CompilationEngine engine = new CompilationEngine(new CompilationValidator());
+    private final TerminalMapper mapper = new TerminalMapper();
+
+    private final CompilationEngine engine = new CompilationEngine(new CompilationValidator(),
+            new StatementCompilationEngine(new CompilationValidator()),
+            mapper);
 
     @Test
     public void shouldCompileClass() {
@@ -35,7 +41,7 @@ public class CompilationEngineTest {
         Tokens tokens = classWithDeclarations(newClassToken, classTokensList());
 
         Assertions.assertThat(engine.compileClass(tokens)).isEqualTo(
-                new Class(newClassToken, classConstructs()));
+                new Class(mapper.from(newClassToken), classConstructs()));
     }
 
     @Test
@@ -57,7 +63,7 @@ public class CompilationEngineTest {
                 new Token("}", TokenType.SYMBOL)));
 
         Assertions.assertThat(engine.compileClass(tokens)).isEqualTo(
-                new Class(newClassToken, List.empty()));
+                new Class(mapper.from(newClassToken), List.empty()));
     }
 
     @ParameterizedTest()
@@ -94,7 +100,7 @@ public class CompilationEngineTest {
         Tokens tokens = classWithDeclarations(newClassToken, classVarDecTokensList());
 
         Assertions.assertThat(engine.compileClass(tokens)).isEqualTo(
-                new Class(newClassToken, classVarDecConstructs()));
+                new Class(mapper.from(newClassToken), classVarDecConstructs()));
     }
 
     @Test
@@ -103,7 +109,7 @@ public class CompilationEngineTest {
         Tokens tokens = classWithDeclarations(newClassToken, classVarDecTokensListWithCustomType());
 
         Assertions.assertThat(engine.compileClass(tokens)).isEqualTo(
-                new Class(newClassToken, classVarDecConstructsWithCustomType()));
+                new Class(mapper.from(newClassToken), classVarDecConstructsWithCustomType()));
     }
 
     @Test
@@ -142,7 +148,7 @@ public class CompilationEngineTest {
         Tokens tokens = classWithDeclarations(newClassToken, classSubroutineDecTokensList());
 
         Assertions.assertThat(engine.compileClass(tokens)).isEqualTo(
-                new Class(newClassToken, classSubroutineDecConstructs()));
+                new Class(mapper.from(newClassToken), classSubroutineDecConstructs()));
     }
 
     @Test
@@ -211,7 +217,7 @@ public class CompilationEngineTest {
 
         Assertions.assertThatThrownBy(() -> engine.compileClass(tokens))
                 .isInstanceOf(CompilationException.class)
-                .hasMessage(CompilationException.INVALID_SUBROUTINE_BODY);
+                .hasMessage(CompilationException.INVALID_SUBROUTINE_BODY_KEYWORD);
         //TODO this should be checked by statement validator instead as we assume that
         // if beginning token does not have "var" keyword then it's statement (maybe refactor to pattern matching?)
     }
@@ -644,7 +650,7 @@ public class CompilationEngineTest {
                                 new VarNames(
                                         List.of(new Token("dog", TokenType.IDENTIFIER))
                                 )),
-                        new Statement()
+                        new ReturnStatement(null)
                 )
         );
     }
@@ -680,7 +686,7 @@ public class CompilationEngineTest {
     private static Stream<Arguments> missingSubroutineBodyBracketSets() {
         return Stream.of(
                 Arguments.of(new Token("{", TokenType.SYMBOL), new Token("x", TokenType.UNKNOWN),
-                        CompilationException.INVALID_SUBROUTINE_BODY),
+                        CompilationException.INVALID_SUBROUTINE_BODY_KEYWORD),
                 Arguments.of(new Token("x", TokenType.UNKNOWN), new Token("}", TokenType.SYMBOL),
                         CompilationException.NOT_AN_OPENING_CURLY_BRACKET),
                 Arguments.of(new Token("y", TokenType.UNKNOWN), new Token("x", TokenType.UNKNOWN),

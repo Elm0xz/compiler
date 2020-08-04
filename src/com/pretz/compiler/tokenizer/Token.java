@@ -57,8 +57,11 @@ public class Token {
         return !is(keywordType);
     }
 
+    public boolean is(String token) {
+        return token().equals(token);
+    }
     public boolean isNot(String token) {
-        return !token().equals(token);
+        return !is(token);
     }
 
     private KeywordType setKeywordType(String token) {

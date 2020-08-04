@@ -111,12 +111,8 @@ public class CompilationValidator {
         return it -> it.is(KeywordType.VAR);
     }
 
-    public Predicate<Token> isStatement() {
+    protected Predicate<Token> isStatement() {
         return this::isStatementKeyword;
-    }
-
-    public boolean isStatement(Token token) {
-        return token.is(TokenType.KEYWORD) && isStatementKeyword(token);
     }
 
     private boolean isStatementKeyword(Token token) {
@@ -125,5 +121,37 @@ public class CompilationValidator {
                 token.is(KeywordType.WHILE) ||
                 token.is(KeywordType.DO) ||
                 token.is(KeywordType.RETURN);
+    }
+
+    public Predicate<Token> isConstant() {
+        return it -> it.is(TokenType.INT_CONST) || it.is(TokenType.STRING_CONST) || isKeywordConstant(it);
+    }
+
+    private boolean isKeywordConstant(Token token) {
+        return token.is(KeywordType.TRUE) ||
+                token.is(KeywordType.FALSE) ||
+                token.is(KeywordType.NULL) ||
+                token.is(KeywordType.THIS);
+    }
+
+    public Predicate<Token> isVarName() {
+        return it -> it.is(TokenType.IDENTIFIER);
+    }
+
+    public boolean isNonOpSymbol(Token token) {
+        return token.is(TokenType.SYMBOL) &&
+                (token.is("{") ||
+                        token.is("}") ||
+                        token.is("(") ||
+                        token.is(")") ||
+                        token.is("[") ||
+                        token.is("]") ||
+                        token.is(".") ||
+                        token.is(",") ||
+                        token.is(";"));
+    }
+
+    public Predicate<Token> isUnaryOp() {
+        return it -> it.is(TokenType.SYMBOL) && it.is("-");
     }
 }

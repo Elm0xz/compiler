@@ -1,16 +1,17 @@
 package com.pretz.compiler.compengine;
 
-import com.pretz.compiler.compengine.constructs.Class;
-import com.pretz.compiler.compengine.constructs.ClassVarDec;
-import com.pretz.compiler.compengine.constructs.Construct;
-import com.pretz.compiler.compengine.constructs.Parameter;
-import com.pretz.compiler.compengine.constructs.ParameterList;
-import com.pretz.compiler.compengine.constructs.Statement;
-import com.pretz.compiler.compengine.constructs.SubroutineBody;
-import com.pretz.compiler.compengine.constructs.SubroutineDec;
-import com.pretz.compiler.compengine.constructs.Type;
-import com.pretz.compiler.compengine.constructs.VarDec;
-import com.pretz.compiler.compengine.constructs.VarNames;
+import com.pretz.compiler.compengine.elements.construct.Class;
+import com.pretz.compiler.compengine.elements.construct.ClassVarDec;
+import com.pretz.compiler.compengine.elements.construct.Construct;
+import com.pretz.compiler.compengine.elements.construct.Parameter;
+import com.pretz.compiler.compengine.elements.construct.ParameterList;
+import com.pretz.compiler.compengine.elements.construct.SubroutineBody;
+import com.pretz.compiler.compengine.elements.construct.SubroutineDec;
+import com.pretz.compiler.compengine.elements.terminal.Terminal;
+import com.pretz.compiler.compengine.elements.terminal.TerminalMapper;
+import com.pretz.compiler.compengine.elements.construct.Type;
+import com.pretz.compiler.compengine.elements.construct.VarDec;
+import com.pretz.compiler.compengine.elements.construct.VarNames;
 import com.pretz.compiler.tokenizer.Token;
 import com.pretz.compiler.tokenizer.Tokens;
 import io.vavr.collection.List;
@@ -23,10 +24,14 @@ import static io.vavr.API.Match;
 
 public class CompilationEngine {
 
-    private final CompilationValidator compilationValidator;
+    private final CompilationValidator validator;
+    private final StatementCompilationEngine statementCompilationEngine;
+    private final TerminalMapper mapper;
 
-    public CompilationEngine(CompilationValidator compilationValidator) {
-        this.compilationValidator = compilationValidator;
+    public CompilationEngine(CompilationValidator validator, StatementCompilationEngine statementCompilationEngine, TerminalMapper mapper) {
+        this.validator = validator;
+        this.statementCompilationEngine = statementCompilationEngine;
+        this.mapper = mapper;
     }
 
     /**
@@ -38,7 +43,7 @@ public class CompilationEngine {
      */
     public Class compileClass(Tokens tokens) {
         consumeClassKeyword(tokens);
-        Token identifier = consumeClassNameIdentifier(tokens);
+        Terminal identifier = consumeClassNameIdentifier(tokens);
         consumeClassOrSubroutineBodyOpeningBracket(tokens);
         List<Construct> declarations = compileDeclarations(tokens);
         consumeClassOrSubroutineBodyClosingBracket(tokens);
@@ -46,18 +51,18 @@ public class CompilationEngine {
     }
 
     private void consumeClassKeyword(Tokens tokens) {
-        compilationValidator.validateClassKeyword(tokens.current());
+        validator.validateClassKeyword(tokens.current());
         tokens.advance();
     }
 
-    private Token consumeClassNameIdentifier(Tokens tokens) {
-        Token identifier = compilationValidator.validateClassIdentifier(tokens.current());
+    private Terminal consumeClassNameIdentifier(Tokens tokens) {
+        Token identifier = validator.validateClassIdentifier(tokens.current());
         tokens.advance();
-        return identifier;
+        return mapper.from(identifier);
     }
 
     private void consumeClassOrSubroutineBodyOpeningBracket(Tokens tokens) {
-        compilationValidator.validateOpeningCurlyBracket(tokens.current());
+        validator.validateOpeningCurlyBracket(tokens.current());
         tokens.advance();
     }
 
@@ -65,8 +70,8 @@ public class CompilationEngine {
         ArrayList<Construct> declarations = new ArrayList<>(); //TODO refactor to something cleaner?
         while (!tokens.isLast()) {
             declarations.add(Match(tokens.current()).of(
-                    Case($(compilationValidator.isClassVarDec()), () -> compileClassVarDec(tokens)),
-                    Case($(compilationValidator.isSubroutineDec()), () -> compileSubroutine(tokens)),
+                    Case($(validator.isClassVarDec()), () -> compileClassVarDec(tokens)),
+                    Case($(validator.isSubroutineDec()), () -> compileSubroutine(tokens)),
                     Case($(), this::throwInvalidDeclarationException)
             ));
         }
@@ -102,7 +107,7 @@ public class CompilationEngine {
     }
 
     private void consumeClassOrSubroutineBodyClosingBracket(Tokens tokens) {
-        compilationValidator.validateClosingCurlyBracket(tokens.current());
+        validator.validateClosingCurlyBracket(tokens.current());
     }
 
     private Token consumeStartingKeyword(Tokens tokens) { //TODO this should be also validated + test
@@ -112,7 +117,7 @@ public class CompilationEngine {
     }
 
     private Type consumeType(Tokens tokens) {
-        compilationValidator.validateType(tokens.current());
+        validator.validateType(tokens.current());
         Type type = new Type(tokens.current());
         tokens.advance();
         return type;
@@ -120,7 +125,7 @@ public class CompilationEngine {
 
     private List<Token> consumeVarNames(Tokens tokens) {
         ArrayList<Token> varNames = new ArrayList<>(); //TODO refactor to something cleaner
-        while (compilationValidator.isNotSemicolon(tokens.current())) {
+        while (validator.isNotSemicolon(tokens.current())) {
             varNames.add(consumeVarName(tokens));
             consumeVarDecComma(tokens);
         }
@@ -128,40 +133,40 @@ public class CompilationEngine {
     }
 
     private Token consumeVarName(Tokens tokens) {
-        compilationValidator.validateVarName(tokens.current());
+        validator.validateVarName(tokens.current());
         Token varName = tokens.current();
         tokens.advance();
         return varName;
     }
 
     private void consumeVarDecComma(Tokens tokens) {
-        compilationValidator.validateCommaOrSemicolon(tokens.current());
-        if (compilationValidator.isNotSemicolon(tokens.current()))
+        validator.validateCommaOrSemicolon(tokens.current());
+        if (validator.isNotSemicolon(tokens.current()))
             tokens.advance();
     }
 
     private Type consumeSubroutineType(Tokens tokens) {
-        compilationValidator.validateTypeOrVoid(tokens.current());
+        validator.validateTypeOrVoid(tokens.current());
         Type type = new Type(tokens.current());
         tokens.advance();
         return type;
     }
 
     private Token consumeSubroutineName(Tokens tokens) {
-        compilationValidator.validateSubroutineName(tokens.current());
+        validator.validateSubroutineName(tokens.current());
         Token varName = tokens.current();
         tokens.advance();
         return varName;
     }
 
     private void consumeSubroutineParametersOpeningBracket(Tokens tokens) {
-        compilationValidator.validateOpeningRoundBracket(tokens.current());
+        validator.validateOpeningRoundBracket(tokens.current());
         tokens.advance();
     }
 
     private ParameterList compileParameterList(Tokens tokens) {
         ArrayList<Parameter> parameters = new ArrayList<>(); //TODO refactor to something cleaner
-        while (compilationValidator.isNotClosingRoundBracket(tokens.current())) {
+        while (validator.isNotClosingRoundBracket(tokens.current())) {
             parameters.add(consumeParameter(tokens));
             consumeParameterListComma(tokens);
         }
@@ -175,8 +180,8 @@ public class CompilationEngine {
     }
 
     private void consumeParameterListComma(Tokens tokens) {
-        compilationValidator.validateCommaOrClosingRoundBracket(tokens.current());
-        if (compilationValidator.isNotClosingRoundBracket(tokens.current()))
+        validator.validateCommaOrClosingRoundBracket(tokens.current());
+        if (validator.isNotClosingRoundBracket(tokens.current()))
             tokens.advance();
     }
 
@@ -188,10 +193,10 @@ public class CompilationEngine {
     private SubroutineBody compileSubroutineBody(Tokens tokens) {
         consumeClassOrSubroutineBodyOpeningBracket(tokens);
         ArrayList<Construct> subroutineBody = new ArrayList<>(); //TODO refactor to something cleaner
-        while (compilationValidator.isNotClosingCurlyBracket(tokens.current())) {
+        while (validator.isNotClosingCurlyBracket(tokens.current())) {
             subroutineBody.add(Match(tokens.current()).of(
-                    Case($(compilationValidator.isVarDec()), () -> compileVarDec(tokens)),
-                    Case($(compilationValidator.isStatement()), () -> compileStatement(tokens)),
+                    Case($(validator.isVarDec()), () -> compileVarDec(tokens)),
+                    Case($(validator.isStatement()), () -> statementCompilationEngine.compileStatement(tokens)),
                     Case($(), this::throwInvalidSubroutineBodyException)
             ));
         }
@@ -200,7 +205,7 @@ public class CompilationEngine {
     }
 
     private Construct throwInvalidSubroutineBodyException() {
-        throw new CompilationException(CompilationException.INVALID_SUBROUTINE_BODY);
+        throw new CompilationException(CompilationException.INVALID_SUBROUTINE_BODY_KEYWORD);
     }
 
     private VarDec compileVarDec(Tokens tokens) {
@@ -209,13 +214,5 @@ public class CompilationEngine {
         List<Token> varNames = consumeVarNames(tokens);
         consumeSemicolon(tokens);
         return new VarDec(startingKeyword, type, new VarNames(varNames));
-    }
-
-    private Statement compileStatement(Tokens tokens) {
-        //TODO consume statement -> maybe separate class for this?
-        /*tokens.advance();
-        tokens.advance();
-        tokens.advance();*/
-        return new Statement();
     }
 }
