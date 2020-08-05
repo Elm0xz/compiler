@@ -1,15 +1,15 @@
 package com.pretz.compiler.compengine.elements.construct;
 
-import com.pretz.compiler.tokenizer.token.Token;
+import com.pretz.compiler.compengine.elements.terminal.Terminal;
 
 import java.util.Objects;
 
 public class ClassVarDec implements Construct {
-    private final Token startingKeyword;
+    private final Terminal startingKeyword;
     private final Type type;
     private final VarNames varNames;
 
-    public ClassVarDec(Token startingKeyword, Type type, VarNames varNames) {
+    public ClassVarDec(Terminal startingKeyword, Type type, VarNames varNames) {
         this.startingKeyword = startingKeyword;
         this.type = type;
         this.varNames = varNames;

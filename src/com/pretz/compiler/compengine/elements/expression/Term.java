@@ -1,16 +1,16 @@
 package com.pretz.compiler.compengine.elements.expression;
 
+import com.pretz.compiler.compengine.elements.Element;
 import com.pretz.compiler.compengine.elements.construct.Construct;
-import com.pretz.compiler.tokenizer.token.Token;
 import io.vavr.collection.List;
 
 import java.util.Objects;
 
 public class Term implements Construct {
-    private final List<Token> termParts;
+    private final List<Element> termParts;
 
-    public Term(Token... tokens) {
-        this.termParts = List.of(tokens);
+    public Term(Element... elements) {
+        this.termParts = List.of(elements);
     }
 
     @Override

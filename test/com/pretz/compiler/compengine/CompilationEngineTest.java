@@ -8,10 +8,12 @@ import com.pretz.compiler.compengine.elements.construct.ParameterList;
 import com.pretz.compiler.compengine.elements.statement.ReturnStatement;
 import com.pretz.compiler.compengine.elements.construct.SubroutineBody;
 import com.pretz.compiler.compengine.elements.construct.SubroutineDec;
+import com.pretz.compiler.compengine.elements.terminal.Terminal;
 import com.pretz.compiler.compengine.elements.terminal.TerminalMapper;
 import com.pretz.compiler.compengine.elements.construct.Type;
 import com.pretz.compiler.compengine.elements.construct.VarDec;
 import com.pretz.compiler.compengine.elements.construct.VarNames;
+import com.pretz.compiler.compengine.elements.terminal.TerminalType;
 import com.pretz.compiler.tokenizer.token.Token;
 import com.pretz.compiler.tokenizer.token.TokenType;
 import com.pretz.compiler.tokenizer.token.Tokens;
@@ -32,7 +34,7 @@ public class CompilationEngineTest {
     private final TerminalMapper mapper = new TerminalMapper();
 
     private final CompilationEngine engine = new CompilationEngine(new CompilationValidator(),
-            new StatementCompilationEngine(new CompilationValidator()),
+            new StatementCompilationEngine(new CompilationValidator(), mapper),
             mapper);
 
     @Test
@@ -310,19 +312,19 @@ public class CompilationEngineTest {
 
     private List<Construct> classConstructs() {
         return List.of(
-                new ClassVarDec(new Token("static", TokenType.KEYWORD),
-                        new Type(new Token("int", TokenType.KEYWORD)),
-                        new VarNames(List.of(new Token("testInt", TokenType.IDENTIFIER)))
+                new ClassVarDec(new Terminal("static", TerminalType.KEYWORD),
+                        new Type(new Terminal("int", TerminalType.KEYWORD)),
+                        new VarNames(List.of(new Terminal("testInt", TerminalType.IDENTIFIER)))
                 ),
-                new ClassVarDec(new Token("field", TokenType.KEYWORD),
-                        new Type(new Token("boolean", TokenType.KEYWORD)),
+                new ClassVarDec(new Terminal("field", TerminalType.KEYWORD),
+                        new Type(new Terminal("boolean", TerminalType.KEYWORD)),
                         new VarNames(List.of(
-                                new Token("testBool1", TokenType.IDENTIFIER),
-                                new Token("testBool2", TokenType.IDENTIFIER)))
+                                new Terminal("testBool1", TerminalType.IDENTIFIER),
+                                new Terminal("testBool2", TerminalType.IDENTIFIER)))
                 ),
-                new SubroutineDec(new Token("method", TokenType.KEYWORD),
-                        new Type(new Token("void", TokenType.KEYWORD)),
-                        new Token("doStuff", TokenType.IDENTIFIER),
+                new SubroutineDec(new Terminal("method", TerminalType.KEYWORD),
+                        new Type(new Terminal("void", TerminalType.KEYWORD)),
+                        new Terminal("doStuff", TerminalType.IDENTIFIER),
                         new ParameterList(subroutineParameterList()), subroutineBody())
         );
     }
@@ -353,30 +355,30 @@ public class CompilationEngineTest {
 
     private List<Construct> classVarDecConstructs() {
         return List.of(
-                new ClassVarDec(new Token("static", TokenType.KEYWORD),
-                        new Type(new Token("int", TokenType.KEYWORD)),
-                        new VarNames(List.of(new Token("testInt", TokenType.IDENTIFIER)))
+                new ClassVarDec(new Terminal("static", TerminalType.KEYWORD),
+                        new Type(new Terminal("int", TerminalType.KEYWORD)),
+                        new VarNames(List.of(new Terminal("testInt", TerminalType.IDENTIFIER)))
                 ),
-                new ClassVarDec(new Token("field", TokenType.KEYWORD),
-                        new Type(new Token("boolean", TokenType.KEYWORD)),
+                new ClassVarDec(new Terminal("field", TerminalType.KEYWORD),
+                        new Type(new Terminal("boolean", TerminalType.KEYWORD)),
                         new VarNames(List.of(
-                                new Token("testBool1", TokenType.IDENTIFIER),
-                                new Token("testBool2", TokenType.IDENTIFIER)))
+                                new Terminal("testBool1", TerminalType.IDENTIFIER),
+                                new Terminal("testBool2", TerminalType.IDENTIFIER)))
                 )
         );
     }
 
     private List<Construct> classVarDecConstructsWithCustomType() {
         return List.of(
-                new ClassVarDec(new Token("static", TokenType.KEYWORD),
-                        new Type(new Token("Dog", TokenType.IDENTIFIER)),
-                        new VarNames(List.of(new Token("testDog", TokenType.IDENTIFIER)))
+                new ClassVarDec(new Terminal("static", TerminalType.KEYWORD),
+                        new Type(new Terminal("Dog", TerminalType.IDENTIFIER)),
+                        new VarNames(List.of(new Terminal("testDog", TerminalType.IDENTIFIER)))
                 ),
-                new ClassVarDec(new Token("field", TokenType.KEYWORD),
-                        new Type(new Token("boolean", TokenType.KEYWORD)),
+                new ClassVarDec(new Terminal("field", TerminalType.KEYWORD),
+                        new Type(new Terminal("boolean", TerminalType.KEYWORD)),
                         new VarNames(List.of(
-                                new Token("testBool1", TokenType.IDENTIFIER),
-                                new Token("testBool2", TokenType.IDENTIFIER)))
+                                new Terminal("testBool1", TerminalType.IDENTIFIER),
+                                new Terminal("testBool2", TerminalType.IDENTIFIER)))
                 )
         );
     }
@@ -616,21 +618,21 @@ public class CompilationEngineTest {
 
     private List<Construct> classSubroutineDecConstructs() {
         return List.of(
-                new SubroutineDec(new Token("method", TokenType.KEYWORD),
-                        new Type(new Token("void", TokenType.KEYWORD)),
-                        new Token("doStuff", TokenType.IDENTIFIER),
+                new SubroutineDec(new Terminal("method", TerminalType.KEYWORD),
+                        new Type(new Terminal("void", TerminalType.KEYWORD)),
+                        new Terminal("doStuff", TerminalType.IDENTIFIER),
                         new ParameterList(subroutineParameterList()), subroutineBody())
         );
     }
 
     private List<Parameter> subroutineParameterList() {
         return List.of(
-                new Parameter(new Type(new Token("boolean", TokenType.KEYWORD)),
-                        new Token("booleanParameter", TokenType.IDENTIFIER)),
-                new Parameter(new Type(new Token("int", TokenType.KEYWORD)),
-                        new Token("intParameter", TokenType.IDENTIFIER)),
-                new Parameter(new Type(new Token("Dog", TokenType.IDENTIFIER)),
-                        new Token("objectParameter", TokenType.IDENTIFIER))
+                new Parameter(new Type(new Terminal("boolean", TerminalType.KEYWORD)),
+                        new Terminal("booleanParameter", TerminalType.IDENTIFIER)),
+                new Parameter(new Type(new Terminal("int", TerminalType.KEYWORD)),
+                        new Terminal("intParameter", TerminalType.IDENTIFIER)),
+                new Parameter(new Type(new Terminal("Dog", TerminalType.IDENTIFIER)),
+                        new Terminal("objectParameter", TerminalType.IDENTIFIER))
         );
     }
 
@@ -638,17 +640,17 @@ public class CompilationEngineTest {
         return new SubroutineBody(
                 List.of(
                         new VarDec(
-                                new Token("var", TokenType.KEYWORD),
-                                new Type(new Token("int", TokenType.KEYWORD)),
+                                new Terminal("var", TerminalType.KEYWORD),
+                                new Type(new Terminal("int", TerminalType.KEYWORD)),
                                 new VarNames(
-                                        List.of(new Token("x", TokenType.IDENTIFIER),
-                                                new Token("y", TokenType.IDENTIFIER))
+                                        List.of(new Terminal("x", TerminalType.IDENTIFIER),
+                                                new Terminal("y", TerminalType.IDENTIFIER))
                                 )),
                         new VarDec(
-                                new Token("var", TokenType.KEYWORD),
-                                new Type(new Token("Dog", TokenType.IDENTIFIER)),
+                                new Terminal("var", TerminalType.KEYWORD),
+                                new Type(new Terminal("Dog", TerminalType.IDENTIFIER)),
                                 new VarNames(
-                                        List.of(new Token("dog", TokenType.IDENTIFIER))
+                                        List.of(new Terminal("dog", TerminalType.IDENTIFIER))
                                 )),
                         new ReturnStatement(null)
                 )

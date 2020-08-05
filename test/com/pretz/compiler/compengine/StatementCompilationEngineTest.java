@@ -3,8 +3,11 @@ package com.pretz.compiler.compengine;
 import com.pretz.compiler.compengine.elements.expression.Expression;
 import com.pretz.compiler.compengine.elements.expression.Op;
 import com.pretz.compiler.compengine.elements.expression.OpTerm;
-import com.pretz.compiler.compengine.elements.statement.ReturnStatement;
 import com.pretz.compiler.compengine.elements.expression.Term;
+import com.pretz.compiler.compengine.elements.statement.ReturnStatement;
+import com.pretz.compiler.compengine.elements.terminal.Terminal;
+import com.pretz.compiler.compengine.elements.terminal.TerminalMapper;
+import com.pretz.compiler.compengine.elements.terminal.TerminalType;
 import com.pretz.compiler.tokenizer.token.Token;
 import com.pretz.compiler.tokenizer.token.TokenType;
 import com.pretz.compiler.tokenizer.token.Tokens;
@@ -19,7 +22,7 @@ import java.util.stream.Stream;
 
 public class StatementCompilationEngineTest {
 
-    private final StatementCompilationEngine engine = new StatementCompilationEngine(new CompilationValidator());
+    private final StatementCompilationEngine engine = new StatementCompilationEngine(new CompilationValidator(), new TerminalMapper());
 
     @Test
     public void shouldCompileEmptyReturnStatement() {
@@ -39,7 +42,7 @@ public class StatementCompilationEngineTest {
 
         Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
                 new ReturnStatement(
-                        new Expression(new Term(new Token("5", TokenType.INT_CONST)), List.empty()))
+                        new Expression(new Term(new Terminal("5", TerminalType.INT_CONST)), List.empty()))
         );
     }
 
@@ -52,7 +55,7 @@ public class StatementCompilationEngineTest {
 
         Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
                 new ReturnStatement(
-                        new Expression(new Term(new Token("Foo", TokenType.STRING_CONST)), List.empty()))
+                        new Expression(new Term(new Terminal("Foo", TerminalType.STRING_CONST)), List.empty()))
         );
     }
 
@@ -66,7 +69,7 @@ public class StatementCompilationEngineTest {
 
         Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
                 new ReturnStatement(
-                        new Expression(new Term(new Token(keyword, TokenType.KEYWORD)), List.empty()))
+                        new Expression(new Term(new Terminal(keyword, TerminalType.KEYWORD)), List.empty()))
         );
     }
 
@@ -79,7 +82,7 @@ public class StatementCompilationEngineTest {
 
         Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
                 new ReturnStatement(
-                        new Expression(new Term(new Token("duck", TokenType.IDENTIFIER)), List.empty()))
+                        new Expression(new Term(new Terminal("duck", TerminalType.IDENTIFIER)), List.empty()))
         );
     }
 
@@ -98,14 +101,14 @@ public class StatementCompilationEngineTest {
         Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
                 new ReturnStatement(
                         new Expression(new Term(
-                                new Token("-", TokenType.SYMBOL),
-                                new Token("duck", TokenType.IDENTIFIER)),
+                                new Terminal("-", TerminalType.SYMBOL),
+                                new Terminal("duck", TerminalType.IDENTIFIER)),
                                 List.of(new OpTerm(
-                                                new Op(new Token("+", TokenType.SYMBOL)),
-                                                new Term(new Token("dog", TokenType.IDENTIFIER))),
+                                                new Op(new Terminal("+", TerminalType.SYMBOL)),
+                                                new Term(new Terminal("dog", TerminalType.IDENTIFIER))),
                                         new OpTerm(
-                                                new Op(new Token("+", TokenType.SYMBOL)),
-                                                new Term(new Token("3", TokenType.INT_CONST)))
+                                                new Op(new Terminal("+", TerminalType.SYMBOL)),
+                                                new Term(new Terminal("3", TerminalType.INT_CONST)))
                                 )))
         );
     }

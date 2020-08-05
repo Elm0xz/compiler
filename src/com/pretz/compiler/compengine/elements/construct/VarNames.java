@@ -1,14 +1,14 @@
 package com.pretz.compiler.compengine.elements.construct;
 
-import com.pretz.compiler.tokenizer.token.Token;
+import com.pretz.compiler.compengine.elements.terminal.Terminal;
 import io.vavr.collection.List;
 
 import java.util.Objects;
 
 public class VarNames implements Construct {
-    private final List<Token> varNames;
+    private final List<Terminal> varNames;
 
-    public VarNames(List<Token> varNames) {
+    public VarNames(List<Terminal> varNames) {
         this.varNames = varNames;
     }
 

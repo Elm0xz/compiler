@@ -1,13 +1,13 @@
 package com.pretz.compiler.compengine.elements.construct;
 
-import com.pretz.compiler.tokenizer.token.Token;
+import com.pretz.compiler.compengine.elements.terminal.Terminal;
 
 import java.util.Objects;
 
 public class Type implements Construct {
-    private final Token type;
+    private final Terminal type;
 
-    public Type(Token type) {
+    public Type(Terminal type) {
         this.type = type;
     }
 

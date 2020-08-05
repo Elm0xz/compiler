@@ -6,7 +6,7 @@ public class CompilationEngineFactory {
 
     public CompilationEngine create() {
         return new CompilationEngine(new CompilationValidator(),
-                new StatementCompilationEngine(new CompilationValidator()),
+                new StatementCompilationEngine(new CompilationValidator(), new TerminalMapper()),
                 new TerminalMapper());
     }
 }

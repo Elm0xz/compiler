@@ -1,14 +1,14 @@
 package com.pretz.compiler.compengine.elements.construct;
 
-import com.pretz.compiler.tokenizer.token.Token;
+import com.pretz.compiler.compengine.elements.terminal.Terminal;
 
 import java.util.Objects;
 
 public class Parameter implements Construct {
     private final Type type;
-    private final Token varName;
+    private final Terminal varName;
 
-    public Parameter(Type type, Token varName) {
+    public Parameter(Type type, Terminal varName) {
         this.type = type;
         this.varName = varName;
     }

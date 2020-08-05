@@ -2,27 +2,30 @@ package com.pretz.compiler.compengine.elements.expression;
 
 import com.pretz.compiler.compengine.CompilationException;
 import com.pretz.compiler.compengine.elements.construct.Construct;
+import com.pretz.compiler.compengine.elements.terminal.Terminal;
+import com.pretz.compiler.compengine.elements.terminal.TerminalType;
 import com.pretz.compiler.tokenizer.token.Token;
 import com.pretz.compiler.tokenizer.token.TokenType;
 
 import java.util.Objects;
 
 public class Op implements Construct {
-    private final Token op;
+    private final Terminal op;
 
-    public Op(Token token) {
+    public Op(Terminal token) {
         validate(token);
         this.op = token;
     }
 
-    private void validate(Token token) { //TODO test this
-        if (!token.is(TokenType.SYMBOL) ||
+    //TODO refactor this
+    private void validate(Terminal token) { //TODO test this
+        /*if (!token.is(TerminalType.SYMBOL) ||
                 (token.isNot("+") && token.isNot("+") &&
                         token.isNot("-") && token.isNot("*") &&
                         token.isNot("/") && token.isNot("&") &&
                         token.isNot("|") && token.isNot("<") &&
                         token.isNot(">") && token.isNot("=")))
-            throw new CompilationException(CompilationException.INVALID_OPERATOR);
+            throw new CompilationException(CompilationException.INVALID_OPERATOR);*/
     }
 
     @Override

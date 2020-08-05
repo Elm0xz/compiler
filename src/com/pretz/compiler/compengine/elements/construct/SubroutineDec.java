@@ -1,18 +1,19 @@
 package com.pretz.compiler.compengine.elements.construct;
 
-import com.pretz.compiler.tokenizer.token.Token;
+import com.pretz.compiler.compengine.elements.terminal.Terminal;
 
 import java.util.Objects;
 
 public class SubroutineDec implements Construct {
-    private final Token startingKeyword;
+    private final Terminal startingKeyword;
     private final Type type;
-    private final Token subroutineName;
+    private final Terminal subroutineName;
     private final ParameterList parameterList;
     private final SubroutineBody subroutineBody;
 
 
-    public SubroutineDec(Token startingKeyword, Type type, Token subroutineName, ParameterList parameterList, SubroutineBody subroutineBody) {
+    public SubroutineDec(Terminal startingKeyword, Type type, Terminal subroutineName,
+                         ParameterList parameterList, SubroutineBody subroutineBody) {
         this.startingKeyword = startingKeyword;
         this.type = type;
         this.subroutineName = subroutineName;

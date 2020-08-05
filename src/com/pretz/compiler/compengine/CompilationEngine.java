@@ -79,9 +79,9 @@ public class CompilationEngine {
     }
 
     private ClassVarDec compileClassVarDec(Tokens tokens) {
-        Token startingKeyword = consumeStartingKeyword(tokens); //TODO separate validations for different starting keywords
+        Terminal startingKeyword = consumeStartingKeyword(tokens); //TODO separate validations for different starting keywords
         Type type = consumeType(tokens);
-        List<Token> varNames = consumeVarNames(tokens);
+        List<Terminal> varNames = consumeVarNames(tokens);
         consumeSemicolon(tokens);
         return new ClassVarDec(startingKeyword, type, new VarNames(varNames));
     }
@@ -92,9 +92,9 @@ public class CompilationEngine {
     }
 
     private SubroutineDec compileSubroutine(Tokens tokens) {
-        Token startingKeyword = consumeStartingKeyword(tokens);
+        Terminal startingKeyword = consumeStartingKeyword(tokens);
         Type type = consumeSubroutineType(tokens);
-        Token subroutineName = consumeSubroutineName(tokens);
+        Terminal subroutineName = consumeSubroutineName(tokens);
         consumeSubroutineParametersOpeningBracket(tokens);
         ParameterList parameterList = compileParameterList(tokens);
         consumeSubroutineParametersClosingBracket(tokens);
@@ -110,21 +110,21 @@ public class CompilationEngine {
         validator.validateClosingCurlyBracket(tokens.current());
     }
 
-    private Token consumeStartingKeyword(Tokens tokens) { //TODO this should be also validated + test
+    private Terminal consumeStartingKeyword(Tokens tokens) { //TODO this should be also validated + test
         Token startingKeyword = tokens.current();
         tokens.advance();
-        return startingKeyword;
+        return mapper.from(startingKeyword);
     }
 
     private Type consumeType(Tokens tokens) {
         validator.validateType(tokens.current());
-        Type type = new Type(tokens.current());
+        Type type = new Type(fromCurrent(tokens));
         tokens.advance();
         return type;
     }
 
-    private List<Token> consumeVarNames(Tokens tokens) {
-        ArrayList<Token> varNames = new ArrayList<>(); //TODO refactor to something cleaner
+    private List<Terminal> consumeVarNames(Tokens tokens) {
+        ArrayList<Terminal> varNames = new ArrayList<>(); //TODO refactor to something cleaner
         while (validator.isNotSemicolon(tokens.current())) {
             varNames.add(consumeVarName(tokens));
             consumeVarDecComma(tokens);
@@ -132,11 +132,11 @@ public class CompilationEngine {
         return List.ofAll(varNames);
     }
 
-    private Token consumeVarName(Tokens tokens) {
+    private Terminal consumeVarName(Tokens tokens) {
         validator.validateVarName(tokens.current());
         Token varName = tokens.current();
         tokens.advance();
-        return varName;
+        return mapper.from(varName);
     }
 
     private void consumeVarDecComma(Tokens tokens) {
@@ -147,16 +147,16 @@ public class CompilationEngine {
 
     private Type consumeSubroutineType(Tokens tokens) {
         validator.validateTypeOrVoid(tokens.current());
-        Type type = new Type(tokens.current());
+        Type type = new Type(fromCurrent(tokens));
         tokens.advance();
         return type;
     }
 
-    private Token consumeSubroutineName(Tokens tokens) {
+    private Terminal consumeSubroutineName(Tokens tokens) {
         validator.validateSubroutineName(tokens.current());
         Token varName = tokens.current();
         tokens.advance();
-        return varName;
+        return mapper.from(varName);
     }
 
     private void consumeSubroutineParametersOpeningBracket(Tokens tokens) {
@@ -175,7 +175,7 @@ public class CompilationEngine {
 
     private Parameter consumeParameter(Tokens tokens) {
         Type parameterType = consumeType(tokens);
-        Token parameterName = consumeVarName(tokens);
+        Terminal parameterName = consumeVarName(tokens);
         return new Parameter(parameterType, parameterName);
     }
 
@@ -209,10 +209,14 @@ public class CompilationEngine {
     }
 
     private VarDec compileVarDec(Tokens tokens) {
-        Token startingKeyword = consumeStartingKeyword(tokens);
+        Terminal startingKeyword = consumeStartingKeyword(tokens);
         Type type = consumeType(tokens);
-        List<Token> varNames = consumeVarNames(tokens);
+        List<Terminal> varNames = consumeVarNames(tokens);
         consumeSemicolon(tokens);
         return new VarDec(startingKeyword, type, new VarNames(varNames));
+    }
+
+    private Terminal fromCurrent(Tokens tokens) {
+        return mapper.from(tokens.current());
     }
 }
