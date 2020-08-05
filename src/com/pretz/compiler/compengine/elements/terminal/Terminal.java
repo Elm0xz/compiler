@@ -1,7 +1,7 @@
 package com.pretz.compiler.compengine.elements.terminal;
 
 import com.pretz.compiler.compengine.elements.Element;
-import com.pretz.compiler.tokenizer.Lexicals;
+import com.pretz.compiler.util.Lexicals;
 
 import java.util.Objects;
 

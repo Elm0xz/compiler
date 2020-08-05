@@ -1,13 +1,13 @@
 package com.pretz.compiler.tokenizer.tokenizing;
 
-import com.pretz.compiler.tokenizer.Lexicals;
-import com.pretz.compiler.tokenizer.Token;
-import com.pretz.compiler.tokenizer.TokenType;
+import com.pretz.compiler.util.Lexicals;
+import com.pretz.compiler.tokenizer.token.Token;
+import com.pretz.compiler.tokenizer.token.TokenType;
 import io.vavr.collection.List;
 
 import java.util.function.Predicate;
 
-import static com.pretz.compiler.ListUtils.removeLastFrom;
+import static com.pretz.compiler.util.ListUtils.removeLastFrom;
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.API.Match;

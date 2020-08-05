@@ -6,9 +6,9 @@ import com.pretz.compiler.compengine.elements.expression.OpTerm;
 import com.pretz.compiler.compengine.elements.statement.ReturnStatement;
 import com.pretz.compiler.compengine.elements.statement.Statement;
 import com.pretz.compiler.compengine.elements.expression.Term;
-import com.pretz.compiler.tokenizer.KeywordType;
-import com.pretz.compiler.tokenizer.Token;
-import com.pretz.compiler.tokenizer.Tokens;
+import com.pretz.compiler.tokenizer.token.KeywordType;
+import com.pretz.compiler.tokenizer.token.Token;
+import com.pretz.compiler.tokenizer.token.Tokens;
 import io.vavr.collection.List;
 
 import java.util.ArrayList;

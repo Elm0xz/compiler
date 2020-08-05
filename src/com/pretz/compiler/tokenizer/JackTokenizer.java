@@ -1,8 +1,11 @@
 package com.pretz.compiler.tokenizer;
 
+import com.pretz.compiler.util.Lexicals;
 import com.pretz.compiler.input.JackInputReader;
 import com.pretz.compiler.tokenizer.comments.CommentAccumulator;
 import com.pretz.compiler.tokenizer.comments.CommentFlags;
+import com.pretz.compiler.tokenizer.token.Token;
+import com.pretz.compiler.tokenizer.token.Tokens;
 import com.pretz.compiler.tokenizer.tokenizing.TokenizingAccumulator;
 import io.vavr.collection.List;
 import io.vavr.collection.Stream;

@@ -2,8 +2,8 @@ package com.pretz.compiler.tokenizer.comments;
 
 import io.vavr.collection.List;
 
-import static com.pretz.compiler.ListUtils.appendTo;
-import static com.pretz.compiler.ListUtils.removeLastFrom;
+import static com.pretz.compiler.util.ListUtils.appendTo;
+import static com.pretz.compiler.util.ListUtils.removeLastFrom;
 
 public class CommentAccumulator {
     private final List<Character> tokens;

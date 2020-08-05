@@ -1,4 +1,4 @@
-package com.pretz.compiler.tokenizer;
+package com.pretz.compiler.util;
 
 import io.vavr.collection.HashSet;
 import io.vavr.collection.Set;

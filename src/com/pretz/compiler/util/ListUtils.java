@@ -1,4 +1,4 @@
-package com.pretz.compiler;
+package com.pretz.compiler.util;
 
 import io.vavr.collection.List;
 

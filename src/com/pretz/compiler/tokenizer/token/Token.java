@@ -1,4 +1,6 @@
-package com.pretz.compiler.tokenizer;
+package com.pretz.compiler.tokenizer.token;
+
+import com.pretz.compiler.util.Lexicals;
 
 import java.util.Objects;
 

@@ -1,4 +1,4 @@
-package com.pretz.compiler.tokenizer;
+package com.pretz.compiler.tokenizer.token;
 
 public enum TokenType {
     KEYWORD,

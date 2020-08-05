@@ -1,6 +1,6 @@
 package com.pretz.compiler.compengine.elements.construct;
 
-import com.pretz.compiler.tokenizer.Token;
+import com.pretz.compiler.tokenizer.token.Token;
 import io.vavr.collection.List;
 
 import java.util.Objects;

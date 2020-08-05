@@ -1,8 +1,5 @@
-package com.pretz.compiler;
+package com.pretz.compiler.compengine;
 
-import com.pretz.compiler.compengine.CompilationEngine;
-import com.pretz.compiler.compengine.CompilationValidator;
-import com.pretz.compiler.compengine.StatementCompilationEngine;
 import com.pretz.compiler.compengine.elements.terminal.TerminalMapper;
 
 public class CompilationEngineFactory {

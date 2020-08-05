@@ -1,8 +1,8 @@
 package com.pretz.compiler.compengine;
 
-import com.pretz.compiler.tokenizer.KeywordType;
-import com.pretz.compiler.tokenizer.Token;
-import com.pretz.compiler.tokenizer.TokenType;
+import com.pretz.compiler.tokenizer.token.KeywordType;
+import com.pretz.compiler.tokenizer.token.Token;
+import com.pretz.compiler.tokenizer.token.TokenType;
 
 import java.util.function.Predicate;
 

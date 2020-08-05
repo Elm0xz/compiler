@@ -2,8 +2,8 @@ package com.pretz.compiler.compengine.elements.expression;
 
 import com.pretz.compiler.compengine.CompilationException;
 import com.pretz.compiler.compengine.elements.construct.Construct;
-import com.pretz.compiler.tokenizer.Token;
-import com.pretz.compiler.tokenizer.TokenType;
+import com.pretz.compiler.tokenizer.token.Token;
+import com.pretz.compiler.tokenizer.token.TokenType;
 
 import java.util.Objects;
 

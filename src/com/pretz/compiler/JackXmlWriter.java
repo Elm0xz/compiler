@@ -1,7 +1,7 @@
 package com.pretz.compiler;
 
-import com.pretz.compiler.tokenizer.Token;
-import com.pretz.compiler.tokenizer.TokenType;
+import com.pretz.compiler.tokenizer.token.Token;
+import com.pretz.compiler.tokenizer.token.TokenType;
 
 import java.io.BufferedWriter;
 import java.io.File;

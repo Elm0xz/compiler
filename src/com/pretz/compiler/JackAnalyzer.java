@@ -1,8 +1,6 @@
 package com.pretz.compiler;
 
-import com.pretz.compiler.compengine.CompilationEngine;
-import com.pretz.compiler.compengine.CompilationValidator;
-import com.pretz.compiler.compengine.StatementCompilationEngine;
+import com.pretz.compiler.compengine.CompilationEngineFactory;
 import com.pretz.compiler.input.JackFileFilter;
 import com.pretz.compiler.tokenizer.JackTokenizer;
 
