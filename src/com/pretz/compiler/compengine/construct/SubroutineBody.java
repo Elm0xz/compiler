@@ -1,4 +1,4 @@
-package com.pretz.compiler.compengine.elements.construct;
+package com.pretz.compiler.compengine.construct;
 
 import io.vavr.collection.List;
 

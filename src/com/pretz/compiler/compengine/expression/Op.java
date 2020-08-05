@@ -1,11 +1,7 @@
-package com.pretz.compiler.compengine.elements.expression;
+package com.pretz.compiler.compengine.expression;
 
-import com.pretz.compiler.compengine.CompilationException;
-import com.pretz.compiler.compengine.elements.construct.Construct;
-import com.pretz.compiler.compengine.elements.terminal.Terminal;
-import com.pretz.compiler.compengine.elements.terminal.TerminalType;
-import com.pretz.compiler.tokenizer.token.Token;
-import com.pretz.compiler.tokenizer.token.TokenType;
+import com.pretz.compiler.compengine.construct.Construct;
+import com.pretz.compiler.compengine.terminal.Terminal;
 
 import java.util.Objects;
 

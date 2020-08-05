@@ -1,6 +1,10 @@
-package com.pretz.compiler.compengine.elements.terminal;
+package com.pretz.compiler.compengine.terminal;
 
-import com.pretz.compiler.compengine.elements.Element;
+import com.pretz.compiler.compengine.validator.Validator;
+import com.pretz.compiler.compengine.Element;
+import com.pretz.compiler.tokenizer.token.KeywordType;
+import com.pretz.compiler.tokenizer.token.Token;
+import com.pretz.compiler.tokenizer.token.TokenType;
 import com.pretz.compiler.util.Lexicals;
 
 import java.util.Objects;
@@ -10,6 +14,27 @@ public class Terminal implements Element {
     private final TerminalType type;
     private final TerminalKeywordType keywordType;
 
+    public Terminal(Token token, Validator validator) {
+        validator.validate(token);
+        this.token = token.token();
+        this.type = map(token.type());
+        this.keywordType = map(token.keyword());
+    }
+
+    public Terminal(Token token) {
+        this.token = token.token();
+        this.type = map(token.type());
+        this.keywordType = map(token.keyword());
+    }
+
+    private static TerminalType map(TokenType type) {
+        return Enum.valueOf(TerminalType.class, type.toString().toUpperCase());
+    }
+
+    private static TerminalKeywordType map(KeywordType type) {
+        return Enum.valueOf(TerminalKeywordType.class, type.toString().toUpperCase());
+    }
+
     public Terminal(String token, TerminalType type) {
         this.token = token;
         this.type = type;
@@ -17,12 +42,6 @@ public class Terminal implements Element {
             this.keywordType = TerminalKeywordType.NOT_A_KEYWORD;
         else
             this.keywordType = setKeywordType(token);
-    }
-
-    public Terminal(String token, TerminalType type, TerminalKeywordType keywordType) {
-        this.token = token;
-        this.type = type;
-        this.keywordType = keywordType;
     }
 
     private TerminalKeywordType setKeywordType(String token) {

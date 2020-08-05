@@ -1,13 +1,12 @@
 package com.pretz.compiler.compengine;
 
-import com.pretz.compiler.compengine.elements.expression.Expression;
-import com.pretz.compiler.compengine.elements.expression.Op;
-import com.pretz.compiler.compengine.elements.expression.OpTerm;
-import com.pretz.compiler.compengine.elements.expression.Term;
-import com.pretz.compiler.compengine.elements.statement.ReturnStatement;
-import com.pretz.compiler.compengine.elements.terminal.Terminal;
-import com.pretz.compiler.compengine.elements.terminal.TerminalMapper;
-import com.pretz.compiler.compengine.elements.terminal.TerminalType;
+import com.pretz.compiler.compengine.expression.Expression;
+import com.pretz.compiler.compengine.expression.Op;
+import com.pretz.compiler.compengine.expression.OpTerm;
+import com.pretz.compiler.compengine.expression.Term;
+import com.pretz.compiler.compengine.statement.ReturnStatement;
+import com.pretz.compiler.compengine.terminal.Terminal;
+import com.pretz.compiler.compengine.terminal.TerminalType;
 import com.pretz.compiler.tokenizer.token.Token;
 import com.pretz.compiler.tokenizer.token.TokenType;
 import com.pretz.compiler.tokenizer.token.Tokens;
@@ -22,7 +21,7 @@ import java.util.stream.Stream;
 
 public class StatementCompilationEngineTest {
 
-    private final StatementCompilationEngine engine = new StatementCompilationEngine(new CompilationValidator(), new TerminalMapper());
+    private final StatementCompilationEngine engine = new StatementCompilationEngine(new CompilationMatcher());
 
     @Test
     public void shouldCompileEmptyReturnStatement() {

@@ -1,4 +1,4 @@
-package com.pretz.compiler.compengine.elements.terminal;
+package com.pretz.compiler.compengine.terminal;
 
 public enum TerminalType {
     KEYWORD,

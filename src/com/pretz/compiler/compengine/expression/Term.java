@@ -1,7 +1,7 @@
-package com.pretz.compiler.compengine.elements.expression;
+package com.pretz.compiler.compengine.expression;
 
-import com.pretz.compiler.compengine.elements.Element;
-import com.pretz.compiler.compengine.elements.construct.Construct;
+import com.pretz.compiler.compengine.Element;
+import com.pretz.compiler.compengine.construct.Construct;
 import io.vavr.collection.List;
 
 import java.util.Objects;

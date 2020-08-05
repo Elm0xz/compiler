@@ -1,6 +1,6 @@
-package com.pretz.compiler.compengine.elements.construct;
+package com.pretz.compiler.compengine.construct;
 
-import com.pretz.compiler.compengine.elements.terminal.Terminal;
+import com.pretz.compiler.compengine.terminal.Terminal;
 
 import java.util.Objects;
 

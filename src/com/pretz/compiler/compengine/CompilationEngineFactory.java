@@ -1,12 +1,12 @@
 package com.pretz.compiler.compengine;
 
-import com.pretz.compiler.compengine.elements.terminal.TerminalMapper;
+import com.pretz.compiler.compengine.validator.ValidatorFactory;
 
 public class CompilationEngineFactory {
 
     public CompilationEngine create() {
-        return new CompilationEngine(new CompilationValidator(),
-                new StatementCompilationEngine(new CompilationValidator(), new TerminalMapper()),
-                new TerminalMapper());
+        return new CompilationEngine(new ValidatorFactory(),
+                new StatementCompilationEngine(new CompilationMatcher()),
+                new CompilationMatcher());
     }
 }

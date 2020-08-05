@@ -1,6 +1,6 @@
-package com.pretz.compiler.compengine.elements.statement;
+package com.pretz.compiler.compengine.statement;
 
-import com.pretz.compiler.compengine.elements.expression.Expression;
+import com.pretz.compiler.compengine.expression.Expression;
 import io.vavr.control.Option;
 
 import java.util.Objects;

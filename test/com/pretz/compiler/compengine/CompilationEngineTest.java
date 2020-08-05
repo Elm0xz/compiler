@@ -1,19 +1,19 @@
 package com.pretz.compiler.compengine;
 
-import com.pretz.compiler.compengine.elements.construct.Class;
-import com.pretz.compiler.compengine.elements.construct.ClassVarDec;
-import com.pretz.compiler.compengine.elements.construct.Construct;
-import com.pretz.compiler.compengine.elements.construct.Parameter;
-import com.pretz.compiler.compengine.elements.construct.ParameterList;
-import com.pretz.compiler.compengine.elements.statement.ReturnStatement;
-import com.pretz.compiler.compengine.elements.construct.SubroutineBody;
-import com.pretz.compiler.compengine.elements.construct.SubroutineDec;
-import com.pretz.compiler.compengine.elements.terminal.Terminal;
-import com.pretz.compiler.compengine.elements.terminal.TerminalMapper;
-import com.pretz.compiler.compengine.elements.construct.Type;
-import com.pretz.compiler.compengine.elements.construct.VarDec;
-import com.pretz.compiler.compengine.elements.construct.VarNames;
-import com.pretz.compiler.compengine.elements.terminal.TerminalType;
+import com.pretz.compiler.compengine.construct.Class;
+import com.pretz.compiler.compengine.construct.ClassVarDec;
+import com.pretz.compiler.compengine.construct.Construct;
+import com.pretz.compiler.compengine.construct.Parameter;
+import com.pretz.compiler.compengine.construct.ParameterList;
+import com.pretz.compiler.compengine.statement.ReturnStatement;
+import com.pretz.compiler.compengine.construct.SubroutineBody;
+import com.pretz.compiler.compengine.construct.SubroutineDec;
+import com.pretz.compiler.compengine.terminal.Terminal;
+import com.pretz.compiler.compengine.construct.Type;
+import com.pretz.compiler.compengine.construct.VarDec;
+import com.pretz.compiler.compengine.construct.VarNames;
+import com.pretz.compiler.compengine.terminal.TerminalType;
+import com.pretz.compiler.compengine.validator.ValidatorFactory;
 import com.pretz.compiler.tokenizer.token.Token;
 import com.pretz.compiler.tokenizer.token.TokenType;
 import com.pretz.compiler.tokenizer.token.Tokens;
@@ -31,11 +31,9 @@ import static com.pretz.compiler.compengine.CompilationException.NOT_A_CLASS;
 //TODO maybe split "integration" (using statement) and unit (basic test cases) tests
 public class CompilationEngineTest {
 
-    private final TerminalMapper mapper = new TerminalMapper();
-
-    private final CompilationEngine engine = new CompilationEngine(new CompilationValidator(),
-            new StatementCompilationEngine(new CompilationValidator(), mapper),
-            mapper);
+    private final CompilationEngine engine = new CompilationEngine(new ValidatorFactory(),
+            new StatementCompilationEngine(new CompilationMatcher()),
+            new CompilationMatcher());
 
     @Test
     public void shouldCompileClass() {
@@ -43,7 +41,7 @@ public class CompilationEngineTest {
         Tokens tokens = classWithDeclarations(newClassToken, classTokensList());
 
         Assertions.assertThat(engine.compileClass(tokens)).isEqualTo(
-                new Class(mapper.from(newClassToken), classConstructs()));
+                new Class(new Terminal(newClassToken), classConstructs()));
     }
 
     @Test
@@ -65,7 +63,7 @@ public class CompilationEngineTest {
                 new Token("}", TokenType.SYMBOL)));
 
         Assertions.assertThat(engine.compileClass(tokens)).isEqualTo(
-                new Class(mapper.from(newClassToken), List.empty()));
+                new Class(new Terminal(newClassToken), List.empty()));
     }
 
     @ParameterizedTest()
@@ -102,7 +100,7 @@ public class CompilationEngineTest {
         Tokens tokens = classWithDeclarations(newClassToken, classVarDecTokensList());
 
         Assertions.assertThat(engine.compileClass(tokens)).isEqualTo(
-                new Class(mapper.from(newClassToken), classVarDecConstructs()));
+                new Class(new Terminal(newClassToken), classVarDecConstructs()));
     }
 
     @Test
@@ -111,7 +109,7 @@ public class CompilationEngineTest {
         Tokens tokens = classWithDeclarations(newClassToken, classVarDecTokensListWithCustomType());
 
         Assertions.assertThat(engine.compileClass(tokens)).isEqualTo(
-                new Class(mapper.from(newClassToken), classVarDecConstructsWithCustomType()));
+                new Class(new Terminal(newClassToken), classVarDecConstructsWithCustomType()));
     }
 
     @Test
@@ -150,7 +148,7 @@ public class CompilationEngineTest {
         Tokens tokens = classWithDeclarations(newClassToken, classSubroutineDecTokensList());
 
         Assertions.assertThat(engine.compileClass(tokens)).isEqualTo(
-                new Class(mapper.from(newClassToken), classSubroutineDecConstructs()));
+                new Class(new Terminal(newClassToken), classSubroutineDecConstructs()));
     }
 
     @Test
@@ -368,21 +366,6 @@ public class CompilationEngineTest {
         );
     }
 
-    private List<Construct> classVarDecConstructsWithCustomType() {
-        return List.of(
-                new ClassVarDec(new Terminal("static", TerminalType.KEYWORD),
-                        new Type(new Terminal("Dog", TerminalType.IDENTIFIER)),
-                        new VarNames(List.of(new Terminal("testDog", TerminalType.IDENTIFIER)))
-                ),
-                new ClassVarDec(new Terminal("field", TerminalType.KEYWORD),
-                        new Type(new Terminal("boolean", TerminalType.KEYWORD)),
-                        new VarNames(List.of(
-                                new Terminal("testBool1", TerminalType.IDENTIFIER),
-                                new Terminal("testBool2", TerminalType.IDENTIFIER)))
-                )
-        );
-    }
-
     private List<Token> classVarDecTokensListWithCustomType() {
         return List.of(
                 new Token("static", TokenType.KEYWORD),
@@ -395,6 +378,21 @@ public class CompilationEngineTest {
                 new Token(",", TokenType.SYMBOL),
                 new Token("testBool2", TokenType.IDENTIFIER),
                 new Token(";", TokenType.SYMBOL)
+        );
+    }
+
+    private List<Construct> classVarDecConstructsWithCustomType() {
+        return List.of(
+                new ClassVarDec(new Terminal("static", TerminalType.KEYWORD),
+                        new Type(new Terminal("Dog", TerminalType.IDENTIFIER)),
+                        new VarNames(List.of(new Terminal("testDog", TerminalType.IDENTIFIER)))
+                ),
+                new ClassVarDec(new Terminal("field", TerminalType.KEYWORD),
+                        new Type(new Terminal("boolean", TerminalType.KEYWORD)),
+                        new VarNames(List.of(
+                                new Terminal("testBool1", TerminalType.IDENTIFIER),
+                                new Terminal("testBool2", TerminalType.IDENTIFIER)))
+                )
         );
     }
 

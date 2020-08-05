@@ -1,6 +1,6 @@
-package com.pretz.compiler.compengine.elements.expression;
+package com.pretz.compiler.compengine.expression;
 
-import com.pretz.compiler.compengine.elements.construct.Construct;
+import com.pretz.compiler.compengine.construct.Construct;
 
 import java.util.Objects;
 

@@ -1,0 +1,15 @@
+package com.pretz.compiler.compengine.validator;
+
+public enum Validation {
+    CLASS_KEYWORD,
+    OPENING_CURLY_BRACKET,
+    CLOSING_CURLY_BRACKET,
+    COMMA_OR_SEMICOLON,
+    OPENING_ROUND_BRACKET,
+    COMMA_OR_CLOSING_ROUND_BRACKET,
+    CLASS_IDENTIFIER,
+    SUBROUTINE_NAME,
+    TYPE_OR_VOID,
+    TYPE,
+    VAR_NAME
+}

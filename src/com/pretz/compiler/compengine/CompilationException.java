@@ -6,8 +6,6 @@ public class CompilationException extends RuntimeException {
         super(s);
     }
 
-
-
     public static final String NOT_A_CLASS = "Token set does not begin with 'class' keyword";
     public static final String INVALID_CLASS_IDENTIFIER = "Invalid class identifier";
     public static final String NOT_AN_OPENING_CURLY_BRACKET = "Opening curly bracket expected when there wasn't any";
