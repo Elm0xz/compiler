@@ -24,6 +24,10 @@ public class Tokens {
         return tokens.get(index);
     }
 
+    public Token ll1() {
+        return tokens.get(index + 1);
+    }
+
     public boolean isLast() {
         return index == tokens.size() - 1;
     }

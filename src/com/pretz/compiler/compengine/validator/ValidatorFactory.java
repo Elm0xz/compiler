@@ -18,7 +18,10 @@ public class ValidatorFactory {
                 Case($(it -> it.equals(Validation.SUBROUTINE_NAME)), SubroutineNameValidator::new),
                 Case($(it -> it.equals(Validation.TYPE_OR_VOID)), TypeOrVoidValidator::new),
                 Case($(it -> it.equals(Validation.TYPE)), TypeValidator::new),
-                Case($(it -> it.equals(Validation.VAR_NAME)), VarNameValidator::new)
+                Case($(it -> it.equals(Validation.VAR_NAME)), VarNameValidator::new),
+                Case($(it -> it.equals(Validation.OPENING_SQUARE_BRACKET)), ElementValidators.OpeningSquareBracketValidator::new),
+                Case($(it -> it.equals(Validation.CLOSING_SQUARE_BRACKET)), ElementValidators.ClosingSquareBracketValidator::new),
+                Case($(it -> it.equals(Validation.CLOSING_ROUND_BRACKET)), ElementValidators.ClosingRoundBracketValidator::new)
         );
     }
 }

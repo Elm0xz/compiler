@@ -7,6 +7,7 @@ import com.pretz.compiler.compengine.expression.Term;
 import com.pretz.compiler.compengine.statement.ReturnStatement;
 import com.pretz.compiler.compengine.terminal.Terminal;
 import com.pretz.compiler.compengine.terminal.TerminalType;
+import com.pretz.compiler.compengine.validator.ValidatorFactory;
 import com.pretz.compiler.tokenizer.token.Token;
 import com.pretz.compiler.tokenizer.token.TokenType;
 import com.pretz.compiler.tokenizer.token.Tokens;
@@ -21,7 +22,7 @@ import java.util.stream.Stream;
 
 public class StatementCompilationEngineTest {
 
-    private final StatementCompilationEngine engine = new StatementCompilationEngine(new CompilationMatcher());
+    private final StatementCompilationEngine engine = new StatementCompilationEngine(new CompilationMatcher(), new ValidatorFactory());
 
     @Test
     public void shouldCompileEmptyReturnStatement() {
@@ -101,7 +102,7 @@ public class StatementCompilationEngineTest {
                 new ReturnStatement(
                         new Expression(new Term(
                                 new Terminal("-", TerminalType.SYMBOL),
-                                new Terminal("duck", TerminalType.IDENTIFIER)),
+                                new Term(new Terminal("duck", TerminalType.IDENTIFIER))),
                                 List.of(new OpTerm(
                                                 new Op(new Terminal("+", TerminalType.SYMBOL)),
                                                 new Term(new Terminal("dog", TerminalType.IDENTIFIER))),
@@ -112,11 +113,104 @@ public class StatementCompilationEngineTest {
         );
     }
 
+    @ParameterizedTest
+    @MethodSource("arrayIndexTokens")
+    public void shouldCompileReturnStatementWithArray(List<Token> arrayIndexTokens, Expression arrayIndexExpression) {
+        Tokens tokens = new Tokens(List.of(
+                new Token("return", TokenType.KEYWORD),
+                new Token("duck", TokenType.IDENTIFIER),
+                new Token("[", TokenType.SYMBOL))
+                .appendAll(arrayIndexTokens)
+                .appendAll(List.of(
+                        new Token("]", TokenType.SYMBOL),
+                        new Token(";", TokenType.SYMBOL))));
+
+        Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
+                new ReturnStatement(
+                        new Expression(new Term(new Terminal("duck", TerminalType.IDENTIFIER),
+                                arrayIndexExpression), List.empty())
+                ));
+    }
+
+    @Test
+    public void shouldCompileReturnStatementWithAdditionalBrackets() {
+        Tokens tokens = new Tokens(List.of(
+                new Token("return", TokenType.KEYWORD),
+                new Token("(", TokenType.SYMBOL),
+                new Token("x", TokenType.IDENTIFIER),
+                new Token("*", TokenType.SYMBOL),
+                new Token("3", TokenType.INT_CONST),
+                new Token(")", TokenType.SYMBOL),
+                new Token("+", TokenType.SYMBOL),
+                new Token("y", TokenType.IDENTIFIER),
+                new Token(";", TokenType.SYMBOL)));
+
+        Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
+                new ReturnStatement(
+                        new Expression(
+                                new Term(
+                                        new Expression(
+                                                new Term(new Terminal("x", TerminalType.IDENTIFIER)),
+                                                List.of(new OpTerm(
+                                                        new Op(new Terminal("*", TerminalType.SYMBOL)),
+                                                        new Term(new Terminal("3", TerminalType.INT_CONST)))
+                                                ))),
+                                List.of(new OpTerm(
+                                        new Op(new Terminal("+", TerminalType.SYMBOL)),
+                                        new Term(new Terminal("y", TerminalType.IDENTIFIER)))
+                                )))
+        );
+    }
+
+    @Test
+    public void shouldCompileReturnStatementWithSubroutineCall() {
+
+    }
+
+    @Test
+    public void shouldCompileReturnStatementWithClassSubroutineCall() {
+
+    }
+
+    @Test
+    public void shouldThrowOnReturnStatementWithInvalidExpression() {
+
+    }
+
     private static Stream<Arguments> keywordConstants() {
         return Stream.of(Arguments.of("true"),
                 Arguments.of("false"),
                 Arguments.of("this"),
                 Arguments.of("null")
+        );
+    }
+
+    private static Stream<Arguments> arrayIndexTokens() {
+        return Stream.of(
+                Arguments.of(
+                        List.of(new Token("x", TokenType.IDENTIFIER)),
+                        new Expression(new Term(new Terminal("x", TerminalType.IDENTIFIER)), List.empty())),
+                Arguments.of(
+                        List.of(new Token("5", TokenType.INT_CONST)),
+                        new Expression(new Term(new Terminal("5", TerminalType.INT_CONST)), List.empty())),
+                Arguments.of(
+                        List.of(new Token("Foo", TokenType.STRING_CONST)),
+                        new Expression(new Term(new Terminal("Foo", TerminalType.STRING_CONST)), List.empty())),
+                Arguments.of(
+                        List.of(new Token("-", TokenType.SYMBOL),
+                                new Token("a", TokenType.IDENTIFIER)),
+                        new Expression(new Term(
+                                new Terminal("-", TerminalType.SYMBOL),
+                                new Term(new Terminal("a", TerminalType.IDENTIFIER))), List.empty())),
+                Arguments.of(
+                        List.of(new Token("y", TokenType.IDENTIFIER),
+                                new Token("[", TokenType.SYMBOL),
+                                new Token("x", TokenType.IDENTIFIER),
+                                new Token("]", TokenType.SYMBOL)),
+                        new Expression(new Term(
+                                new Terminal("y", TerminalType.IDENTIFIER),
+                                new Expression(new Term(
+                                        new Terminal("x", TerminalType.IDENTIFIER)), List.empty())), List.empty()))
         );
     }
 }

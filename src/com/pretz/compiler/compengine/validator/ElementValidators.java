@@ -88,4 +88,40 @@ public class ElementValidators {
             return token.isNot(")") || token.isNot(TokenType.SYMBOL);
         }
     }
+
+    public static class OpeningSquareBracketValidator implements Validator {
+        @Override
+        public void validate(Token token) {
+            if (isNotOpeningSquareBracket(token))
+                throw new CompilationException(CompilationException.NOT_AN_OPENING_SQUARE_BRACKET);
+        }
+
+        private boolean isNotOpeningSquareBracket(Token token) {
+            return token.isNot("[") || token.isNot(TokenType.SYMBOL);
+        }
+    }
+
+    public static class ClosingSquareBracketValidator implements Validator {
+        @Override
+        public void validate(Token token) {
+            if (isNotClosingSquareBracket(token))
+                throw new CompilationException(CompilationException.NOT_A_CLOSING_SQUARE_BRACKET);
+        }
+
+        private boolean isNotClosingSquareBracket(Token token) {
+            return token.isNot("]") || token.isNot(TokenType.SYMBOL);
+        }
+    }
+
+    public static class ClosingRoundBracketValidator implements Validator {
+        @Override
+        public void validate(Token token) {
+            if (isNotClosingRoundBracket(token))
+                throw new CompilationException(CompilationException.NOT_A_CLOSING_ROUND_BRACKET);
+        }
+
+        private boolean isNotClosingRoundBracket(Token token) {
+            return token.isNot(")") || token.isNot(TokenType.SYMBOL);
+        }
+    }
 }

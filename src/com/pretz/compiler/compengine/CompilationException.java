@@ -22,4 +22,7 @@ public class CompilationException extends RuntimeException {
     public static final String INVALID_STATEMENT = "Invalid statement keyword";
     public static final String INVALID_OPERATOR = "Invalid operator";
     public static final String INVALID_TERM = "Expecting constant or variable";
+    public static final String NOT_AN_OPENING_SQUARE_BRACKET = "Opening square bracket expected when there wasn't any";
+    public static final String NOT_A_CLOSING_SQUARE_BRACKET = "Opening square bracket expected when there wasn't any";
+    public static final String NOT_A_CLOSING_ROUND_BRACKET = "Opening round bracket expected when there wasn't any";
 }

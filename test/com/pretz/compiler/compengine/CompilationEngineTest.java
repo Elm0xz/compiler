@@ -32,7 +32,7 @@ import static com.pretz.compiler.compengine.CompilationException.NOT_A_CLASS;
 public class CompilationEngineTest {
 
     private final CompilationEngine engine = new CompilationEngine(new ValidatorFactory(),
-            new StatementCompilationEngine(new CompilationMatcher()),
+            new StatementCompilationEngine(new CompilationMatcher(), new ValidatorFactory()),
             new CompilationMatcher());
 
     @Test

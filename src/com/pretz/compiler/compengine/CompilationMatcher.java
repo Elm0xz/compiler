@@ -3,6 +3,7 @@ package com.pretz.compiler.compengine;
 import com.pretz.compiler.tokenizer.token.KeywordType;
 import com.pretz.compiler.tokenizer.token.Token;
 import com.pretz.compiler.tokenizer.token.TokenType;
+import com.pretz.compiler.tokenizer.token.Tokens;
 import com.pretz.compiler.util.Lexicals;
 
 import java.util.function.Predicate;
@@ -67,11 +68,23 @@ public class CompilationMatcher {
                 token.is(KeywordType.THIS);
     }
 
-    public Predicate<Token> isVarName() {
+    public Predicate<Token> isVarNameOrSubroutineCall() {
         return it -> it.is(TokenType.IDENTIFIER);
     }
 
     public Predicate<Token> isUnaryOp() {
         return it -> it.is(TokenType.SYMBOL) && it.is("-");
+    }
+
+    public Predicate<Token> isExpressionInBrackets() {
+        return it -> it.is(TokenType.SYMBOL) && it.is("(");
+    }
+
+    public Predicate<Tokens> isVarNameArray() {
+        return it -> it.ll1().is(TokenType.SYMBOL) && it.ll1().is("[");
+    }
+
+    public Predicate<Tokens> isSubroutineCall() {
+        return it -> it.ll1().is(TokenType.SYMBOL) && it.ll1().is("(");
     }
 }

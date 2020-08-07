@@ -1,15 +1,14 @@
 package com.pretz.compiler.compengine.statement;
 
 import com.pretz.compiler.compengine.expression.Expression;
-import io.vavr.control.Option;
 
 import java.util.Objects;
 
 public class ReturnStatement implements Statement {
-    private final Option<Expression> expression;
+    private final Expression expression; //TODO this can be empty! think about using vavr option or refactor equals to avoid NullPointerException
 
     public ReturnStatement(Expression expression) {
-        this.expression = Option.of(expression);
+        this.expression = expression;
     }
 
     @Override

@@ -24,7 +24,7 @@ public class Op implements Construct, Validator {
     @Override
     public void validate(Token token) { //TODO test this
         if (!token.is(TokenType.SYMBOL) ||
-                (Lexicals.ops().contains(token.token().charAt(0))))
+                (!Lexicals.ops().contains(token.token().charAt(0))))
             throw new CompilationException(CompilationException.INVALID_OPERATOR);
     }
 
