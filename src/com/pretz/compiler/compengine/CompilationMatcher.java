@@ -3,6 +3,7 @@ package com.pretz.compiler.compengine;
 import com.pretz.compiler.tokenizer.token.KeywordType;
 import com.pretz.compiler.tokenizer.token.Token;
 import com.pretz.compiler.tokenizer.token.TokenType;
+import com.pretz.compiler.util.Lexicals;
 
 import java.util.function.Predicate;
 
@@ -50,17 +51,9 @@ public class CompilationMatcher {
         return it -> it.is(KeywordType.RETURN);
     }
 
-    public boolean isNonOpSymbol(Token token) { //todo refactor using lexicals
+    public boolean isNonOpSymbol(Token token) {
         return token.is(TokenType.SYMBOL) &&
-                (token.is("{") ||
-                        token.is("}") ||
-                        token.is("(") ||
-                        token.is(")") ||
-                        token.is("[") ||
-                        token.is("]") ||
-                        token.is(".") ||
-                        token.is(",") ||
-                        token.is(";"));
+                Lexicals.nonOps().contains(token.token().charAt(0));
     }
 
     public Predicate<Token> isConstant() {

@@ -161,7 +161,17 @@ public class CompilationEngineTest {
                 .hasMessage(CompilationException.INVALID_SUBROUTINE_NAME);
     }
 
-    @ParameterizedTest
+    @Test
+    public void shouldThrowOnInvalidSubroutineType() {
+        Token newClassToken = new Token("NewClass", TokenType.IDENTIFIER);
+        Tokens tokens = classWithDeclarations(newClassToken, classSubroutineDecTokensListWithInvalidSubroutineType());
+
+        Assertions.assertThatThrownBy(() -> engine.compileClass(tokens))
+                .isInstanceOf(CompilationException.class)
+                .hasMessage(CompilationException.INVALID_SUBROUTINE_TYPE);
+    }
+
+        @ParameterizedTest
     @MethodSource("missingSubroutineParametersBracketSets")
     public void shouldThrowOnMissingSubroutineParametersBrackets(Token openingBracket, Token closingBracket, String excMsg) {
         Token newClassToken = new Token("NewClass", TokenType.IDENTIFIER);
@@ -195,8 +205,6 @@ public class CompilationEngineTest {
                 .isInstanceOf(CompilationException.class)
                 .hasMessage(CompilationException.INVALID_VARNAME);
     }
-
-    //TODO tests: 1. missing subroutinebody bracket, 3. missing var
 
     @Test
     public void shouldThrowOnMissingSubroutineBodyVarDecCommas() {
@@ -253,7 +261,6 @@ public class CompilationEngineTest {
                 .hasMessage(CompilationException.INVALID_TYPE);
     }
 
-    //TODO test with both var dec and subroutine dec
     @Test
     public void shouldThrowOnInvalidSubroutineBodyVarDecName() {
         Token newClassToken = new Token("NewClass", TokenType.IDENTIFIER);
@@ -478,6 +485,16 @@ public class CompilationEngineTest {
                 new Token("method", TokenType.KEYWORD),
                 new Token("void", TokenType.KEYWORD),
                 new Token("boolean", TokenType.KEYWORD),
+                new Token("(", TokenType.SYMBOL),
+                new Token(")", TokenType.SYMBOL)
+        );
+    }
+
+    private List<Token> classSubroutineDecTokensListWithInvalidSubroutineType() {
+        return List.of(
+                new Token("method", TokenType.KEYWORD),
+                new Token("$", TokenType.SYMBOL),
+                new Token("doStuff", TokenType.IDENTIFIER),
                 new Token("(", TokenType.SYMBOL),
                 new Token(")", TokenType.SYMBOL)
         );

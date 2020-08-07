@@ -18,6 +18,7 @@ public class CompilationException extends RuntimeException {
     public static final String INVALID_VARNAME = "Invalid variable name";
     public static final String INVALID_SUBROUTINE_NAME = "Invalid subroutine name";
     public static final String INVALID_SUBROUTINE_BODY_KEYWORD = "Invalid keyword in subroutine body";
+    public static final String INVALID_SUBROUTINE_TYPE = "Invalid subroutine type";
     public static final String INVALID_STATEMENT = "Invalid statement keyword";
     public static final String INVALID_OPERATOR = "Invalid operator";
     public static final String INVALID_TERM = "Expecting constant or variable";

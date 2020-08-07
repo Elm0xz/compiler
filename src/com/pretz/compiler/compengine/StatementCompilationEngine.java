@@ -49,7 +49,7 @@ public class StatementCompilationEngine {
         while (!matcher.isNonOpSymbol(tokens.current())) {
             opTerms.add(consumeOpTerm(tokens));
         }
-        return new Expression(term, List.empty());
+        return new Expression(term, List.ofAll(opTerms));
     }
 
     private Term consumeTerm(Tokens tokens) {
@@ -67,8 +67,7 @@ public class StatementCompilationEngine {
         Token unaryOp = tokens.current();
         tokens.advance();
         Term term = consumeTerm(tokens);
-        return new Term(new Terminal(unaryOp), null);//TODO FINISHED HERE YESTERDAY
-        //TODO probably create Constant and Identifier constructs and start using Token only as DTO for parser
+        return new Term(new Terminal(unaryOp), term);
     }
 
     private OpTerm consumeOpTerm(Tokens tokens) {
@@ -78,7 +77,7 @@ public class StatementCompilationEngine {
     }
 
     private Op consumeOp(Tokens tokens) {
-        Op op = new Op(new Terminal(tokens.current()));
+        Op op = new Op(tokens.current());
         tokens.advance();
         return op;
     }
@@ -91,3 +90,4 @@ public class StatementCompilationEngine {
         throw new CompilationException(CompilationException.INVALID_TERM);
     }
 }
+

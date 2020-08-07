@@ -10,7 +10,7 @@ public class TypeOrVoidValidator implements Validator {
     @Override
     public void validate(Token token) {
         if (isNotPrimitiveType(token) && token.isNot(TokenType.IDENTIFIER) && token.isNot(KeywordType.VOID))
-            throw new CompilationException(CompilationException.INVALID_TYPE);
+            throw new CompilationException(CompilationException.INVALID_SUBROUTINE_TYPE);
     }
 
     private boolean isNotPrimitiveType(Token token) {

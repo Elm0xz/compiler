@@ -4,17 +4,26 @@ import io.vavr.collection.HashSet;
 import io.vavr.collection.Set;
 
 public class Lexicals {
-    private static final Set<Character> symbols = HashSet.of(
+
+    private static final Set<Character> nonOps = HashSet.of(
             '{', '}',
             '(', ')',
             '[', ']',
             '.', ',',
-            ';',
+            ';'
+    );
+
+    private static final Set<Character> ops = HashSet.of(
             '+', '-',
             '*', '/',
             '&', '|',
             '<', '>',
-            '=', '~');
+            '='
+    );
+
+    private static final Set<Character> unaryOps = HashSet.of(
+            '-', '~'
+    );
 
     private static final Set<String> keywords = HashSet.of(
             "class",
@@ -34,10 +43,22 @@ public class Lexicals {
 
 
     public static Set<Character> symbols() {
-        return symbols;
+        return nonOps.addAll(ops).addAll(unaryOps);
     }
 
     public static Set<String> keywords() {
         return keywords;
+    }
+
+    public static Set<Character> ops() {
+        return ops;
+    }
+
+    public static Set<Character> unaryOps() {
+        return unaryOps;
+    }
+
+    public static Set<Character> nonOps() {
+        return nonOps;
     }
 }
