@@ -14,6 +14,11 @@ public class Expression implements Construct {
         this.opTerms = opTerms;
     }
 
+    public Expression(Term term) {
+        this.term = term;
+        this.opTerms = List.empty();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

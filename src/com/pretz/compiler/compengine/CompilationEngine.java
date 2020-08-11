@@ -110,6 +110,7 @@ public class CompilationEngine {
 
     private void consumeClassOrSubroutineBodyClosingBracket(Tokens tokens) {
         validator.create(Validation.CLOSING_CURLY_BRACKET).validate(tokens.current());
+        tokens.advance();
     }
 
     /**

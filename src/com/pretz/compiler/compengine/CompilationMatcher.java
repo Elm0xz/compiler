@@ -56,6 +56,18 @@ public class CompilationMatcher {
         return it -> it.is(KeywordType.DO);
     }
 
+    public Predicate<Token> isWhileStatement() {
+        return it -> it.is(KeywordType.WHILE);
+    }
+
+    public Predicate<Token> isIfStatement() {
+        return it -> it.is(KeywordType.IF);
+    }
+    public Predicate<Token> isLetStatement() {
+        return it -> it.is(KeywordType.LET);
+    }
+
+
     public boolean isNonOpSymbol(Token token) {
         return token.is(TokenType.SYMBOL) &&
                 Lexicals.nonOps().contains(token.token().charAt(0));
@@ -94,5 +106,9 @@ public class CompilationMatcher {
 
     public boolean isDot(Token token) {
         return token.is(TokenType.SYMBOL) && token.is(".");
+    }
+
+    public boolean isElseKeyword(Token token) {
+        return token.is(TokenType.KEYWORD) && token.is(KeywordType.ELSE);
     }
 }
