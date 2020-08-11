@@ -7,6 +7,7 @@ import com.pretz.compiler.compengine.expression.Term;
 import com.pretz.compiler.compengine.expression.TermType;
 import com.pretz.compiler.compengine.statement.DoStatement;
 import com.pretz.compiler.compengine.statement.IfStatement;
+import com.pretz.compiler.compengine.statement.LetStatement;
 import com.pretz.compiler.compengine.statement.ReturnStatement;
 import com.pretz.compiler.compengine.statement.Statement;
 import com.pretz.compiler.compengine.statement.WhileStatement;
@@ -60,12 +61,14 @@ public class StatementCompilationEngine {
     }
 
     private WhileStatement compileWhileStatement(Tokens tokens) {
+        consumeStartingStatementKeyword(tokens);
         Expression condition = consumeCondition(tokens);
         List<Statement> statements = consumeNestedStatements(tokens);
         return new WhileStatement(condition, List.ofAll(statements));
     }
 
     private Statement compileIfStatement(Tokens tokens) {
+        consumeStartingStatementKeyword(tokens);
         Expression condition = consumeCondition(tokens);
         List<Statement> ifStatements = consumeNestedStatements(tokens);
         List<Statement> elseStatements = List.empty();
@@ -76,8 +79,21 @@ public class StatementCompilationEngine {
         return new IfStatement(condition, ifStatements, elseStatements);
     }
 
-    private Expression consumeCondition(Tokens tokens) {
+    private Statement compileLetStatement(Tokens tokens) {
         consumeStartingStatementKeyword(tokens);
+        Terminal varName = consumeIdentifier(tokens);
+        Expression arrayExpression = null;
+        if (matcher.isNotEqualsSign(tokens.current())) {
+            consumeArrayOpeningSquareBracket(tokens);
+            arrayExpression = compileExpression(tokens);
+            consumeArrayClosingSquareBracket(tokens);
+        }
+        consumeEqualsSign(tokens);
+        Expression assignedExpression = compileExpression(tokens);
+        return new LetStatement(varName, arrayExpression, assignedExpression);
+    }
+
+    private Expression consumeCondition(Tokens tokens) {
         consumeOpeningRoundBracket(tokens);
         Expression condition = compileExpression(tokens);
         consumeClosingRoundBracket(tokens);
@@ -94,17 +110,16 @@ public class StatementCompilationEngine {
         return List.ofAll(statements);
     }
 
-    private Statement compileLetStatement(Tokens tokens) {
-        consumeStartingStatementKeyword(tokens);
-        throw new NotImplementedException("!");
-    }
-
     private void consumeStartingStatementKeyword(Tokens tokens) {
         tokens.advance();
     }
 
     private void consumeSemicolon(Tokens tokens) {
         //TODO some validation on this?
+        tokens.advance();
+    }
+
+    private void consumeEqualsSign(Tokens tokens) {
         tokens.advance();
     }
 
@@ -117,7 +132,7 @@ public class StatementCompilationEngine {
         return new Expression(term, List.ofAll(opTerms));
     }
 
-    private Term consumeTerm(Tokens tokens) { //TODO maybe small enum is needed to discern between those
+    private Term consumeTerm(Tokens tokens) {
         return Match(tokens.current()).of(
                 Case($(matcher.isConstant()), () -> consumeSimpleTerm(tokens, TermType.CONSTANT)),
                 Case($(matcher.isVarNameOrSubroutineCall()), () -> consumeVarNameTerm(tokens)),
@@ -134,12 +149,11 @@ public class StatementCompilationEngine {
     }
 
     private Term consumeVarNameTerm(Tokens tokens) {
-        Term term = Match(tokens).of(
+        return Match(tokens).of(
                 Case($(matcher.isVarNameArray()), () -> consumeVarNameArray(tokens)),
                 Case($(matcher.isSubroutineCall()), () -> consumeSubroutineCall(tokens)),
                 Case($(), () -> consumeSimpleTerm(tokens, TermType.VAR))
         );
-        return term;
     }
 
     private Term consumeVarNameArray(Tokens tokens) {

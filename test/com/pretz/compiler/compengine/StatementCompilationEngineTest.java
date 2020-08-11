@@ -7,6 +7,7 @@ import com.pretz.compiler.compengine.expression.Term;
 import com.pretz.compiler.compengine.expression.TermType;
 import com.pretz.compiler.compengine.statement.DoStatement;
 import com.pretz.compiler.compengine.statement.IfStatement;
+import com.pretz.compiler.compengine.statement.LetStatement;
 import com.pretz.compiler.compengine.statement.ReturnStatement;
 import com.pretz.compiler.compengine.statement.WhileStatement;
 import com.pretz.compiler.compengine.terminal.Terminal;
@@ -336,7 +337,33 @@ public class StatementCompilationEngineTest {
                                         TermType.SUBROUTINE_CALL, new Terminal("doAnotherStuff", TerminalType.IDENTIFIER),
                                         new Expression(new Term(TermType.CONSTANT, new Terminal("false", TerminalType.KEYWORD))))
                                 ))
+                ));
+    }
+
+    @Test
+    public void shouldCompileLetStatement() {
+        Tokens tokens = new Tokens(List.of(
+                new Token("let", TokenType.KEYWORD),
+                new Token("x", TokenType.IDENTIFIER),
+                new Token("[", TokenType.SYMBOL),
+                new Token("5", TokenType.INT_CONST),
+                new Token("]", TokenType.SYMBOL),
+                new Token("=", TokenType.INT_CONST),
+                new Token("doStuff", TokenType.IDENTIFIER),
+                new Token("(", TokenType.SYMBOL),
+                new Token("3", TokenType.INT_CONST),
+                new Token(")", TokenType.SYMBOL),
+                new Token(";", TokenType.SYMBOL)
         ));
+
+        Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
+                new LetStatement(
+                        new Terminal("x", TerminalType.IDENTIFIER),
+                        new Expression(new Term(TermType.CONSTANT, new Terminal("5", TerminalType.INT_CONST))),
+                        new Expression(new Term(TermType.SUBROUTINE_CALL, new Terminal("doStuff", TerminalType.IDENTIFIER),
+                                new Expression(new Term(TermType.CONSTANT, new Terminal("3", TerminalType.INT_CONST)))))
+                )
+        );
     }
 
     private static Stream<Arguments> keywordConstants() {

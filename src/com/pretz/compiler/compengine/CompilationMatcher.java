@@ -111,4 +111,8 @@ public class CompilationMatcher {
     public boolean isElseKeyword(Token token) {
         return token.is(TokenType.KEYWORD) && token.is(KeywordType.ELSE);
     }
+
+    public boolean isNotEqualsSign(Token token) {
+        return token.isNot("=");
+    }
 }
