@@ -13,6 +13,10 @@ public class Term implements Construct {
         this.termParts = List.of(elements);
     }
 
+    public Term(List<Element> elements) {
+        this.termParts = elements;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

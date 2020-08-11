@@ -1,5 +1,6 @@
 package com.pretz.compiler.compengine;
 
+import com.pretz.compiler.compengine.construct.Parameter;
 import com.pretz.compiler.compengine.expression.Expression;
 import com.pretz.compiler.compengine.expression.Op;
 import com.pretz.compiler.compengine.expression.OpTerm;
@@ -56,7 +57,7 @@ public class StatementCompilationEngine {
         return new Expression(term, List.ofAll(opTerms));
     }
 
-    private Term consumeTerm(Tokens tokens) {
+    private Term consumeTerm(Tokens tokens) { //TODO maybe small enum is needed to discern between those
         return Match(tokens.current()).of(
                 Case($(matcher.isConstant()), () -> consumeSimpleTerm(tokens)),
                 Case($(matcher.isVarNameOrSubroutineCall()), () -> consumeVarNameTerm(tokens)),
@@ -82,16 +83,54 @@ public class StatementCompilationEngine {
     }
 
     private Term consumeVarNameArray(Tokens tokens) {
-        Terminal varName = new Terminal(tokens.current());
-        tokens.advance();
+        Terminal varName = consumeIdentifier(tokens);
         consumeArrayOpeningSquareBracket(tokens);
         Expression expression = compileExpression(tokens);
         consumeArrayClosingSquareBracket(tokens);
         return new Term(varName, expression);
     }
 
-    private Term consumeSubroutineCall(Tokens tokens) { //TODO implement this!
-        throw new NotImplementedException("not yet implemented");
+    private Terminal consumeIdentifier(Tokens tokens) {
+        Terminal varName = new Terminal(tokens.current());
+        tokens.advance();
+        return varName;
+    }
+
+    private Term consumeSubroutineCall(Tokens tokens) {
+        List<Element> subroutineCall = consumeSubroutineCallIdentifier(tokens); //TODO refactor into something better
+        consumeExpressionOpeningRoundBracket(tokens);
+        List<? extends Element> expressionList = consumeExpressionList(tokens);
+        consumeExpressionClosingRoundBracket(tokens);
+        return new Term(subroutineCall.appendAll(expressionList).toJavaList().toArray(Element[]::new)); //TODO quite ugly conversion
+    }
+
+    private List<Element> consumeSubroutineCallIdentifier(Tokens tokens) {//TODO ugly types
+        ArrayList<Element> identifiers = new ArrayList<>(); //TODO refactor into something better
+        identifiers.add(consumeIdentifier(tokens));
+        if (matcher.isDot(tokens.current())) {
+            consumeDot(tokens);
+            identifiers.add(consumeIdentifier(tokens));
+        }
+        return List.ofAll(identifiers);
+    }
+
+    private void consumeDot(Tokens tokens) {
+        tokens.advance();
+    }
+
+    private List<Expression> consumeExpressionList(Tokens tokens) {
+        ArrayList<Expression> expressions = new ArrayList<>();
+        while(matcher.isNotClosingRoundBracket(tokens.current())) {
+            expressions.add(compileExpression(tokens));
+            consumeExpressionListComma(tokens);
+        }
+        return List.ofAll(expressions);
+    }
+
+    private void consumeExpressionListComma(Tokens tokens) {
+        validator.create(Validation.COMMA_OR_CLOSING_ROUND_BRACKET).validate(tokens.current());
+        if (matcher.isNotClosingRoundBracket(tokens.current()))
+            tokens.advance();
     }
 
     private Term consumeExpressionInBrackets(Tokens tokens) {

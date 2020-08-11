@@ -5,7 +5,7 @@ import com.pretz.compiler.compengine.expression.Expression;
 import java.util.Objects;
 
 public class ReturnStatement implements Statement {
-    private final Expression expression; //TODO this can be empty! think about using vavr option or refactor equals to avoid NullPointerException
+    private final Expression expression; //TODO this can be empty
 
     public ReturnStatement(Expression expression) {
         this.expression = expression;
@@ -16,7 +16,7 @@ public class ReturnStatement implements Statement {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ReturnStatement that = (ReturnStatement) o;
-        return expression.equals(that.expression);
+        return Objects.equals(expression, that.expression);
     }
 
     @Override

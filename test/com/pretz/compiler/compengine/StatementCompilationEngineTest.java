@@ -164,12 +164,45 @@ public class StatementCompilationEngineTest {
 
     @Test
     public void shouldCompileReturnStatementWithSubroutineCall() {
+        Tokens tokens = new Tokens(List.of(
+                new Token("return", TokenType.KEYWORD),
+                new Token("doStuff", TokenType.IDENTIFIER),
+                new Token("(", TokenType.SYMBOL),
+                new Token("5", TokenType.INT_CONST),
+                new Token(")", TokenType.SYMBOL)));
 
+        Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
+                new ReturnStatement(
+                        new Expression(new Term(
+                                new Terminal("doStuff", TerminalType.IDENTIFIER),
+                                new Expression(
+                                        new Term( new Terminal("5", TerminalType.INT_CONST)),
+                                        List.empty())),
+                                List.empty()
+                        )));
     }
 
     @Test
     public void shouldCompileReturnStatementWithClassSubroutineCall() {
+        Tokens tokens = new Tokens(List.of(
+                new Token("return", TokenType.KEYWORD),
+                new Token("stuff", TokenType.IDENTIFIER),
+                new Token(".", TokenType.SYMBOL),
+                new Token("doStuff", TokenType.IDENTIFIER),
+                new Token("(", TokenType.SYMBOL),
+                new Token("5", TokenType.INT_CONST),
+                new Token(")", TokenType.SYMBOL)));
 
+        Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
+                new ReturnStatement(
+                        new Expression(new Term(
+                                new Terminal("stuff", TerminalType.IDENTIFIER),
+                                new Terminal("doStuff", TerminalType.IDENTIFIER),
+                                new Expression(
+                                        new Term( new Terminal("5", TerminalType.INT_CONST)),
+                                        List.empty())),
+                                List.empty()
+                        )));
     }
 
     @Test

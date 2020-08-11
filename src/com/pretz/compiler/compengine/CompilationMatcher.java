@@ -85,6 +85,10 @@ public class CompilationMatcher {
     }
 
     public Predicate<Tokens> isSubroutineCall() {
-        return it -> it.ll1().is(TokenType.SYMBOL) && it.ll1().is("(");
+        return it -> it.ll1().is(TokenType.SYMBOL) && (it.ll1().is("(") || it.ll1().is("."));
+    }
+
+    public boolean isDot(Token token) {
+        return token.is(TokenType.SYMBOL) && token.is(".");
     }
 }
