@@ -90,6 +90,7 @@ public class StatementCompilationEngine {
         }
         consumeEqualsSign(tokens);
         Expression assignedExpression = compileExpression(tokens);
+        consumeSemicolon(tokens);
         return new LetStatement(varName, arrayExpression, assignedExpression);
     }
 

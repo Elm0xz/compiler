@@ -5,13 +5,17 @@ import com.pretz.compiler.compengine.construct.ClassVarDec;
 import com.pretz.compiler.compengine.construct.Construct;
 import com.pretz.compiler.compengine.construct.Parameter;
 import com.pretz.compiler.compengine.construct.ParameterList;
-import com.pretz.compiler.compengine.statement.ReturnStatement;
 import com.pretz.compiler.compengine.construct.SubroutineBody;
 import com.pretz.compiler.compengine.construct.SubroutineDec;
-import com.pretz.compiler.compengine.terminal.Terminal;
 import com.pretz.compiler.compengine.construct.Type;
 import com.pretz.compiler.compengine.construct.VarDec;
 import com.pretz.compiler.compengine.construct.VarNames;
+import com.pretz.compiler.compengine.expression.Expression;
+import com.pretz.compiler.compengine.expression.Term;
+import com.pretz.compiler.compengine.expression.TermType;
+import com.pretz.compiler.compengine.statement.LetStatement;
+import com.pretz.compiler.compengine.statement.ReturnStatement;
+import com.pretz.compiler.compengine.terminal.Terminal;
 import com.pretz.compiler.compengine.terminal.TerminalType;
 import com.pretz.compiler.compengine.validator.ValidatorFactory;
 import com.pretz.compiler.tokenizer.token.Token;
@@ -171,7 +175,7 @@ public class CompilationEngineTest {
                 .hasMessage(CompilationException.INVALID_SUBROUTINE_TYPE);
     }
 
-        @ParameterizedTest
+    @ParameterizedTest
     @MethodSource("missingSubroutineParametersBracketSets")
     public void shouldThrowOnMissingSubroutineParametersBrackets(Token openingBracket, Token closingBracket, String excMsg) {
         Token newClassToken = new Token("NewClass", TokenType.IDENTIFIER);
@@ -307,6 +311,11 @@ public class CompilationEngineTest {
                 new Token("var", TokenType.KEYWORD),
                 new Token("Dog", TokenType.IDENTIFIER),
                 new Token("dog", TokenType.IDENTIFIER),
+                new Token(";", TokenType.SYMBOL),
+                new Token("let", TokenType.KEYWORD),
+                new Token("x", TokenType.IDENTIFIER),
+                new Token("=", TokenType.SYMBOL),
+                new Token("5", TokenType.INT_CONST),
                 new Token(";", TokenType.SYMBOL),
                 new Token("return", TokenType.KEYWORD),
                 new Token("x", TokenType.IDENTIFIER),
@@ -472,6 +481,11 @@ public class CompilationEngineTest {
                 new Token("var", TokenType.KEYWORD),
                 new Token("Dog", TokenType.IDENTIFIER),
                 new Token("dog", TokenType.IDENTIFIER),
+                new Token(";", TokenType.SYMBOL),
+                new Token("let", TokenType.KEYWORD),
+                new Token("x", TokenType.IDENTIFIER),
+                new Token("=", TokenType.SYMBOL),
+                new Token("5", TokenType.INT_CONST),
                 new Token(";", TokenType.SYMBOL),
                 new Token("return", TokenType.KEYWORD),
                 new Token("x", TokenType.IDENTIFIER),
@@ -667,7 +681,13 @@ public class CompilationEngineTest {
                                 new VarNames(
                                         List.of(new Terminal("dog", TerminalType.IDENTIFIER))
                                 )),
-                        new ReturnStatement(null)
+                        new LetStatement(
+                                new Terminal("x", TerminalType.IDENTIFIER),
+                                null,
+                                new Expression(new Term(TermType.CONSTANT, new Terminal("5", TerminalType.INT_CONST)))
+                        ),
+                        new ReturnStatement(
+                                new Expression(new Term(TermType.VAR, new Terminal("x", TerminalType.IDENTIFIER))))
                 )
         );
     }
