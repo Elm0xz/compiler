@@ -52,6 +52,10 @@ public class CompilationMatcher {
         return it -> it.is(KeywordType.RETURN);
     }
 
+    public Predicate<Token> isDoStatement() {
+        return it -> it.is(KeywordType.DO);
+    }
+
     public boolean isNonOpSymbol(Token token) {
         return token.is(TokenType.SYMBOL) &&
                 Lexicals.nonOps().contains(token.token().charAt(0));

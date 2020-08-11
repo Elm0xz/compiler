@@ -8,13 +8,11 @@ import java.util.Objects;
 
 public class Term implements Construct {
     private final List<Element> termParts;
+    private final TermType termType;
 
-    public Term(Element... elements) {
+    public Term(TermType termType, Element... elements) {
+        this.termType = termType;
         this.termParts = List.of(elements);
-    }
-
-    public Term(List<Element> elements) {
-        this.termParts = elements;
     }
 
     @Override

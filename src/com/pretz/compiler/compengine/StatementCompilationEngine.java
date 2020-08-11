@@ -1,10 +1,11 @@
 package com.pretz.compiler.compengine;
 
-import com.pretz.compiler.compengine.construct.Parameter;
 import com.pretz.compiler.compengine.expression.Expression;
 import com.pretz.compiler.compengine.expression.Op;
 import com.pretz.compiler.compengine.expression.OpTerm;
 import com.pretz.compiler.compengine.expression.Term;
+import com.pretz.compiler.compengine.expression.TermType;
+import com.pretz.compiler.compengine.statement.DoStatement;
 import com.pretz.compiler.compengine.statement.ReturnStatement;
 import com.pretz.compiler.compengine.statement.Statement;
 import com.pretz.compiler.compengine.terminal.Terminal;
@@ -33,6 +34,7 @@ public class StatementCompilationEngine {
     protected Statement compileStatement(Tokens tokens) {
         return Match(tokens.current()).of(
                 Case($(matcher.isReturnStatement()), () -> compileReturnStatement(tokens)),
+                Case($(matcher.isDoStatement()), () -> compileDoStatement(tokens)),
                 Case($(), this::throwInvalidStatementException));
     }
 
@@ -42,6 +44,12 @@ public class StatementCompilationEngine {
         if (matcher.isNotSemicolon(tokens.current()))
             expression = compileExpression(tokens);
         return new ReturnStatement(expression);
+    }
+
+    private DoStatement compileDoStatement(Tokens tokens) {
+        consumeStartingStatementKeyword(tokens);
+        Term subroutineCall = consumeSubroutineCall(tokens);
+        return new DoStatement(subroutineCall);
     }
 
     private void consumeStartingStatementKeyword(Tokens tokens) {
@@ -59,7 +67,7 @@ public class StatementCompilationEngine {
 
     private Term consumeTerm(Tokens tokens) { //TODO maybe small enum is needed to discern between those
         return Match(tokens.current()).of(
-                Case($(matcher.isConstant()), () -> consumeSimpleTerm(tokens)),
+                Case($(matcher.isConstant()), () -> consumeSimpleTerm(tokens, TermType.CONSTANT)),
                 Case($(matcher.isVarNameOrSubroutineCall()), () -> consumeVarNameTerm(tokens)),
                 Case($(matcher.isUnaryOp()), () -> consumeUnaryOpTerm(tokens)),
                 Case($(matcher.isExpressionInBrackets()), () -> consumeExpressionInBrackets(tokens)),
@@ -67,8 +75,8 @@ public class StatementCompilationEngine {
         );
     }
 
-    private Term consumeSimpleTerm(Tokens tokens) {
-        Term simpleTerm = new Term(new Terminal(tokens.current()));
+    private Term consumeSimpleTerm(Tokens tokens, TermType termType) {
+        Term simpleTerm = new Term(termType, new Terminal(tokens.current()));
         tokens.advance();
         return simpleTerm;
     }
@@ -77,7 +85,7 @@ public class StatementCompilationEngine {
         Term term = Match(tokens).of(
                 Case($(matcher.isVarNameArray()), () -> consumeVarNameArray(tokens)),
                 Case($(matcher.isSubroutineCall()), () -> consumeSubroutineCall(tokens)),
-                Case($(), () -> consumeSimpleTerm(tokens))
+                Case($(), () -> consumeSimpleTerm(tokens, TermType.VAR))
         );
         return term;
     }
@@ -87,7 +95,7 @@ public class StatementCompilationEngine {
         consumeArrayOpeningSquareBracket(tokens);
         Expression expression = compileExpression(tokens);
         consumeArrayClosingSquareBracket(tokens);
-        return new Term(varName, expression);
+        return new Term(TermType.VAR_ARRAY, varName, expression);
     }
 
     private Terminal consumeIdentifier(Tokens tokens) {
@@ -97,11 +105,11 @@ public class StatementCompilationEngine {
     }
 
     private Term consumeSubroutineCall(Tokens tokens) {
-        List<Element> subroutineCall = consumeSubroutineCallIdentifier(tokens); //TODO refactor into something better
+        List<Element> subroutineCallIdentifier = consumeSubroutineCallIdentifier(tokens); //TODO refactor into something better
         consumeExpressionOpeningRoundBracket(tokens);
         List<? extends Element> expressionList = consumeExpressionList(tokens);
         consumeExpressionClosingRoundBracket(tokens);
-        return new Term(subroutineCall.appendAll(expressionList).toJavaList().toArray(Element[]::new)); //TODO quite ugly conversion
+        return new Term(TermType.SUBROUTINE_CALL, subroutineCallIdentifier.appendAll(expressionList).toJavaList().toArray(Element[]::new)); //TODO quite ugly conversion
     }
 
     private List<Element> consumeSubroutineCallIdentifier(Tokens tokens) {//TODO ugly types
@@ -137,7 +145,7 @@ public class StatementCompilationEngine {
         consumeExpressionOpeningRoundBracket(tokens);
         Expression expression = compileExpression(tokens);
         consumeExpressionClosingRoundBracket(tokens);
-        return new Term(expression);
+        return new Term(TermType.EXPRESSION_IN_BRACKETS, expression);
     }
 
     private void consumeExpressionOpeningRoundBracket(Tokens tokens) {
@@ -164,7 +172,7 @@ public class StatementCompilationEngine {
         Token unaryOp = tokens.current();
         tokens.advance();
         Term term = consumeTerm(tokens);
-        return new Term(new Terminal(unaryOp), term);
+        return new Term(TermType.UNARY_OP, new Terminal(unaryOp), term);
     }
 
     private OpTerm consumeOpTerm(Tokens tokens) {

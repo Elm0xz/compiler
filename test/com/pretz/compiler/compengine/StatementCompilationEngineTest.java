@@ -4,6 +4,8 @@ import com.pretz.compiler.compengine.expression.Expression;
 import com.pretz.compiler.compengine.expression.Op;
 import com.pretz.compiler.compengine.expression.OpTerm;
 import com.pretz.compiler.compengine.expression.Term;
+import com.pretz.compiler.compengine.expression.TermType;
+import com.pretz.compiler.compengine.statement.DoStatement;
 import com.pretz.compiler.compengine.statement.ReturnStatement;
 import com.pretz.compiler.compengine.terminal.Terminal;
 import com.pretz.compiler.compengine.terminal.TerminalType;
@@ -42,7 +44,7 @@ public class StatementCompilationEngineTest {
 
         Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
                 new ReturnStatement(
-                        new Expression(new Term(new Terminal("5", TerminalType.INT_CONST)), List.empty()))
+                        new Expression(new Term(TermType.CONSTANT, new Terminal("5", TerminalType.INT_CONST)), List.empty()))
         );
     }
 
@@ -55,7 +57,7 @@ public class StatementCompilationEngineTest {
 
         Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
                 new ReturnStatement(
-                        new Expression(new Term(new Terminal("Foo", TerminalType.STRING_CONST)), List.empty()))
+                        new Expression(new Term(TermType.CONSTANT, new Terminal("Foo", TerminalType.STRING_CONST)), List.empty()))
         );
     }
 
@@ -69,7 +71,7 @@ public class StatementCompilationEngineTest {
 
         Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
                 new ReturnStatement(
-                        new Expression(new Term(new Terminal(keyword, TerminalType.KEYWORD)), List.empty()))
+                        new Expression(new Term(TermType.CONSTANT, new Terminal(keyword, TerminalType.KEYWORD)), List.empty()))
         );
     }
 
@@ -82,7 +84,7 @@ public class StatementCompilationEngineTest {
 
         Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
                 new ReturnStatement(
-                        new Expression(new Term(new Terminal("duck", TerminalType.IDENTIFIER)), List.empty()))
+                        new Expression(new Term(TermType.CONSTANT, new Terminal("duck", TerminalType.IDENTIFIER)), List.empty()))
         );
     }
 
@@ -101,14 +103,14 @@ public class StatementCompilationEngineTest {
         Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
                 new ReturnStatement(
                         new Expression(new Term(
-                                new Terminal("-", TerminalType.SYMBOL),
-                                new Term(new Terminal("duck", TerminalType.IDENTIFIER))),
+                                TermType.UNARY_OP, new Terminal("-", TerminalType.SYMBOL),
+                                new Term(TermType.VAR, new Terminal("duck", TerminalType.IDENTIFIER))),
                                 List.of(new OpTerm(
                                                 new Op(new Terminal("+", TerminalType.SYMBOL)),
-                                                new Term(new Terminal("dog", TerminalType.IDENTIFIER))),
+                                                new Term(TermType.VAR, new Terminal("dog", TerminalType.IDENTIFIER))),
                                         new OpTerm(
                                                 new Op(new Terminal("+", TerminalType.SYMBOL)),
-                                                new Term(new Terminal("3", TerminalType.INT_CONST)))
+                                                new Term(TermType.CONSTANT, new Terminal("3", TerminalType.INT_CONST)))
                                 )))
         );
     }
@@ -127,7 +129,7 @@ public class StatementCompilationEngineTest {
 
         Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
                 new ReturnStatement(
-                        new Expression(new Term(new Terminal("duck", TerminalType.IDENTIFIER),
+                        new Expression(new Term(TermType.VAR_ARRAY, new Terminal("duck", TerminalType.IDENTIFIER),
                                 arrayIndexExpression), List.empty())
                 ));
     }
@@ -149,15 +151,15 @@ public class StatementCompilationEngineTest {
                 new ReturnStatement(
                         new Expression(
                                 new Term(
-                                        new Expression(
-                                                new Term(new Terminal("x", TerminalType.IDENTIFIER)),
+                                        TermType.EXPRESSION_IN_BRACKETS, new Expression(
+                                                new Term(TermType.VAR, new Terminal("x", TerminalType.IDENTIFIER)),
                                                 List.of(new OpTerm(
                                                         new Op(new Terminal("*", TerminalType.SYMBOL)),
-                                                        new Term(new Terminal("3", TerminalType.INT_CONST)))
+                                                        new Term(TermType.CONSTANT, new Terminal("3", TerminalType.INT_CONST)))
                                                 ))),
                                 List.of(new OpTerm(
                                         new Op(new Terminal("+", TerminalType.SYMBOL)),
-                                        new Term(new Terminal("y", TerminalType.IDENTIFIER)))
+                                        new Term(TermType.VAR, new Terminal("y", TerminalType.IDENTIFIER)))
                                 )))
         );
     }
@@ -174,9 +176,9 @@ public class StatementCompilationEngineTest {
         Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
                 new ReturnStatement(
                         new Expression(new Term(
-                                new Terminal("doStuff", TerminalType.IDENTIFIER),
+                                TermType.SUBROUTINE_CALL, new Terminal("doStuff", TerminalType.IDENTIFIER),
                                 new Expression(
-                                        new Term( new Terminal("5", TerminalType.INT_CONST)),
+                                        new Term(TermType.CONSTANT, new Terminal("5", TerminalType.INT_CONST)),
                                         List.empty())),
                                 List.empty()
                         )));
@@ -196,13 +198,54 @@ public class StatementCompilationEngineTest {
         Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
                 new ReturnStatement(
                         new Expression(new Term(
-                                new Terminal("stuff", TerminalType.IDENTIFIER),
+                                TermType.SUBROUTINE_CALL, new Terminal("stuff", TerminalType.IDENTIFIER),
                                 new Terminal("doStuff", TerminalType.IDENTIFIER),
                                 new Expression(
-                                        new Term( new Terminal("5", TerminalType.INT_CONST)),
+                                        new Term(TermType.CONSTANT, new Terminal("5", TerminalType.INT_CONST)),
                                         List.empty())),
                                 List.empty()
                         )));
+    }
+
+    @Test
+    public void shouldCompileDoStatement() {
+        Tokens tokens = new Tokens(List.of(
+                new Token("do", TokenType.KEYWORD),
+                new Token("doStuff", TokenType.IDENTIFIER),
+                new Token("(", TokenType.SYMBOL),
+                new Token("5", TokenType.INT_CONST),
+                new Token(")", TokenType.SYMBOL)));
+
+        Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
+                new DoStatement(
+                        new Term(
+                                TermType.SUBROUTINE_CALL, new Terminal("doStuff", TerminalType.IDENTIFIER),
+                                new Expression(
+                                        new Term(TermType.CONSTANT, new Terminal("5", TerminalType.INT_CONST)),
+                                        List.empty()))
+                ));
+    }
+
+    @Test
+    public void shouldCompileDoStatementWithClassSubroutineCall() {
+        Tokens tokens = new Tokens(List.of(
+                new Token("do", TokenType.KEYWORD),
+                new Token("stuff", TokenType.IDENTIFIER),
+                new Token(".", TokenType.SYMBOL),
+                new Token("doStuff", TokenType.IDENTIFIER),
+                new Token("(", TokenType.SYMBOL),
+                new Token("5", TokenType.INT_CONST),
+                new Token(")", TokenType.SYMBOL)));
+
+        Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
+                new DoStatement(
+                        new Term(
+                                TermType.SUBROUTINE_CALL, new Terminal("stuff", TerminalType.IDENTIFIER),
+                                new Terminal("doStuff", TerminalType.IDENTIFIER),
+                                new Expression(
+                                        new Term(TermType.CONSTANT, new Terminal("5", TerminalType.INT_CONST)),
+                                        List.empty()))
+                ));
     }
 
     @Test
@@ -222,28 +265,28 @@ public class StatementCompilationEngineTest {
         return Stream.of(
                 Arguments.of(
                         List.of(new Token("x", TokenType.IDENTIFIER)),
-                        new Expression(new Term(new Terminal("x", TerminalType.IDENTIFIER)), List.empty())),
+                        new Expression(new Term(TermType.VAR, new Terminal("x", TerminalType.IDENTIFIER)), List.empty())),
                 Arguments.of(
                         List.of(new Token("5", TokenType.INT_CONST)),
-                        new Expression(new Term(new Terminal("5", TerminalType.INT_CONST)), List.empty())),
+                        new Expression(new Term(TermType.CONSTANT, new Terminal("5", TerminalType.INT_CONST)), List.empty())),
                 Arguments.of(
                         List.of(new Token("Foo", TokenType.STRING_CONST)),
-                        new Expression(new Term(new Terminal("Foo", TerminalType.STRING_CONST)), List.empty())),
+                        new Expression(new Term(TermType.CONSTANT, new Terminal("Foo", TerminalType.STRING_CONST)), List.empty())),
                 Arguments.of(
                         List.of(new Token("-", TokenType.SYMBOL),
                                 new Token("a", TokenType.IDENTIFIER)),
                         new Expression(new Term(
-                                new Terminal("-", TerminalType.SYMBOL),
-                                new Term(new Terminal("a", TerminalType.IDENTIFIER))), List.empty())),
+                                TermType.UNARY_OP, new Terminal("-", TerminalType.SYMBOL),
+                                new Term(TermType.VAR, new Terminal("a", TerminalType.IDENTIFIER))), List.empty())),
                 Arguments.of(
                         List.of(new Token("y", TokenType.IDENTIFIER),
                                 new Token("[", TokenType.SYMBOL),
                                 new Token("x", TokenType.IDENTIFIER),
                                 new Token("]", TokenType.SYMBOL)),
                         new Expression(new Term(
-                                new Terminal("y", TerminalType.IDENTIFIER),
+                                TermType.VAR_ARRAY, new Terminal("y", TerminalType.IDENTIFIER),
                                 new Expression(new Term(
-                                        new Terminal("x", TerminalType.IDENTIFIER)), List.empty())), List.empty()))
+                                        TermType.VAR, new Terminal("x", TerminalType.IDENTIFIER)), List.empty())), List.empty()))
         );
     }
 }
