@@ -4,7 +4,15 @@ import com.pretz.compiler.compengine.terminal.Terminal;
 
 import java.util.Objects;
 
+import static com.pretz.compiler.util.XmlUtils.basicClosingTag;
+import static com.pretz.compiler.util.XmlUtils.basicOpeningTag;
+import static com.pretz.compiler.util.XmlUtils.closingRoundBracket;
+import static com.pretz.compiler.util.XmlUtils.openingRoundBracket;
+import static com.pretz.compiler.util.XmlUtils.semicolon;
+
 public class SubroutineDec implements Construct {
+    private static final String CONSTRUCT_NAME = "subroutineDec";
+
     private final Terminal startingKeyword;
     private final Type type;
     private final Terminal subroutineName;
@@ -19,6 +27,21 @@ public class SubroutineDec implements Construct {
         this.subroutineName = subroutineName;
         this.parameterList = parameterList;
         this.subroutineBody = subroutineBody;
+    }
+
+    @Override
+    public String toXml(int indLvl) {
+        indLvl++;
+        return basicOpeningTag(indLvl - 1, CONSTRUCT_NAME) +
+                startingKeyword.toXml(indLvl) +
+                type.toXml(indLvl) +
+                subroutineName.toXml(indLvl) +
+                openingRoundBracket(indLvl) +
+                parameterList.toXml(indLvl) +
+                closingRoundBracket(indLvl) +
+                subroutineBody.toXml(indLvl) +
+                semicolon(indLvl) +
+                basicClosingTag(indLvl - 1, CONSTRUCT_NAME);
     }
 
     @Override

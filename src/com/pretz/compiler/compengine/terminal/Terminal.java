@@ -1,13 +1,18 @@
 package com.pretz.compiler.compengine.terminal;
 
-import com.pretz.compiler.compengine.validator.Validator;
 import com.pretz.compiler.compengine.Element;
+import com.pretz.compiler.compengine.validator.Validator;
 import com.pretz.compiler.tokenizer.token.KeywordType;
 import com.pretz.compiler.tokenizer.token.Token;
 import com.pretz.compiler.tokenizer.token.TokenType;
 import com.pretz.compiler.util.Lexicals;
 
 import java.util.Objects;
+
+import static com.pretz.compiler.util.XmlUtils.indent;
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
 
 public class Terminal implements Element {
     private final String token;
@@ -48,6 +53,18 @@ public class Terminal implements Element {
         if (Lexicals.keywords().contains(token))
             return TerminalKeywordType.valueOf(token.toUpperCase());
         else throw new IllegalArgumentException("Invalid keyword type");
+    }
+
+    public String toXml(int indLvl) {
+        return indent(indLvl) + "<" + toTag() + "> " + token + " </" + toTag() + ">\n";
+    }
+
+    private String toTag() {
+        return Match(type).of(
+                Case($(TerminalType.IDENTIFIER), "identifier"),
+                Case($(TerminalType.KEYWORD), "keyword"),
+                Case($(), "NOT YET IMPLEMENTED")
+        );
     }
 
     @Override

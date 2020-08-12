@@ -4,8 +4,17 @@ import com.pretz.compiler.compengine.terminal.Terminal;
 import io.vavr.collection.List;
 
 import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static com.pretz.compiler.util.XmlUtils.basicClosingTag;
+import static com.pretz.compiler.util.XmlUtils.basicOpeningTag;
+import static com.pretz.compiler.util.XmlUtils.closingCurlyBracket;
+import static com.pretz.compiler.util.XmlUtils.openingCurlyBracket;
+import static com.pretz.compiler.util.XmlUtils.simpleStartingKeyword;
 
 public class Class implements Construct {
+    private static final String CONSTRUCT_NAME = "class";
+
     private final Terminal identifier;
     private final List<Construct> declarations;
 
@@ -15,11 +24,20 @@ public class Class implements Construct {
     }
 
     @Override
-    public String toString() { //TODO format this to return XML formatted output
-        return "Class{" +
-                "identifier='" + identifier + '\'' +
-                ", declarations=" + declarations +
-                '}';
+    public String toXml(int indLvl) {
+        indLvl++;
+        return basicOpeningTag(indLvl - 1, CONSTRUCT_NAME) +
+                simpleStartingKeyword(indLvl, CONSTRUCT_NAME) +
+                identifier.toXml(indLvl) +
+                openingCurlyBracket(indLvl) +
+                declarationsToXml(indLvl) +
+                closingCurlyBracket(indLvl) +
+                basicClosingTag(indLvl - 1, CONSTRUCT_NAME);
+    }
+
+    private String declarationsToXml(int indLvl) {
+        return declarations.map(it -> it.toXml(indLvl))
+                .collect(Collectors.joining());
     }
 
     @Override

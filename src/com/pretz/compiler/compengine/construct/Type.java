@@ -18,6 +18,11 @@ public class Type implements Construct {
     }
 
     @Override
+    public String toXml(int indLvl) {
+        return type.toXml(indLvl);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

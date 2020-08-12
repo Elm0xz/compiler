@@ -28,7 +28,7 @@ public class JackTokenizer {
                 .tokens().toStream()
                 .foldLeft(new TokenizingAccumulator(), this::tokenize)
                 .tokens().dropRight(1);
-        tokens.forEach(System.out::println);
+        //tokens.forEach(System.out::println);
         return new Tokens(tokens);
     }
 

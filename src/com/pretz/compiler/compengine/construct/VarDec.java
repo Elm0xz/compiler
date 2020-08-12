@@ -4,7 +4,13 @@ import com.pretz.compiler.compengine.terminal.Terminal;
 
 import java.util.Objects;
 
+import static com.pretz.compiler.util.XmlUtils.basicClosingTag;
+import static com.pretz.compiler.util.XmlUtils.basicOpeningTag;
+import static com.pretz.compiler.util.XmlUtils.semicolon;
+
 public class VarDec implements Construct {
+    private static final String CONSTRUCT_NAME = "varDec";
+
     private final Terminal startingKeyword;
     private final Type type;
     private final VarNames varNames;
@@ -13,6 +19,17 @@ public class VarDec implements Construct {
         this.startingKeyword = startingKeyword;
         this.type = type;
         this.varNames = varNames;
+    }
+
+    @Override
+    public String toXml(int indLvl) {
+        indLvl++;
+        return basicOpeningTag(indLvl - 1, CONSTRUCT_NAME) +
+                startingKeyword.toXml(indLvl) +
+                type.toXml(indLvl) +
+                varNames.toXml(indLvl) +
+                semicolon(indLvl) +
+                basicClosingTag(indLvl - 1, CONSTRUCT_NAME);
     }
 
     @Override

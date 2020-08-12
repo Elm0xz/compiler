@@ -13,7 +13,7 @@ import static io.vavr.API.Tuple;
 public class JackAnalyzer {
 
     public static void main(String[] args) {
-        System.out.println(args[0]); //for debugging evaluator input
+        //System.out.println(args[0]); //for debugging evaluator input
         if (args.length == 0) {
             throw new IllegalArgumentException("Empty file name - nothing to compile");
         }
@@ -25,7 +25,7 @@ public class JackAnalyzer {
                 /*.collect(Collectors.toList())*/
                 /*.forEach(fileTokens -> new JackXmlWriter().write(fileTokens._1, fileTokens._2));*/
                 .map(tokensAndFile -> new CompilationEngineFactory().create().compileClass(tokensAndFile._1))//TODO what does it actually return?
-                .forEach(System.out::println);//TODO write results to xml
+                .forEach(it -> System.out.println(it.toXml(0)));//TODO write results to xml
     }
 
     /**
