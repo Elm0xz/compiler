@@ -8,6 +8,7 @@ import com.pretz.compiler.tokenizer.token.TokenType;
 import com.pretz.compiler.util.Lexicals;
 
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import static com.pretz.compiler.util.XmlUtils.indent;
 import static io.vavr.API.$;
@@ -56,7 +57,7 @@ public class Terminal implements Element {
     }
 
     public String toXml(int indLvl) {
-        return indent(indLvl) + "<" + toTag() + "> " + token + " </" + toTag() + ">\n";
+        return indent(indLvl) + "<" + toTag() + "> " + translateToken() + " </" + toTag() + ">\n";
     }
 
     private String toTag() {
@@ -67,6 +68,31 @@ public class Terminal implements Element {
                 Case($(TerminalType.INT_CONST), "integerConstant"),
                 Case($(TerminalType.STRING_CONST), "stringConstant")
         );
+    }
+
+    private String translateToken() {
+        return Match(token).of(
+                Case($(isLessThan()), "&lt;"),
+                Case($(isGreaterThan()), "&gt;"),
+                Case($(isQuotationMark()), "&quot;"),
+                Case($(isAmpersand()), "&amp;"),
+                Case($(), token));
+    }
+
+    private Predicate<String> isLessThan() {
+        return it -> it.equals("<");
+    }
+
+    private Predicate<String> isGreaterThan() {
+        return it -> it.equals(">");
+    }
+
+    private Predicate<String> isQuotationMark() {
+        return it -> it.equals("\"");
+    }
+
+    private Predicate<String> isAmpersand() {
+        return it -> it.equals("&");
     }
 
     @Override

@@ -24,8 +24,8 @@ public class JackAnalyzer {
                 .map(file -> Tuple(new JackTokenizer().tokenize(file), file))
                 /*.collect(Collectors.toList())*/
                 /*.forEach(fileTokens -> new JackXmlWriter().write(fileTokens._1, fileTokens._2));*/
-                .map(tokensAndFile -> new CompilationEngineFactory().create().compileClass(tokensAndFile._1))//TODO what does it actually return?
-                .forEach(it -> System.out.println(it.toXml(0)));//TODO write results to xml
+                .map(tokensAndFile -> Tuple(new CompilationEngineFactory().create().compileClass(tokensAndFile._1), tokensAndFile._2))
+                .forEach(parseTreeAndFile -> new JackParseTreeXmlWriter().write(parseTreeAndFile._1.toXml(0), parseTreeAndFile._2));
     }
 
     /**
