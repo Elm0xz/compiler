@@ -4,8 +4,15 @@ import com.pretz.compiler.compengine.construct.Construct;
 import io.vavr.collection.List;
 
 import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static com.pretz.compiler.util.XmlUtils.basicClosingTag;
+import static com.pretz.compiler.util.XmlUtils.basicOpeningTag;
+import static com.pretz.compiler.util.XmlUtils.comma;
 
 public class Expression implements Construct {
+    private static final String CONSTRUCT_NAME = "expression";
+
     private final Term term;
     private final List<OpTerm> opTerms;
 
@@ -17,6 +24,20 @@ public class Expression implements Construct {
     public Expression(Term term) {
         this.term = term;
         this.opTerms = List.empty();
+    }
+
+    @Override
+    public String toXml(int indLvl) {
+        indLvl++;
+        return basicOpeningTag(indLvl - 1, CONSTRUCT_NAME) +
+                term.toXml(indLvl) +
+                opTermsToXml(indLvl) +
+                basicClosingTag(indLvl - 1, CONSTRUCT_NAME);
+    }
+
+    private String opTermsToXml(int indLvl) {
+        return opTerms.map(it -> it.toXml(indLvl))
+                .collect(Collectors.joining(comma(indLvl)));
     }
 
     @Override

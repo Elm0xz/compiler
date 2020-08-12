@@ -29,6 +29,11 @@ public class Op implements Construct, Validator {
     }
 
     @Override
+    public String toXml(int indLvl) {
+        return op.toXml(indLvl);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

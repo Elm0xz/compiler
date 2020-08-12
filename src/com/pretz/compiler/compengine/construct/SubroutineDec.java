@@ -40,7 +40,6 @@ public class SubroutineDec implements Construct {
                 parameterList.toXml(indLvl) +
                 closingRoundBracket(indLvl) +
                 subroutineBody.toXml(indLvl) +
-                semicolon(indLvl) +
                 basicClosingTag(indLvl - 1, CONSTRUCT_NAME);
     }
 

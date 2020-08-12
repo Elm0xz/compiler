@@ -89,7 +89,7 @@ public class CompilationMatcher {
     }
 
     public Predicate<Token> isUnaryOp() {
-        return it -> it.is(TokenType.SYMBOL) && it.is("-");
+        return it -> it.is(TokenType.SYMBOL) && (it.is("-") || (it.is("~")));
     }
 
     public Predicate<Token> isExpressionInBrackets() {

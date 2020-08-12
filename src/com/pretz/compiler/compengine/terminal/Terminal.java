@@ -63,7 +63,9 @@ public class Terminal implements Element {
         return Match(type).of(
                 Case($(TerminalType.IDENTIFIER), "identifier"),
                 Case($(TerminalType.KEYWORD), "keyword"),
-                Case($(), "NOT YET IMPLEMENTED")
+                Case($(TerminalType.SYMBOL), "symbol"),
+                Case($(TerminalType.INT_CONST), "integerConstant"),
+                Case($(TerminalType.STRING_CONST), "stringConstant")
         );
     }
 

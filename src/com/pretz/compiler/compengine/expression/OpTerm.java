@@ -14,6 +14,12 @@ public class OpTerm implements Construct {
     }
 
     @Override
+    public String toXml(int indLvl) {
+        return op.toXml(indLvl) +
+                term.toXml(indLvl);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
