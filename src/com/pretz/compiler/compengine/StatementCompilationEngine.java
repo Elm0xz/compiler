@@ -153,6 +153,7 @@ public class StatementCompilationEngine {
             simpleTerm = new Term(termType, new Identifier(tokens.current(), IdentifierMeaning.USAGE));
         }
         else {
+            //TODO there is no validation here, why?
             simpleTerm = new Term(termType, new Terminal(tokens.current()));
         }
         tokens.advance();
@@ -172,7 +173,7 @@ public class StatementCompilationEngine {
         consumeArrayOpeningSquareBracket(tokens);
         Expression expression = compileExpression(tokens);
         consumeArrayClosingSquareBracket(tokens);
-        return new Term(TermType.VAR_ARRAY, varName, expression);
+        return new Term(TermType.VAR_ARRAY, List.of(varName, expression));
     }
 
     private Terminal consumeIdentifier(Tokens tokens, IdentifierMeaning meaning) {
@@ -186,7 +187,7 @@ public class StatementCompilationEngine {
         consumeOpeningRoundBracket(tokens);
         List<? extends Element> expressionList = consumeExpressionList(tokens);
         consumeClosingRoundBracket(tokens);
-        return new Term(TermType.SUBROUTINE_CALL, subroutineCallIdentifier.appendAll(expressionList).toJavaList().toArray(Element[]::new)); //TODO quite ugly conversion
+        return new Term(TermType.SUBROUTINE_CALL, subroutineCallIdentifier.appendAll(expressionList)); //TODO quite ugly conversion
     }
 
     private List<Element> consumeSubroutineCallIdentifier(Tokens tokens) {//TODO ugly types
@@ -259,7 +260,7 @@ public class StatementCompilationEngine {
         Token unaryOp = tokens.current();
         tokens.advance();
         Term term = consumeTerm(tokens);
-        return new Term(TermType.UNARY_OP, new Terminal(unaryOp), term);
+        return new Term(TermType.UNARY_OP, List.of(new Terminal(unaryOp), term));
     }
 
     private OpTerm consumeOpTerm(Tokens tokens) {

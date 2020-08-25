@@ -42,8 +42,4 @@ public class Type implements Construct {
     public Type(Terminal type) {
         this.type = type;
     }
-
-    public Type(Identifier type) {
-        this.type = type;
-    }
 }

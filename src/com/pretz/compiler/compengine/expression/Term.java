@@ -27,9 +27,19 @@ public class Term implements Construct {
     private final List<Element> termParts;
     private final TermType termType;
 
-    public Term(TermType termType, Element... elements) {
+    public Term(TermType termType, Element element) {
         this.termType = termType;
-        this.termParts = List.of(elements);
+        this.termParts = List.of(element);
+    }
+
+    public Term(TermType termType, Element element1, Element element2) {
+        this.termType = termType;
+        this.termParts = List.of(element1, element2);
+    }
+
+    public Term(TermType termType, List<Element> elements) {
+        this.termType = termType;
+        this.termParts = elements;
     }
 
     @Override
