@@ -19,12 +19,12 @@ public class Class implements Construct {
 
     private final Terminal identifier;
     private final List<Construct> declarations;
-    /*private final SymbolTable classSymbolTable;*/
+    private final SymbolTable classSymbolTable;
 
     public Class(Terminal identifier, List<Construct> declarations) {
         this.identifier = identifier;
         this.declarations = declarations;
-        /*this.classSymbolTable = new SymbolTableFactory().create(identifier, declarations);*/
+        this.classSymbolTable = new SymbolTableFactory().create(identifier, declarations);
     }
 
     @Override

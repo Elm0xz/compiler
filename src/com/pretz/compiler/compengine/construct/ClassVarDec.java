@@ -21,6 +21,18 @@ public class ClassVarDec implements Construct {
         this.varNames = varNames;
     }
 
+    public Terminal startingKeyword() {
+        return startingKeyword;
+    }
+
+    public Type type() {
+        return type;
+    }
+
+    public VarNames varNames() {
+        return varNames;
+    }
+
     @Override
     public String toXml(int indLvl) {
         indLvl++;
