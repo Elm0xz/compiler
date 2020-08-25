@@ -10,6 +10,8 @@ import com.pretz.compiler.compengine.construct.SubroutineDec;
 import com.pretz.compiler.compengine.construct.Type;
 import com.pretz.compiler.compengine.construct.VarDec;
 import com.pretz.compiler.compengine.construct.VarNames;
+import com.pretz.compiler.compengine.terminal.Identifier;
+import com.pretz.compiler.compengine.terminal.IdentifierMeaning;
 import com.pretz.compiler.compengine.terminal.Terminal;
 import com.pretz.compiler.compengine.validator.Validation;
 import com.pretz.compiler.compengine.validator.ValidatorFactory;
@@ -58,7 +60,7 @@ public class CompilationEngine {
     }
 
     private Terminal consumeClassIdentifier(Tokens tokens) {
-        Terminal identifier = new Terminal(tokens.current(), validator.create(Validation.CLASS_IDENTIFIER));
+        Terminal identifier = new Identifier(tokens.current(), validator.create(Validation.CLASS_IDENTIFIER), IdentifierMeaning.DEFINITION);
         tokens.advance();
         return identifier;
     }
@@ -141,7 +143,7 @@ public class CompilationEngine {
     }
 
     private Terminal consumeVarName(Tokens tokens) {
-        Terminal varName = new Terminal(tokens.current(), validator.create(Validation.VAR_NAME));
+        Terminal varName = new Identifier(tokens.current(), validator.create(Validation.VAR_NAME), IdentifierMeaning.DEFINITION);
         tokens.advance();
         return varName;
     }
@@ -159,7 +161,7 @@ public class CompilationEngine {
     }
 
     private Terminal consumeSubroutineName(Tokens tokens) {
-        Terminal varName = new Terminal(tokens.current(), validator.create(Validation.SUBROUTINE_NAME));
+        Terminal varName = new Identifier(tokens.current(), validator.create(Validation.SUBROUTINE_NAME), IdentifierMeaning.DEFINITION);
         tokens.advance();
         return varName;
     }

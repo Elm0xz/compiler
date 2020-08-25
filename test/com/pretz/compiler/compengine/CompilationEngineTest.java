@@ -15,6 +15,8 @@ import com.pretz.compiler.compengine.expression.Term;
 import com.pretz.compiler.compengine.expression.TermType;
 import com.pretz.compiler.compengine.statement.LetStatement;
 import com.pretz.compiler.compengine.statement.ReturnStatement;
+import com.pretz.compiler.compengine.terminal.Identifier;
+import com.pretz.compiler.compengine.terminal.IdentifierMeaning;
 import com.pretz.compiler.compengine.terminal.Terminal;
 import com.pretz.compiler.compengine.terminal.TerminalType;
 import com.pretz.compiler.compengine.validator.ValidatorFactory;
@@ -45,7 +47,7 @@ public class CompilationEngineTest {
         Tokens tokens = classWithDeclarations(newClassToken, classTokensList());
 
         Assertions.assertThat(engine.compileClass(tokens)).isEqualTo(
-                new Class(new Terminal(newClassToken), classConstructs()));
+                new Class(new Identifier(newClassToken, IdentifierMeaning.DEFINITION), classConstructs()));
     }
 
     @Test
@@ -67,7 +69,7 @@ public class CompilationEngineTest {
                 new Token("}", TokenType.SYMBOL)));
 
         Assertions.assertThat(engine.compileClass(tokens)).isEqualTo(
-                new Class(new Terminal(newClassToken), List.empty()));
+                new Class(new Identifier(newClassToken, IdentifierMeaning.DEFINITION), List.empty()));
     }
 
     @ParameterizedTest()
@@ -104,7 +106,7 @@ public class CompilationEngineTest {
         Tokens tokens = classWithDeclarations(newClassToken, classVarDecTokensList());
 
         Assertions.assertThat(engine.compileClass(tokens)).isEqualTo(
-                new Class(new Terminal(newClassToken), classVarDecConstructs()));
+                new Class(new Identifier(newClassToken, IdentifierMeaning.DEFINITION), classVarDecConstructs()));
     }
 
     @Test
@@ -113,7 +115,7 @@ public class CompilationEngineTest {
         Tokens tokens = classWithDeclarations(newClassToken, classVarDecTokensListWithCustomType());
 
         Assertions.assertThat(engine.compileClass(tokens)).isEqualTo(
-                new Class(new Terminal(newClassToken), classVarDecConstructsWithCustomType()));
+                new Class(new Identifier(newClassToken, IdentifierMeaning.DEFINITION), classVarDecConstructsWithCustomType()));
     }
 
     @Test
@@ -152,7 +154,7 @@ public class CompilationEngineTest {
         Tokens tokens = classWithDeclarations(newClassToken, classSubroutineDecTokensList());
 
         Assertions.assertThat(engine.compileClass(tokens)).isEqualTo(
-                new Class(new Terminal(newClassToken), classSubroutineDecConstructs()));
+                new Class(new Identifier(newClassToken, IdentifierMeaning.DEFINITION), classSubroutineDecConstructs()));
     }
 
     @Test
@@ -328,17 +330,17 @@ public class CompilationEngineTest {
         return List.of(
                 new ClassVarDec(new Terminal("static", TerminalType.KEYWORD),
                         new Type(new Terminal("int", TerminalType.KEYWORD)),
-                        new VarNames(List.of(new Terminal("testInt", TerminalType.IDENTIFIER)))
+                        new VarNames(List.of(new Identifier("testInt", TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION)))
                 ),
                 new ClassVarDec(new Terminal("field", TerminalType.KEYWORD),
                         new Type(new Terminal("boolean", TerminalType.KEYWORD)),
                         new VarNames(List.of(
-                                new Terminal("testBool1", TerminalType.IDENTIFIER),
-                                new Terminal("testBool2", TerminalType.IDENTIFIER)))
+                                new Identifier("testBool1", TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION),
+                                new Identifier("testBool2", TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION)))
                 ),
                 new SubroutineDec(new Terminal("method", TerminalType.KEYWORD),
                         new Type(new Terminal("void", TerminalType.KEYWORD)),
-                        new Terminal("doStuff", TerminalType.IDENTIFIER),
+                        new Identifier("doStuff", TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION),
                         new ParameterList(subroutineParameterList()), subroutineBody())
         );
     }
@@ -371,13 +373,13 @@ public class CompilationEngineTest {
         return List.of(
                 new ClassVarDec(new Terminal("static", TerminalType.KEYWORD),
                         new Type(new Terminal("int", TerminalType.KEYWORD)),
-                        new VarNames(List.of(new Terminal("testInt", TerminalType.IDENTIFIER)))
+                        new VarNames(List.of(new Identifier("testInt", TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION)))
                 ),
                 new ClassVarDec(new Terminal("field", TerminalType.KEYWORD),
                         new Type(new Terminal("boolean", TerminalType.KEYWORD)),
                         new VarNames(List.of(
-                                new Terminal("testBool1", TerminalType.IDENTIFIER),
-                                new Terminal("testBool2", TerminalType.IDENTIFIER)))
+                                new Identifier("testBool1", TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION),
+                                new Identifier("testBool2", TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION)))
                 )
         );
     }
@@ -400,14 +402,14 @@ public class CompilationEngineTest {
     private List<Construct> classVarDecConstructsWithCustomType() {
         return List.of(
                 new ClassVarDec(new Terminal("static", TerminalType.KEYWORD),
-                        new Type(new Terminal("Dog", TerminalType.IDENTIFIER)),
-                        new VarNames(List.of(new Terminal("testDog", TerminalType.IDENTIFIER)))
+                        new Type(new Identifier("Dog", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE)),
+                        new VarNames(List.of(new Identifier("testDog", TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION)))
                 ),
                 new ClassVarDec(new Terminal("field", TerminalType.KEYWORD),
                         new Type(new Terminal("boolean", TerminalType.KEYWORD)),
                         new VarNames(List.of(
-                                new Terminal("testBool1", TerminalType.IDENTIFIER),
-                                new Terminal("testBool2", TerminalType.IDENTIFIER)))
+                                new Identifier("testBool1", TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION),
+                                new Identifier("testBool2", TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION)))
                 )
         );
     }
@@ -649,7 +651,7 @@ public class CompilationEngineTest {
         return List.of(
                 new SubroutineDec(new Terminal("method", TerminalType.KEYWORD),
                         new Type(new Terminal("void", TerminalType.KEYWORD)),
-                        new Terminal("doStuff", TerminalType.IDENTIFIER),
+                        new Identifier("doStuff", TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION),
                         new ParameterList(subroutineParameterList()), subroutineBody())
         );
     }
@@ -657,11 +659,11 @@ public class CompilationEngineTest {
     private List<Parameter> subroutineParameterList() {
         return List.of(
                 new Parameter(new Type(new Terminal("boolean", TerminalType.KEYWORD)),
-                        new Terminal("booleanParameter", TerminalType.IDENTIFIER)),
+                        new Identifier("booleanParameter", TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION)),
                 new Parameter(new Type(new Terminal("int", TerminalType.KEYWORD)),
-                        new Terminal("intParameter", TerminalType.IDENTIFIER)),
-                new Parameter(new Type(new Terminal("Dog", TerminalType.IDENTIFIER)),
-                        new Terminal("objectParameter", TerminalType.IDENTIFIER))
+                        new Identifier("intParameter", TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION)),
+                new Parameter(new Type(new Identifier("Dog", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE)),
+                        new Identifier("objectParameter", TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION))
         );
     }
 
@@ -672,22 +674,22 @@ public class CompilationEngineTest {
                                 new Terminal("var", TerminalType.KEYWORD),
                                 new Type(new Terminal("int", TerminalType.KEYWORD)),
                                 new VarNames(
-                                        List.of(new Terminal("x", TerminalType.IDENTIFIER),
-                                                new Terminal("y", TerminalType.IDENTIFIER))
+                                        List.of(new Identifier("x", TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION),
+                                                new Identifier("y", TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION))
                                 )),
                         new VarDec(
                                 new Terminal("var", TerminalType.KEYWORD),
-                                new Type(new Terminal("Dog", TerminalType.IDENTIFIER)),
+                                new Type(new Identifier("Dog", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE)),
                                 new VarNames(
-                                        List.of(new Terminal("dog", TerminalType.IDENTIFIER))
+                                        List.of(new Identifier("dog", TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION))
                                 )),
                         new LetStatement(
-                                new Terminal("x", TerminalType.IDENTIFIER),
+                                new Identifier("x", TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION),
                                 null,
                                 new Expression(new Term(TermType.CONSTANT, new Terminal("5", TerminalType.INT_CONST)))
                         ),
                         new ReturnStatement(
-                                new Expression(new Term(TermType.VAR, new Terminal("x", TerminalType.IDENTIFIER))))
+                                new Expression(new Term(TermType.VAR, new Identifier("x", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE))))
                 )
         );
     }

@@ -10,6 +10,8 @@ import com.pretz.compiler.compengine.statement.IfStatement;
 import com.pretz.compiler.compengine.statement.LetStatement;
 import com.pretz.compiler.compengine.statement.ReturnStatement;
 import com.pretz.compiler.compengine.statement.WhileStatement;
+import com.pretz.compiler.compengine.terminal.Identifier;
+import com.pretz.compiler.compengine.terminal.IdentifierMeaning;
 import com.pretz.compiler.compengine.terminal.Terminal;
 import com.pretz.compiler.compengine.terminal.TerminalType;
 import com.pretz.compiler.compengine.validator.ValidatorFactory;
@@ -87,7 +89,7 @@ public class StatementCompilationEngineTest {
 
         Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
                 new ReturnStatement(
-                        new Expression(new Term(TermType.CONSTANT, new Terminal("duck", TerminalType.IDENTIFIER))))
+                        new Expression(new Term(TermType.CONSTANT, new Identifier("duck", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE))))
         );
     }
 
@@ -107,10 +109,10 @@ public class StatementCompilationEngineTest {
                 new ReturnStatement(
                         new Expression(new Term(
                                 TermType.UNARY_OP, new Terminal("-", TerminalType.SYMBOL),
-                                new Term(TermType.VAR, new Terminal("duck", TerminalType.IDENTIFIER))),
+                                new Term(TermType.VAR, new Identifier("duck", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE))),
                                 List.of(new OpTerm(
                                                 new Op(new Terminal("+", TerminalType.SYMBOL)),
-                                                new Term(TermType.VAR, new Terminal("dog", TerminalType.IDENTIFIER))),
+                                                new Term(TermType.VAR, new Identifier("dog", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE))),
                                         new OpTerm(
                                                 new Op(new Terminal("+", TerminalType.SYMBOL)),
                                                 new Term(TermType.CONSTANT, new Terminal("3", TerminalType.INT_CONST)))
@@ -132,7 +134,7 @@ public class StatementCompilationEngineTest {
 
         Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
                 new ReturnStatement(
-                        new Expression(new Term(TermType.VAR_ARRAY, new Terminal("duck", TerminalType.IDENTIFIER),
+                        new Expression(new Term(TermType.VAR_ARRAY, new Identifier("duck", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE),
                                 arrayIndexExpression))
                 ));
     }
@@ -155,14 +157,14 @@ public class StatementCompilationEngineTest {
                         new Expression(
                                 new Term(
                                         TermType.EXPRESSION_IN_BRACKETS, new Expression(
-                                        new Term(TermType.VAR, new Terminal("x", TerminalType.IDENTIFIER)),
+                                        new Term(TermType.VAR, new Identifier("x", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE)),
                                         List.of(new OpTerm(
                                                 new Op(new Terminal("*", TerminalType.SYMBOL)),
                                                 new Term(TermType.CONSTANT, new Terminal("3", TerminalType.INT_CONST)))
                                         ))),
                                 List.of(new OpTerm(
                                         new Op(new Terminal("+", TerminalType.SYMBOL)),
-                                        new Term(TermType.VAR, new Terminal("y", TerminalType.IDENTIFIER)))
+                                        new Term(TermType.VAR, new Identifier("y", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE)))
                                 )))
         );
     }
@@ -180,7 +182,7 @@ public class StatementCompilationEngineTest {
         Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
                 new ReturnStatement(
                         new Expression(new Term(
-                                TermType.SUBROUTINE_CALL, new Terminal("doStuff", TerminalType.IDENTIFIER),
+                                TermType.SUBROUTINE_CALL, new Identifier("doStuff", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE),
                                 new Expression(
                                         new Term(TermType.CONSTANT, new Terminal("5", TerminalType.INT_CONST))
                                 ))
@@ -202,8 +204,8 @@ public class StatementCompilationEngineTest {
         Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
                 new ReturnStatement(
                         new Expression(new Term(
-                                TermType.SUBROUTINE_CALL, new Terminal("stuff", TerminalType.IDENTIFIER),
-                                new Terminal("doStuff", TerminalType.IDENTIFIER),
+                                TermType.SUBROUTINE_CALL, new Identifier("stuff", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE),
+                                new Identifier("doStuff", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE),
                                 new Expression(
                                         new Term(TermType.CONSTANT, new Terminal("5", TerminalType.INT_CONST))))
                         )));
@@ -227,7 +229,7 @@ public class StatementCompilationEngineTest {
         Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
                 new DoStatement(
                         new Term(
-                                TermType.SUBROUTINE_CALL, new Terminal("doStuff", TerminalType.IDENTIFIER),
+                                TermType.SUBROUTINE_CALL, new Identifier("doStuff", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE),
                                 new Expression(
                                         new Term(TermType.CONSTANT, new Terminal("5", TerminalType.INT_CONST))))
                 ));
@@ -248,8 +250,8 @@ public class StatementCompilationEngineTest {
         Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
                 new DoStatement(
                         new Term(
-                                TermType.SUBROUTINE_CALL, new Terminal("stuff", TerminalType.IDENTIFIER),
-                                new Terminal("doStuff", TerminalType.IDENTIFIER),
+                                TermType.SUBROUTINE_CALL, new Identifier("stuff", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE),
+                                new Identifier("doStuff", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE),
                                 new Expression(
                                         new Term(TermType.CONSTANT, new Terminal("5", TerminalType.INT_CONST))))
                 ));
@@ -282,11 +284,11 @@ public class StatementCompilationEngineTest {
                 new WhileStatement(
                         new Expression(new Term(TermType.CONSTANT, new Terminal("true", TerminalType.KEYWORD))),
                         List.of(new DoStatement(new Term(
-                                        TermType.SUBROUTINE_CALL, new Terminal("doStuff", TerminalType.IDENTIFIER),
+                                        TermType.SUBROUTINE_CALL, new Identifier("doStuff", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE),
                                         new Expression(new Term(TermType.CONSTANT, new Terminal("3", TerminalType.INT_CONST))))
                                 ),
                                 new DoStatement(new Term(
-                                        TermType.SUBROUTINE_CALL, new Terminal("doAnotherStuff", TerminalType.IDENTIFIER),
+                                        TermType.SUBROUTINE_CALL, new Identifier("doAnotherStuff", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE),
                                         new Expression(new Term(TermType.CONSTANT, new Terminal("false", TerminalType.KEYWORD))))
                                 ))
                 ));
@@ -323,18 +325,18 @@ public class StatementCompilationEngineTest {
 
         Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
                 new IfStatement(
-                        new Expression(new Term(TermType.VAR, new Terminal("x", TerminalType.IDENTIFIER)),
+                        new Expression(new Term(TermType.VAR, new Identifier("x", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE)),
                                 List.of(new OpTerm(new Op(new Terminal("=", TerminalType.SYMBOL)),
                                         new Term(TermType.CONSTANT, new Terminal("3", TerminalType.INT_CONST)))
 
                                 )),
                         List.of(new DoStatement(new Term(
-                                TermType.SUBROUTINE_CALL, new Terminal("doStuff", TerminalType.IDENTIFIER),
+                                TermType.SUBROUTINE_CALL, new Identifier("doStuff", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE),
                                 new Expression(new Term(TermType.CONSTANT, new Terminal("3", TerminalType.INT_CONST))))
                         )),
                         List.of(
                                 new DoStatement(new Term(
-                                        TermType.SUBROUTINE_CALL, new Terminal("doAnotherStuff", TerminalType.IDENTIFIER),
+                                        TermType.SUBROUTINE_CALL, new Identifier("doAnotherStuff", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE),
                                         new Expression(new Term(TermType.CONSTANT, new Terminal("false", TerminalType.KEYWORD))))
                                 ))
                 ));
@@ -358,9 +360,9 @@ public class StatementCompilationEngineTest {
 
         Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo(
                 new LetStatement(
-                        new Terminal("x", TerminalType.IDENTIFIER),
+                        new Identifier("x", TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION),
                         new Expression(new Term(TermType.CONSTANT, new Terminal("5", TerminalType.INT_CONST))),
-                        new Expression(new Term(TermType.SUBROUTINE_CALL, new Terminal("doStuff", TerminalType.IDENTIFIER),
+                        new Expression(new Term(TermType.SUBROUTINE_CALL, new Identifier("doStuff", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE),
                                 new Expression(new Term(TermType.CONSTANT, new Terminal("3", TerminalType.INT_CONST)))))
                 )
         );
@@ -378,7 +380,7 @@ public class StatementCompilationEngineTest {
         return Stream.of(
                 Arguments.of(
                         List.of(new Token("x", TokenType.IDENTIFIER)),
-                        new Expression(new Term(TermType.VAR, new Terminal("x", TerminalType.IDENTIFIER)))),
+                        new Expression(new Term(TermType.VAR, new Identifier("x", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE)))),
                 Arguments.of(
                         List.of(new Token("5", TokenType.INT_CONST)),
                         new Expression(new Term(TermType.CONSTANT, new Terminal("5", TerminalType.INT_CONST)))),
@@ -390,16 +392,16 @@ public class StatementCompilationEngineTest {
                                 new Token("a", TokenType.IDENTIFIER)),
                         new Expression(new Term(
                                 TermType.UNARY_OP, new Terminal("-", TerminalType.SYMBOL),
-                                new Term(TermType.VAR, new Terminal("a", TerminalType.IDENTIFIER))))),
+                                new Term(TermType.VAR, new Identifier("a", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE))))),
                 Arguments.of(
                         List.of(new Token("y", TokenType.IDENTIFIER),
                                 new Token("[", TokenType.SYMBOL),
                                 new Token("x", TokenType.IDENTIFIER),
                                 new Token("]", TokenType.SYMBOL)),
                         new Expression(new Term(
-                                TermType.VAR_ARRAY, new Terminal("y", TerminalType.IDENTIFIER),
+                                TermType.VAR_ARRAY, new Identifier("y", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE),
                                 new Expression(new Term(
-                                        TermType.VAR, new Terminal("x", TerminalType.IDENTIFIER))))))
+                                        TermType.VAR, new Identifier("x", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE))))))
         );
     }
 }

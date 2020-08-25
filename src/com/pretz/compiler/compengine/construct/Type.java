@@ -1,8 +1,11 @@
 package com.pretz.compiler.compengine.construct;
 
-import com.pretz.compiler.compengine.validator.Validator;
+import com.pretz.compiler.compengine.terminal.Identifier;
+import com.pretz.compiler.compengine.terminal.IdentifierMeaning;
 import com.pretz.compiler.compengine.terminal.Terminal;
+import com.pretz.compiler.compengine.validator.Validator;
 import com.pretz.compiler.tokenizer.token.Token;
+import com.pretz.compiler.tokenizer.token.TokenType;
 
 import java.util.Objects;
 
@@ -10,11 +13,11 @@ public class Type implements Construct {
     private final Terminal type;
 
     public Type(Token type, Validator validator) {
-        this.type = new Terminal(type, validator);
-    }
-
-    public Type(Terminal type) {
-        this.type = type;
+        if (type.is(TokenType.KEYWORD))
+            this.type = new Terminal(type, validator);
+        else {
+            this.type = new Identifier(type, validator, IdentifierMeaning.USAGE);
+        }
     }
 
     @Override
@@ -33,5 +36,14 @@ public class Type implements Construct {
     @Override
     public int hashCode() {
         return Objects.hash(type);
+    }
+
+    //TODO these constructors are only used in test, should be handled by factory method instead
+    public Type(Terminal type) {
+        this.type = type;
+    }
+
+    public Type(Identifier type) {
+        this.type = type;
     }
 }

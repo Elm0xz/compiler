@@ -1,5 +1,7 @@
 package com.pretz.compiler.compengine.construct;
 
+import com.pretz.compiler.compengine.symboltable.SymbolTable;
+import com.pretz.compiler.compengine.symboltable.SymbolTableFactory;
 import com.pretz.compiler.compengine.terminal.Terminal;
 import io.vavr.collection.List;
 
@@ -17,10 +19,12 @@ public class Class implements Construct {
 
     private final Terminal identifier;
     private final List<Construct> declarations;
+    /*private final SymbolTable classSymbolTable;*/
 
     public Class(Terminal identifier, List<Construct> declarations) {
         this.identifier = identifier;
         this.declarations = declarations;
+        /*this.classSymbolTable = new SymbolTableFactory().create(identifier, declarations);*/
     }
 
     @Override

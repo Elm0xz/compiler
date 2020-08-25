@@ -41,15 +41,6 @@ public class Terminal implements Element {
         return Enum.valueOf(TerminalKeywordType.class, type.toString().toUpperCase());
     }
 
-    public Terminal(String token, TerminalType type) {
-        this.token = token;
-        this.type = type;
-        if (type != TerminalType.KEYWORD)
-            this.keywordType = TerminalKeywordType.NOT_A_KEYWORD;
-        else
-            this.keywordType = setKeywordType(token);
-    }
-
     private TerminalKeywordType setKeywordType(String token) {
         if (Lexicals.keywords().contains(token))
             return TerminalKeywordType.valueOf(token.toUpperCase());
@@ -107,5 +98,15 @@ public class Terminal implements Element {
     @Override
     public int hashCode() {
         return Objects.hash(token, type);
+    }
+
+    //TODO this constructor is only used in test, should be handled by factory method instead
+    public Terminal(String token, TerminalType type) {
+        this.token = token;
+        this.type = type;
+        if (type != TerminalType.KEYWORD)
+            this.keywordType = TerminalKeywordType.NOT_A_KEYWORD;
+        else
+            this.keywordType = setKeywordType(token);
     }
 }

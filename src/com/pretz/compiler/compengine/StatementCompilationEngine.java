@@ -11,10 +11,13 @@ import com.pretz.compiler.compengine.statement.LetStatement;
 import com.pretz.compiler.compengine.statement.ReturnStatement;
 import com.pretz.compiler.compengine.statement.Statement;
 import com.pretz.compiler.compengine.statement.WhileStatement;
+import com.pretz.compiler.compengine.terminal.Identifier;
+import com.pretz.compiler.compengine.terminal.IdentifierMeaning;
 import com.pretz.compiler.compengine.terminal.Terminal;
 import com.pretz.compiler.compengine.validator.Validation;
 import com.pretz.compiler.compengine.validator.ValidatorFactory;
 import com.pretz.compiler.tokenizer.token.Token;
+import com.pretz.compiler.tokenizer.token.TokenType;
 import com.pretz.compiler.tokenizer.token.Tokens;
 import io.vavr.collection.List;
 
@@ -81,7 +84,7 @@ public class StatementCompilationEngine {
 
     private Statement compileLetStatement(Tokens tokens) {
         consumeStartingStatementKeyword(tokens);
-        Terminal varName = consumeIdentifier(tokens);
+        Terminal varName = consumeIdentifier(tokens, IdentifierMeaning.DEFINITION);
         Expression arrayExpression = null;
         if (matcher.isNotEqualsSign(tokens.current())) {
             consumeArrayOpeningSquareBracket(tokens);
@@ -143,8 +146,15 @@ public class StatementCompilationEngine {
         );
     }
 
+    //TODO maybe two separate methods?
     private Term consumeSimpleTerm(Tokens tokens, TermType termType) {
-        Term simpleTerm = new Term(termType, new Terminal(tokens.current()));
+        Term simpleTerm;
+        if (tokens.current().is(TokenType.IDENTIFIER)) {
+            simpleTerm = new Term(termType, new Identifier(tokens.current(), IdentifierMeaning.USAGE));
+        }
+        else {
+            simpleTerm = new Term(termType, new Terminal(tokens.current()));
+        }
         tokens.advance();
         return simpleTerm;
     }
@@ -158,17 +168,17 @@ public class StatementCompilationEngine {
     }
 
     private Term consumeVarNameArray(Tokens tokens) {
-        Terminal varName = consumeIdentifier(tokens);
+        Terminal varName = consumeIdentifier(tokens, IdentifierMeaning.USAGE);
         consumeArrayOpeningSquareBracket(tokens);
         Expression expression = compileExpression(tokens);
         consumeArrayClosingSquareBracket(tokens);
         return new Term(TermType.VAR_ARRAY, varName, expression);
     }
 
-    private Terminal consumeIdentifier(Tokens tokens) {
-        Terminal varName = new Terminal(tokens.current());
+    private Terminal consumeIdentifier(Tokens tokens, IdentifierMeaning meaning) {
+        Terminal identifier = new Identifier(tokens.current(), meaning);
         tokens.advance();
-        return varName;
+        return identifier;
     }
 
     private Term consumeSubroutineCall(Tokens tokens) {
@@ -181,10 +191,10 @@ public class StatementCompilationEngine {
 
     private List<Element> consumeSubroutineCallIdentifier(Tokens tokens) {//TODO ugly types
         ArrayList<Element> identifiers = new ArrayList<>(); //TODO refactor into something better
-        identifiers.add(consumeIdentifier(tokens));
+        identifiers.add(consumeIdentifier(tokens, IdentifierMeaning.USAGE));
         if (matcher.isDot(tokens.current())) {
             consumeDot(tokens);
-            identifiers.add(consumeIdentifier(tokens));
+            identifiers.add(consumeIdentifier(tokens, IdentifierMeaning.USAGE));
         }
         return List.ofAll(identifiers);
     }
