@@ -28,8 +28,12 @@ public class ElementTestUtils {
         return new Token(token, identifier);
     }
 
-    protected Identifier identifier(Token newClassToken) {
+    protected Identifier defIdentifier(Token newClassToken) {
         return new Identifier(newClassToken, IdentifierMeaning.DEFINITION);
+    }
+
+    protected Identifier defIdentifier(String token) {
+        return new Identifier(token, TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION);
     }
 
     protected Identifier identifier(String token, IdentifierMeaning meaning) {
@@ -37,7 +41,7 @@ public class ElementTestUtils {
     }
 
     protected Class classC(Token className, List<Construct> constructs) {
-        return new Class(identifier(className), constructs);
+        return new Class(defIdentifier(className), constructs);
     }
 
     protected Terminal terminal(String token, TerminalType keyword) {

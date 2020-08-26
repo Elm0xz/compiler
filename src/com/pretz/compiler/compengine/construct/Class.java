@@ -3,7 +3,6 @@ package com.pretz.compiler.compengine.construct;
 import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import com.pretz.compiler.compengine.symboltable.SymbolTableFactory;
 import com.pretz.compiler.compengine.terminal.Identifier;
-import com.pretz.compiler.compengine.terminal.Terminal;
 import io.vavr.collection.List;
 
 import java.util.Objects;
@@ -25,7 +24,12 @@ public class Class implements Construct {
     public Class(Identifier identifier, List<Construct> declarations) {
         this.identifier = identifier;
         this.declarations = declarations;
-        this.classSymbolTable = new SymbolTableFactory().create(identifier, declarations);
+        this.classSymbolTable = new SymbolTableFactory().create(identifier, filterClassVarDeclarations(declarations));
+    }
+
+    private List<ClassVarDec> filterClassVarDeclarations(List<Construct> declarations) {
+        return declarations.filter(it -> it instanceof ClassVarDec)
+                .map(it -> (ClassVarDec) it);
     }
 
     @Override
