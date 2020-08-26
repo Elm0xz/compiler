@@ -61,4 +61,12 @@ public class WhileStatement implements Statement {
     public int hashCode() {
         return Objects.hash(condition, statements);
     }
+
+    @Override
+    public String toString() {
+        return "WhileStatement{" +
+                "condition=" + condition +
+                ", statements=" + statements +
+                '}';
+    }
 }

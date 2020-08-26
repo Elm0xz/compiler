@@ -18,6 +18,7 @@ import static io.vavr.API.Match;
 public class Terminal implements Element {
     private final String token;
     private final TerminalType type;
+
     private final TerminalKeywordType keywordType;
 
     public Terminal(Token token, Validator validator) {
@@ -49,6 +50,10 @@ public class Terminal implements Element {
 
     public String toXml(int indLvl) {
         return indent(indLvl) + "<" + toTag() + "> " + translateToken() + " </" + toTag() + ">\n";
+    }
+
+    public TerminalKeywordType keywordType() {
+        return keywordType;
     }
 
     private String toTag() {
@@ -108,5 +113,14 @@ public class Terminal implements Element {
             this.keywordType = TerminalKeywordType.NOT_A_KEYWORD;
         else
             this.keywordType = setKeywordType(token);
+    }
+
+    @Override
+    public String toString() {
+        return "Terminal{" +
+                "token='" + token + '\'' +
+                ", type=" + type +
+                ", keywordType=" + keywordType +
+                '}';
     }
 }

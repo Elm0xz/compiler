@@ -41,4 +41,11 @@ public class DoStatement implements Statement {
     public int hashCode() {
         return Objects.hash(subroutineCall);
     }
+
+    @Override
+    public String toString() {
+        return "DoStatement{" +
+                "subroutineCall=" + subroutineCall +
+                '}';
+    }
 }

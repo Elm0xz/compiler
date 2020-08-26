@@ -58,4 +58,13 @@ public class ClassVarDec implements Construct {
     public int hashCode() {
         return Objects.hash(startingKeyword, type, varNames);
     }
+
+    @Override
+    public String toString() {
+        return "ClassVarDec{" +
+                "startingKeyword=" + startingKeyword +
+                ", type=" + type +
+                ", varNames=" + varNames +
+                '}';
+    }
 }

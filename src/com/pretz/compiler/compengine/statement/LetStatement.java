@@ -64,4 +64,13 @@ public class LetStatement implements Statement {
     public int hashCode() {
         return Objects.hash(varName, arrayExpression, assignedExpression);
     }
+
+    @Override
+    public String toString() {
+        return "LetStatement{" +
+                "varName=" + varName +
+                ", arrayExpression=" + arrayExpression +
+                ", assignedExpression=" + assignedExpression +
+                '}';
+    }
 }

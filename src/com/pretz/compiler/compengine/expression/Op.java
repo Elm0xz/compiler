@@ -45,4 +45,11 @@ public class Op implements Construct, Validator {
     public int hashCode() {
         return Objects.hash(op);
     }
+
+    @Override
+    public String toString() {
+        return "Op{" +
+                "op=" + op +
+                '}';
+    }
 }

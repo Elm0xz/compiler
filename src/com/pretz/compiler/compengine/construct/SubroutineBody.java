@@ -58,4 +58,11 @@ public class SubroutineBody implements Construct {
     public int hashCode() {
         return Objects.hash(subroutineBody);
     }
+
+    @Override
+    public String toString() {
+        return "SubroutineBody{" +
+                "subroutineBody=" + subroutineBody +
+                '}';
+    }
 }

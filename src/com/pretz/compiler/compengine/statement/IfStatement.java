@@ -84,4 +84,13 @@ public class IfStatement implements Statement {
     public int hashCode() {
         return Objects.hash(condition, ifStatements, elseStatements);
     }
+
+    @Override
+    public String toString() {
+        return "IfStatement{" +
+                "condition=" + condition +
+                ", ifStatements=" + ifStatements +
+                ", elseStatements=" + elseStatements +
+                '}';
+    }
 }

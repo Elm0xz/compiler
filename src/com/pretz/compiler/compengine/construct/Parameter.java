@@ -32,4 +32,12 @@ public class Parameter implements Construct {
     public int hashCode() {
         return Objects.hash(type, varName);
     }
+
+    @Override
+    public String toString() {
+        return "Parameter{" +
+                "type=" + type +
+                ", varName=" + varName +
+                '}';
+    }
 }

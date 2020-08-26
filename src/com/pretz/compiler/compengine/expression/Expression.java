@@ -53,4 +53,12 @@ public class Expression implements Construct {
     public int hashCode() {
         return Objects.hash(term, opTerms);
     }
+
+    @Override
+    public String toString() {
+        return "Expression{" +
+                "term=" + term +
+                ", opTerms=" + opTerms +
+                '}';
+    }
 }

@@ -32,4 +32,12 @@ public class OpTerm implements Construct {
     public int hashCode() {
         return Objects.hash(op, term);
     }
+
+    @Override
+    public String toString() {
+        return "OpTerm{" +
+                "op=" + op +
+                ", term=" + term +
+                '}';
+    }
 }

@@ -121,4 +121,12 @@ public class Term implements Construct {
     public int hashCode() {
         return Objects.hash(termParts);
     }
+
+    @Override
+    public String toString() {
+        return "Term{" +
+                "termParts=" + termParts +
+                ", termType=" + termType +
+                '}';
+    }
 }

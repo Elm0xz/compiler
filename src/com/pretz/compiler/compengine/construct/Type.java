@@ -42,4 +42,11 @@ public class Type implements Construct {
     public Type(Terminal type) {
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        return "Type{" +
+                "type=" + type +
+                '}';
+    }
 }

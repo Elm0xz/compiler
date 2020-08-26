@@ -46,4 +46,11 @@ public class ParameterList implements Construct {
     public int hashCode() {
         return Objects.hash(parameters);
     }
+
+    @Override
+    public String toString() {
+        return "ParameterList{" +
+                "parameters=" + parameters +
+                '}';
+    }
 }

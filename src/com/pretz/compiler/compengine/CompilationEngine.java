@@ -47,7 +47,7 @@ public class CompilationEngine {
      */
     public Class compileClass(Tokens tokens) {
         consumeClassKeyword(tokens);
-        Terminal identifier = consumeClassIdentifier(tokens);
+        Identifier identifier = consumeClassIdentifier(tokens);
         consumeClassOrSubroutineBodyOpeningBracket(tokens);
         List<Construct> declarations = compileDeclarations(tokens);
         consumeClassOrSubroutineBodyClosingBracket(tokens);
@@ -59,8 +59,8 @@ public class CompilationEngine {
         tokens.advance();
     }
 
-    private Terminal consumeClassIdentifier(Tokens tokens) {
-        Terminal identifier = new Identifier(tokens.current(), validator.create(Validation.CLASS_IDENTIFIER), IdentifierMeaning.DEFINITION);
+    private Identifier consumeClassIdentifier(Tokens tokens) {
+        Identifier identifier = new Identifier(tokens.current(), validator.create(Validation.CLASS_IDENTIFIER), IdentifierMeaning.DEFINITION);
         tokens.advance();
         return identifier;
     }
@@ -85,7 +85,7 @@ public class CompilationEngine {
     private ClassVarDec compileClassVarDec(Tokens tokens) {
         Terminal startingKeyword = consumeStartingKeyword(tokens);
         Type type = consumeType(tokens);
-        List<Terminal> varNames = consumeVarNames(tokens);
+        List<Identifier> varNames = consumeVarNames(tokens);
         consumeSemicolon(tokens);
         return new ClassVarDec(startingKeyword, type, new VarNames(varNames));
     }
@@ -133,8 +133,8 @@ public class CompilationEngine {
         return type;
     }
 
-    private List<Terminal> consumeVarNames(Tokens tokens) {
-        ArrayList<Terminal> varNames = new ArrayList<>(); //TODO refactor to something cleaner
+    private List<Identifier> consumeVarNames(Tokens tokens) {
+        ArrayList<Identifier> varNames = new ArrayList<>(); //TODO refactor to something cleaner
         while (matcher.isNotSemicolon(tokens.current())) {
             varNames.add(consumeVarName(tokens));
             consumeVarDecComma(tokens);
@@ -142,8 +142,8 @@ public class CompilationEngine {
         return List.ofAll(varNames);
     }
 
-    private Terminal consumeVarName(Tokens tokens) {
-        Terminal varName = new Identifier(tokens.current(), validator.create(Validation.VAR_NAME), IdentifierMeaning.DEFINITION);
+    private Identifier consumeVarName(Tokens tokens) {
+        Identifier varName = new Identifier(tokens.current(), validator.create(Validation.VAR_NAME), IdentifierMeaning.DEFINITION);
         tokens.advance();
         return varName;
     }
@@ -218,7 +218,7 @@ public class CompilationEngine {
     private VarDec compileVarDec(Tokens tokens) {
         Terminal startingKeyword = consumeStartingKeyword(tokens);
         Type type = consumeType(tokens);
-        List<Terminal> varNames = consumeVarNames(tokens);
+        List<Identifier> varNames = consumeVarNames(tokens);
         consumeSemicolon(tokens);
         return new VarDec(startingKeyword, type, new VarNames(varNames));
     }

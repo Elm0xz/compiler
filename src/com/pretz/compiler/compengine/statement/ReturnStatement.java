@@ -49,4 +49,11 @@ public class ReturnStatement implements Statement {
     public int hashCode() {
         return Objects.hash(expression);
     }
+
+    @Override
+    public String toString() {
+        return "ReturnStatement{" +
+                "expression=" + expression +
+                '}';
+    }
 }

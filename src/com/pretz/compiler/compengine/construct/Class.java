@@ -2,6 +2,7 @@ package com.pretz.compiler.compengine.construct;
 
 import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import com.pretz.compiler.compengine.symboltable.SymbolTableFactory;
+import com.pretz.compiler.compengine.terminal.Identifier;
 import com.pretz.compiler.compengine.terminal.Terminal;
 import io.vavr.collection.List;
 
@@ -17,11 +18,11 @@ import static com.pretz.compiler.util.XmlUtils.simpleStartingKeyword;
 public class Class implements Construct {
     private static final String CONSTRUCT_NAME = "class";
 
-    private final Terminal identifier;
+    private final Identifier identifier;
     private final List<Construct> declarations;
     private final SymbolTable classSymbolTable;
 
-    public Class(Terminal identifier, List<Construct> declarations) {
+    public Class(Identifier identifier, List<Construct> declarations) {
         this.identifier = identifier;
         this.declarations = declarations;
         this.classSymbolTable = new SymbolTableFactory().create(identifier, declarations);
@@ -56,5 +57,14 @@ public class Class implements Construct {
     @Override
     public int hashCode() {
         return Objects.hash(identifier, declarations);
+    }
+
+    @Override
+    public String toString() {
+        return "Class{" +
+                "identifier=" + identifier +
+                ", declarations=" + declarations +
+                ", classSymbolTable=" + classSymbolTable +
+                '}';
     }
 }

@@ -59,4 +59,15 @@ public class SubroutineDec implements Construct {
     public int hashCode() {
         return Objects.hash(startingKeyword, type, subroutineName, parameterList, subroutineBody);
     }
+
+    @Override
+    public String toString() {
+        return "SubroutineDec{" +
+                "startingKeyword=" + startingKeyword +
+                ", type=" + type +
+                ", subroutineName=" + subroutineName +
+                ", parameterList=" + parameterList +
+                ", subroutineBody=" + subroutineBody +
+                '}';
+    }
 }

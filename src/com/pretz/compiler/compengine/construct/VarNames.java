@@ -1,5 +1,6 @@
 package com.pretz.compiler.compengine.construct;
 
+import com.pretz.compiler.compengine.terminal.Identifier;
 import com.pretz.compiler.compengine.terminal.Terminal;
 import io.vavr.collection.List;
 
@@ -9,10 +10,14 @@ import java.util.stream.Collectors;
 import static com.pretz.compiler.util.XmlUtils.comma;
 
 public class VarNames implements Construct {
-    private final List<Terminal> varNames;
+    private final List<Identifier> varNames;
 
-    public VarNames(List<Terminal> varNames) {
+    public VarNames(List<Identifier> varNames) {
         this.varNames = varNames;
+    }
+
+    public List<Identifier> varNames() {
+        return varNames;
     }
 
     @Override
@@ -32,5 +37,12 @@ public class VarNames implements Construct {
     @Override
     public int hashCode() {
         return Objects.hash(varNames);
+    }
+
+    @Override
+    public String toString() {
+        return "VarNames{" +
+                "varNames=" + varNames +
+                '}';
     }
 }
