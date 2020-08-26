@@ -116,8 +116,8 @@ public class ElementTestUtils {
                         identifier(subrToken, IdentifierMeaning.USAGE),
                         expression));
     }
-    //it does not take into account other possible nested terms apart from variable
 
+    //it does not take into account other possible nested terms apart from variable
     protected Term unaryOpTerm(String token) {
         return new Term(TermType.UNARY_OP,
                 List.of(
@@ -147,8 +147,8 @@ public class ElementTestUtils {
     protected Expression expression(Term term, List<OpTerm> opTerms) {
         return new Expression(term, opTerms);
     }
-    //it does not check if term is legit subroutine call
 
+    //it does not check if term is legit subroutine call
     protected DoStatement doStatement(Term subroutineCall) {
         return new DoStatement(subroutineCall);
     }

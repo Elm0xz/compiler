@@ -2,7 +2,6 @@ package com.pretz.compiler.compengine.expression;
 
 import com.pretz.compiler.compengine.Element;
 import com.pretz.compiler.compengine.construct.Construct;
-import com.pretz.compiler.compengine.terminal.Terminal;
 import io.vavr.collection.List;
 
 import java.util.Objects;

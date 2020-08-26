@@ -1,7 +1,6 @@
 package com.pretz.compiler.compengine.symboltable;
 
 import com.pretz.compiler.compengine.terminal.Identifier;
-import io.vavr.Tuple2;
 import io.vavr.collection.Map;
 
 import java.util.Objects;
@@ -17,10 +16,6 @@ public class SymbolTable {
 
     public int size() {
         return symbols.size();
-    }
-
-    public Tuple2<SymbolId, Identifier> get(int i) {
-        return symbols.get();
     }
 
     @Override

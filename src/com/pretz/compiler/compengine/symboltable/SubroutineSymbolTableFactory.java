@@ -1,6 +1,5 @@
 package com.pretz.compiler.compengine.symboltable;
 
-import com.pretz.compiler.compengine.construct.ClassVarDec;
 import com.pretz.compiler.compengine.construct.Construct;
 import com.pretz.compiler.compengine.construct.Parameter;
 import com.pretz.compiler.compengine.construct.VarDec;
@@ -13,6 +12,7 @@ import java.util.function.Predicate;
 
 public class SubroutineSymbolTableFactory implements SymbolTableFactory {
 
+    //TODO ugly as hell
     @Override
     public SymbolTable create(Identifier identifier, List<Construct> declarations) {
         var parameters = asParameter(declarations.filter(it -> it instanceof Parameter));
