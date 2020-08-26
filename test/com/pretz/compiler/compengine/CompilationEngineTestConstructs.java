@@ -3,10 +3,6 @@ package com.pretz.compiler.compengine;
 import com.pretz.compiler.compengine.construct.Construct;
 import com.pretz.compiler.compengine.construct.ParameterList;
 import com.pretz.compiler.compengine.construct.SubroutineBody;
-import com.pretz.compiler.compengine.construct.SubroutineDec;
-import com.pretz.compiler.compengine.expression.Expression;
-import com.pretz.compiler.compengine.expression.Term;
-import com.pretz.compiler.compengine.expression.TermType;
 import com.pretz.compiler.compengine.statement.LetStatement;
 import com.pretz.compiler.compengine.statement.ReturnStatement;
 import com.pretz.compiler.compengine.terminal.IdentifierMeaning;
@@ -25,11 +21,7 @@ public class CompilationEngineTestConstructs {
         return List.of(
                 $.classVarDec("static", "int", $.oneVarName("testInt")),
                 $.classVarDec("field", "boolean", $.varNames("testBool1", "testBool2")),
-                new SubroutineDec($.terminal("method", TerminalType.KEYWORD),
-                        $.type("void"),
-                        $.identifier("doStuff", IdentifierMeaning.DEFINITION),
-                        subroutineParameterList(),
-                        subroutineBody())
+                $.subroutineDec("method", "void", "doStuff", subroutineParameterList(), subroutineBody())
         );
     }
 
@@ -49,11 +41,7 @@ public class CompilationEngineTestConstructs {
 
     protected List<Construct> classSubroutineDecConstructs() {
         return List.of(
-                new SubroutineDec($.terminal("method", TerminalType.KEYWORD),
-                        $.type("void"),
-                        $.identifier("doStuff", IdentifierMeaning.DEFINITION),
-                        subroutineParameterList(),
-                        subroutineBody())
+                $.subroutineDec("function", "int", "doSomeStuff", subroutineParameterList(), subroutineBody())
         );
     }
 
@@ -73,10 +61,10 @@ public class CompilationEngineTestConstructs {
                         new LetStatement(
                                 $.identifier("x", IdentifierMeaning.DEFINITION),
                                 null,
-                                new Expression(new Term(TermType.CONSTANT, $.terminal("5", TerminalType.INT_CONST)))
+                                $.expression($.constantTerm("5", TerminalType.INT_CONST))
                         ),
                         new ReturnStatement(
-                                new Expression(new Term(TermType.VAR, $.identifier("x", IdentifierMeaning.USAGE))))
+                                $.expression($.varNameTerm("x")))
                 )
         );
     }

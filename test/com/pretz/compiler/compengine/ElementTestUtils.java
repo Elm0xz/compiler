@@ -4,6 +4,9 @@ import com.pretz.compiler.compengine.construct.Class;
 import com.pretz.compiler.compengine.construct.ClassVarDec;
 import com.pretz.compiler.compengine.construct.Construct;
 import com.pretz.compiler.compengine.construct.Parameter;
+import com.pretz.compiler.compengine.construct.ParameterList;
+import com.pretz.compiler.compengine.construct.SubroutineBody;
+import com.pretz.compiler.compengine.construct.SubroutineDec;
 import com.pretz.compiler.compengine.construct.Type;
 import com.pretz.compiler.compengine.construct.VarDec;
 import com.pretz.compiler.compengine.construct.VarNames;
@@ -81,6 +84,15 @@ public class ElementTestUtils {
         return new Parameter(type(type), identifier(varName, IdentifierMeaning.DEFINITION));
     }
 
+    protected  SubroutineDec subroutineDec(String method, String s, String doStuff,
+                                           ParameterList parameterList, SubroutineBody subroutineBody) {
+        return new SubroutineDec(terminal(method, TerminalType.KEYWORD),
+                type(s),
+                identifier(doStuff, IdentifierMeaning.DEFINITION),
+                parameterList,
+                subroutineBody);
+    }
+
     protected Term constantTerm(String token, TerminalType terminalType) {
         return new Term(TermType.CONSTANT, terminal(token, terminalType));
     }
@@ -104,8 +116,8 @@ public class ElementTestUtils {
                         identifier(subrToken, IdentifierMeaning.USAGE),
                         expression));
     }
-
     //it does not take into account other possible nested terms apart from variable
+
     protected Term unaryOpTerm(String token) {
         return new Term(TermType.UNARY_OP,
                 List.of(
@@ -135,8 +147,8 @@ public class ElementTestUtils {
     protected Expression expression(Term term, List<OpTerm> opTerms) {
         return new Expression(term, opTerms);
     }
-
     //it does not check if term is legit subroutine call
+
     protected DoStatement doStatement(Term subroutineCall) {
         return new DoStatement(subroutineCall);
     }

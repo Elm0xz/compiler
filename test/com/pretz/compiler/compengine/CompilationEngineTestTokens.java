@@ -142,9 +142,9 @@ public class CompilationEngineTestTokens {
 
     protected List<Token> classSubroutineDecTokensList() {
         return List.of(
-                $.token("method", TokenType.KEYWORD),
-                $.token("void", TokenType.KEYWORD),
-                $.token("doStuff", TokenType.IDENTIFIER),
+                $.token("function", TokenType.KEYWORD),
+                $.token("int", TokenType.KEYWORD),
+                $.token("doSomeStuff", TokenType.IDENTIFIER),
                 $.token("(", TokenType.SYMBOL),
                 $.token("boolean", TokenType.KEYWORD),
                 $.token("booleanParameter", TokenType.IDENTIFIER),
