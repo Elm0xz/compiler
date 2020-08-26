@@ -53,4 +53,8 @@ public class ParameterList implements Construct {
                 "parameters=" + parameters +
                 '}';
     }
+
+    public List<Parameter> parameters() {
+        return parameters;
+    }
 }

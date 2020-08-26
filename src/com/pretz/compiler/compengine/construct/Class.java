@@ -1,7 +1,8 @@
 package com.pretz.compiler.compengine.construct;
 
+import com.pretz.compiler.compengine.symboltable.ClassSymbolTableFactory;
+import com.pretz.compiler.compengine.symboltable.Scope;
 import com.pretz.compiler.compengine.symboltable.SymbolTable;
-import com.pretz.compiler.compengine.symboltable.SymbolTableFactory;
 import com.pretz.compiler.compengine.terminal.Identifier;
 import io.vavr.collection.List;
 
@@ -14,7 +15,7 @@ import static com.pretz.compiler.util.XmlUtils.closingCurlyBracket;
 import static com.pretz.compiler.util.XmlUtils.openingCurlyBracket;
 import static com.pretz.compiler.util.XmlUtils.simpleStartingKeyword;
 
-public class Class implements Construct {
+public class Class implements Construct, Scope {
     private static final String CONSTRUCT_NAME = "class";
 
     private final Identifier identifier;
@@ -24,12 +25,11 @@ public class Class implements Construct {
     public Class(Identifier identifier, List<Construct> declarations) {
         this.identifier = identifier;
         this.declarations = declarations;
-        this.classSymbolTable = new SymbolTableFactory().create(identifier, filterClassVarDeclarations(declarations));
+        this.classSymbolTable = new ClassSymbolTableFactory().create(identifier, filterClassVariableDeclarations(declarations));
     }
 
-    private List<ClassVarDec> filterClassVarDeclarations(List<Construct> declarations) {
-        return declarations.filter(it -> it instanceof ClassVarDec)
-                .map(it -> (ClassVarDec) it);
+    private List<Construct> filterClassVariableDeclarations(List<Construct> declarations) {
+        return declarations.filter(it -> it instanceof ClassVarDec);
     }
 
     @Override
@@ -70,5 +70,18 @@ public class Class implements Construct {
                 ", declarations=" + declarations +
                 ", classSymbolTable=" + classSymbolTable +
                 '}';
+    }
+
+    public Identifier identifier() {
+        return identifier;
+    }
+
+    public List<Construct> declarations() {
+        return declarations;
+    }
+
+    @Override
+    public SymbolTable symbolTable() {
+        return classSymbolTable;
     }
 }

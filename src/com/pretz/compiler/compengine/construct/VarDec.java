@@ -55,4 +55,16 @@ public class VarDec implements Construct {
                 ", varNames=" + varNames +
                 '}';
     }
+
+    public VarNames varNames() {
+        return varNames;
+    }
+
+    public Terminal startingKeyword() {
+        return startingKeyword;
+    }
+
+    public Type type() {
+        return type;
+    }
 }

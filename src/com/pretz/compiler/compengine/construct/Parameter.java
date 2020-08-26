@@ -1,14 +1,15 @@
 package com.pretz.compiler.compengine.construct;
 
+import com.pretz.compiler.compengine.terminal.Identifier;
 import com.pretz.compiler.compengine.terminal.Terminal;
 
 import java.util.Objects;
 
 public class Parameter implements Construct {
     private final Type type;
-    private final Terminal varName;
+    private final Identifier varName;
 
-    public Parameter(Type type, Terminal varName) {
+    public Parameter(Type type, Identifier varName) {
         this.type = type;
         this.varName = varName;
     }
@@ -39,5 +40,13 @@ public class Parameter implements Construct {
                 "type=" + type +
                 ", varName=" + varName +
                 '}';
+    }
+
+    public Type type() {
+        return type;
+    }
+
+    public Identifier varName() {
+        return varName;
     }
 }

@@ -7,13 +7,24 @@ import java.util.Objects;
 
 public class SymbolId {
     private final Type type;
-    private final TerminalKeywordType kind;
+    private final Kind kind;
     private final int id;
 
-    public SymbolId(Type type, TerminalKeywordType kind, int id) {
+    public SymbolId(Type type, Kind kind, int id) {
         this.type = type;
         this.kind = kind;
         this.id = id;
+    }
+
+    public SymbolId(Type type, TerminalKeywordType kind, int id) {
+        this.type = type;
+        this.kind = map(kind);
+        this.id = id;
+    }
+
+    //TODO some validation of possible mappings?
+    private Kind map(TerminalKeywordType kind) {
+        return Kind.valueOf(kind.name());
     }
 
     @Override

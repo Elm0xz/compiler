@@ -98,7 +98,7 @@ public class CompilationEngine {
     private SubroutineDec compileSubroutine(Tokens tokens) {
         Terminal startingKeyword = consumeStartingKeyword(tokens);
         Type type = consumeSubroutineType(tokens);
-        Terminal subroutineName = consumeSubroutineName(tokens);
+        Identifier subroutineName = consumeSubroutineName(tokens);
         consumeSubroutineParametersOpeningBracket(tokens);
         ParameterList parameterList = compileParameterList(tokens);
         consumeSubroutineParametersClosingBracket(tokens);
@@ -160,8 +160,8 @@ public class CompilationEngine {
         return type;
     }
 
-    private Terminal consumeSubroutineName(Tokens tokens) {
-        Terminal varName = new Identifier(tokens.current(), validator.create(Validation.SUBROUTINE_NAME), IdentifierMeaning.DEFINITION);
+    private Identifier consumeSubroutineName(Tokens tokens) {
+        Identifier varName = new Identifier(tokens.current(), validator.create(Validation.SUBROUTINE_NAME), IdentifierMeaning.DEFINITION);
         tokens.advance();
         return varName;
     }
@@ -182,7 +182,7 @@ public class CompilationEngine {
 
     private Parameter consumeParameter(Tokens tokens) {
         Type parameterType = consumeType(tokens);
-        Terminal parameterName = consumeVarName(tokens);
+        Identifier parameterName = consumeVarName(tokens);
         return new Parameter(parameterType, parameterName);
     }
 

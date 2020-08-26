@@ -1,6 +1,11 @@
 package com.pretz.compiler.compengine.construct;
 
+import com.pretz.compiler.compengine.symboltable.Scope;
+import com.pretz.compiler.compengine.symboltable.SubroutineSymbolTableFactory;
+import com.pretz.compiler.compengine.symboltable.SymbolTable;
+import com.pretz.compiler.compengine.terminal.Identifier;
 import com.pretz.compiler.compengine.terminal.Terminal;
+import io.vavr.collection.List;
 
 import java.util.Objects;
 
@@ -8,25 +13,35 @@ import static com.pretz.compiler.util.XmlUtils.basicClosingTag;
 import static com.pretz.compiler.util.XmlUtils.basicOpeningTag;
 import static com.pretz.compiler.util.XmlUtils.closingRoundBracket;
 import static com.pretz.compiler.util.XmlUtils.openingRoundBracket;
-import static com.pretz.compiler.util.XmlUtils.semicolon;
 
-public class SubroutineDec implements Construct {
+public class SubroutineDec implements Construct, Scope {
     private static final String CONSTRUCT_NAME = "subroutineDec";
 
     private final Terminal startingKeyword;
     private final Type type;
-    private final Terminal subroutineName;
+    private final Identifier subroutineName;
     private final ParameterList parameterList;
     private final SubroutineBody subroutineBody;
+    private final SymbolTable symbolTable;
 
 
-    public SubroutineDec(Terminal startingKeyword, Type type, Terminal subroutineName,
+    public SubroutineDec(Terminal startingKeyword, Type type, Identifier subroutineName,
                          ParameterList parameterList, SubroutineBody subroutineBody) {
         this.startingKeyword = startingKeyword;
         this.type = type;
         this.subroutineName = subroutineName;
         this.parameterList = parameterList;
         this.subroutineBody = subroutineBody;
+        this.symbolTable = new SubroutineSymbolTableFactory()
+                .create(subroutineName, filterParametersAndVarDecs(parameterList, subroutineBody));
+    }
+
+    private List<Construct> filterParametersAndVarDecs(ParameterList parameterList, SubroutineBody subroutineBody) {
+        return parameterList.parameters()
+                .map(it -> (Construct) it)
+                .appendAll(subroutineBody.subroutineBody()
+                        .filter(it -> it instanceof VarDec)
+                );
     }
 
     @Override
@@ -69,5 +84,10 @@ public class SubroutineDec implements Construct {
                 ", parameterList=" + parameterList +
                 ", subroutineBody=" + subroutineBody +
                 '}';
+    }
+
+    @Override
+    public SymbolTable symbolTable() {
+        return symbolTable;
     }
 }

@@ -65,4 +65,8 @@ public class SubroutineBody implements Construct {
                 "subroutineBody=" + subroutineBody +
                 '}';
     }
+
+    public List<Construct> subroutineBody() {
+        return subroutineBody;
+    }
 }
