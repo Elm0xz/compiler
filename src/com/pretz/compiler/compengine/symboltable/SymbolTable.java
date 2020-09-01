@@ -7,8 +7,8 @@ import java.util.Objects;
 
 public class SymbolTable {
     private final Identifier scope;
-    private final Map<SymbolId, Identifier> symbols;
 
+    private final Map<SymbolId, Identifier> symbols;
     public SymbolTable(Identifier scope, Map<SymbolId, Identifier> symbols) {
         this.scope = scope;
         this.symbols = symbols;
@@ -16,6 +16,15 @@ public class SymbolTable {
 
     public int size() {
         return symbols.size();
+    }
+
+    public String scope() {
+        return scope.token();
+    }
+
+    public Integer numberByKind(Kind kind) {
+        return symbols.toList()
+                .count(it -> it._1.kind().equals(kind));
     }
 
     @Override
@@ -38,5 +47,14 @@ public class SymbolTable {
     @Override
     public int hashCode() {
         return Objects.hash(scope, symbols);
+    }
+
+    /**
+     * Used to merge class symbol table with subroutine symbol table when needed
+     * @param other subroutine symbol table to be merged
+     * @return merged symbol table
+     */
+    public SymbolTable merge(SymbolTable other) {
+        return new SymbolTable(this.scope, this.symbols.merge(other.symbols));
     }
 }

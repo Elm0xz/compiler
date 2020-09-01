@@ -24,16 +24,16 @@ public class JackAnalyzer {
                 /*.collect(Collectors.toList())*/
                 /*.forEach(fileTokens -> new JackXmlWriter().write(fileTokens._1, fileTokens._2));*/
                 .map(tokensAndFile -> Tuple(new CompilationEngineFactory().create().compileClass(tokensAndFile._1), tokensAndFile._2))
-                .forEach(parseTreeAndFile -> new JackParseTreeXmlWriter().write(parseTreeAndFile._1.toXml(0), parseTreeAndFile._2));
+                .forEach(parseTreeAndFile -> new JackParseTreeVmWriter().write(parseTreeAndFile._1.toVm(), parseTreeAndFile._2));
     }
 
     /**
      * Validates input filename.
      *
      * @param fileName input path or filename
-     * @throws IllegalArgumentException if cannot parse input successfully because of malformed path,
-     * input file not being of .jack extension or directory not containing any .jack files.
      * @return list of input .jack files
+     * @throws IllegalArgumentException if cannot parse input successfully because of malformed path,
+     *                                  input file not being of .jack extension or directory not containing any .jack files.
      */
     private List<File> validate(String fileName) {
         File inputFile = new File(fileName);

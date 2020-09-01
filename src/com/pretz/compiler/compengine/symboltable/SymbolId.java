@@ -50,4 +50,8 @@ public class SymbolId {
     public int hashCode() {
         return Objects.hash(type, kind, id);
     }
+
+    public Kind kind() {
+        return kind;
+    }
 }

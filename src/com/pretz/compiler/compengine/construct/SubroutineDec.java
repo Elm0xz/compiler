@@ -1,10 +1,12 @@
 package com.pretz.compiler.compengine.construct;
 
+import com.pretz.compiler.compengine.symboltable.Kind;
 import com.pretz.compiler.compengine.symboltable.Scope;
 import com.pretz.compiler.compengine.symboltable.SubroutineSymbolTableFactory;
 import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import com.pretz.compiler.compengine.terminal.Identifier;
 import com.pretz.compiler.compengine.terminal.Terminal;
+import com.pretz.compiler.util.VmKeywords;
 import io.vavr.collection.List;
 
 import java.util.Objects;
@@ -22,7 +24,7 @@ public class SubroutineDec implements Construct, Scope {
     private final Identifier subroutineName;
     private final ParameterList parameterList;
     private final SubroutineBody subroutineBody;
-    private final SymbolTable symbolTable;
+    private final SymbolTable subroutineSymbolTable;
 
 
     public SubroutineDec(Terminal startingKeyword, Type type, Identifier subroutineName,
@@ -32,7 +34,7 @@ public class SubroutineDec implements Construct, Scope {
         this.subroutineName = subroutineName;
         this.parameterList = parameterList;
         this.subroutineBody = subroutineBody;
-        this.symbolTable = new SubroutineSymbolTableFactory()
+        this.subroutineSymbolTable = new SubroutineSymbolTableFactory()
                 .create(subroutineName, filterParametersAndVarDecs(parameterList, subroutineBody));
     }
 
@@ -88,6 +90,14 @@ public class SubroutineDec implements Construct, Scope {
 
     @Override
     public SymbolTable symbolTable() {
-        return symbolTable;
+        return subroutineSymbolTable;
+    }
+
+    @Override
+    public String toVm(SymbolTable symbolTable) {
+        return List.of(VmKeywords.FUNCTION.keyword(),
+                symbolTable.scope() + "." + subroutineName.token(),
+                subroutineSymbolTable.numberByKind(Kind.VAR))
+                .mkString(" ");
     }
 }

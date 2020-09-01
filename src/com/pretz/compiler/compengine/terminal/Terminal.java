@@ -123,4 +123,8 @@ public class Terminal implements Element {
                 ", keywordType=" + keywordType +
                 '}';
     }
+
+    public String token() {
+        return token;
+    }
 }

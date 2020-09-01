@@ -84,4 +84,16 @@ public class Class implements Construct, Scope {
     public SymbolTable symbolTable() {
         return classSymbolTable;
     }
+
+    public String toVm() {
+        return this.toVm(classSymbolTable);
+    }
+
+    @Override
+    public String toVm(SymbolTable symbolTable) {
+        return declarations
+                .filter(it -> it instanceof SubroutineDec)
+                .map(it -> it.toVm(symbolTable))
+                .mkString("\n");
+    }
 }
