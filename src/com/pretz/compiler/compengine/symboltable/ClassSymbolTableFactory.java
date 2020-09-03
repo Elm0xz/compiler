@@ -14,7 +14,7 @@ public class ClassSymbolTableFactory implements SymbolTableFactory {
     @Override
     public SymbolTable create(Identifier identifier, List<Construct> declarations) {
         var classVarDeclarations = asClassVarDec(declarations);
-        Map<SymbolId, Identifier> symbolTable =
+        Map<Identifier, Symbol> symbolTable =
                 classVarDeclarations
                         .flatMap(it -> from(it, classVarDeclarations))
                         .toMap(it -> it);
@@ -25,11 +25,11 @@ public class ClassSymbolTableFactory implements SymbolTableFactory {
         return declarations.map(it -> (ClassVarDec) it);
     }
 
-    private List<Tuple2<SymbolId, Identifier>> from(ClassVarDec classVarDec, List<ClassVarDec> declarations) {
+    private List<Tuple2<Identifier, Symbol>> from(ClassVarDec classVarDec, List<ClassVarDec> declarations) {
         //TODO validation
         return classVarDec.varNames().varNames()
                 .zipWithIndex()
-                .map(it -> new Tuple2<>(symbolId(classVarDec, nextId(it, classVarDec, declarations)), it._1));
+                .map(it -> new Tuple2<>(it._1, symbolId(classVarDec, nextId(it, classVarDec, declarations))));
     }
 
     //TODO maybe it could be simplified by first grouping variable declarations by type and kind and then indexing
@@ -49,7 +49,7 @@ public class ClassSymbolTableFactory implements SymbolTableFactory {
         return it -> it.equals(classVarDec);
     }
 
-    private SymbolId symbolId(ClassVarDec classVarDec, int index) {
-        return new SymbolId(classVarDec.type(), classVarDec.startingKeyword().keywordType(), index);
+    private Symbol symbolId(ClassVarDec classVarDec, int index) {
+        return new Symbol(classVarDec.type(), classVarDec.startingKeyword().keywordType(), index);
     }
 }

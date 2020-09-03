@@ -2,6 +2,7 @@ package com.pretz.compiler.compengine.expression;
 
 import com.pretz.compiler.compengine.Element;
 import com.pretz.compiler.compengine.construct.Construct;
+import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import io.vavr.collection.List;
 
 import java.util.Objects;
@@ -127,5 +128,13 @@ public class Term implements Construct {
                 "termParts=" + termParts +
                 ", termType=" + termType +
                 '}';
+    }
+
+    @Override
+    public String toVm(SymbolTable symbolTable) {
+        return Match(termType).of(
+                Case($(TermType.CONSTANT), () -> "push " + termParts.get(0).toVm(symbolTable)),
+                Case($(TermType.VAR), () -> "push " + termParts.get(0).toVm(symbolTable)),
+                Case($(), () -> "NOT YET IMPLEMENTED!"));
     }
 }

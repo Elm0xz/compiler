@@ -95,6 +95,10 @@ public class SubroutineDec implements Construct, Scope {
 
     @Override
     public String toVm(SymbolTable symbolTable) {
+        return functionKeyword(symbolTable);
+    }
+
+    private String functionKeyword(SymbolTable symbolTable) {
         return List.of(VmKeywords.FUNCTION.keyword(),
                 symbolTable.scope() + "." + subroutineName.token(),
                 subroutineSymbolTable.numberByKind(Kind.VAR))

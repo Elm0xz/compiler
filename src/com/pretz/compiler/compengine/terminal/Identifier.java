@@ -1,9 +1,8 @@
 package com.pretz.compiler.compengine.terminal;
 
+import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import com.pretz.compiler.compengine.validator.Validator;
 import com.pretz.compiler.tokenizer.token.Token;
-
-import java.util.Objects;
 
 public class Identifier extends Terminal {
     private final IdentifierMeaning identifierMeaning;
@@ -25,23 +24,15 @@ public class Identifier extends Terminal {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        Identifier that = (Identifier) o;
-        return identifierMeaning == that.identifierMeaning;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), identifierMeaning);
-    }
-
-    @Override
     public String toString() {
         return "Identifier{" +
                 "identifierMeaning=" + identifierMeaning +
                 "} " + super.toString();
+    }
+
+    @Override
+    public String toVm(SymbolTable symbolTable) {
+        var symbol = symbolTable.get(this);
+        return symbol.toVm();
     }
 }

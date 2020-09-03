@@ -1,7 +1,9 @@
 package com.pretz.compiler.compengine.statement;
 
 import com.pretz.compiler.compengine.expression.Expression;
-import com.pretz.compiler.compengine.terminal.Terminal;
+import com.pretz.compiler.compengine.symboltable.SymbolTable;
+import com.pretz.compiler.compengine.terminal.Identifier;
+import io.vavr.collection.List;
 
 import java.util.Objects;
 
@@ -17,11 +19,11 @@ public class LetStatement implements Statement {
     private static final String CONSTRUCT_NAME = "letStatement";
     private static final String KEYWORD = "let";
 
-    private final Terminal varName;
+    private final Identifier varName;
     private final Expression arrayExpression;
     private final Expression assignedExpression;
 
-    public LetStatement(Terminal varName, Expression arrayExpression, Expression assignedExpression) {
+    public LetStatement(Identifier varName, Expression arrayExpression, Expression assignedExpression) {
         this.varName = varName;
         this.arrayExpression = arrayExpression;
         this.assignedExpression = assignedExpression;
@@ -72,5 +74,21 @@ public class LetStatement implements Statement {
                 ", arrayExpression=" + arrayExpression +
                 ", assignedExpression=" + assignedExpression +
                 '}';
+    }
+
+    @Override
+    public String toVm(SymbolTable symbolTable) {
+        return List.of(rightSideToVm(symbolTable),
+                leftSideToVm(symbolTable))
+                .mkString("\n");
+    }
+
+    //TODO handle array expressions here too
+    private String leftSideToVm(SymbolTable symbolTable) {
+        return "pop " + (symbolTable.get(varName).toVm());
+    }
+
+    private String rightSideToVm(SymbolTable symbolTable) {
+        return assignedExpression.toVm(symbolTable);
     }
 }

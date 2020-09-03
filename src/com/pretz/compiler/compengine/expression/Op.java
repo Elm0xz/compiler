@@ -2,6 +2,7 @@ package com.pretz.compiler.compengine.expression;
 
 import com.pretz.compiler.compengine.CompilationException;
 import com.pretz.compiler.compengine.construct.Construct;
+import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import com.pretz.compiler.compengine.terminal.Terminal;
 import com.pretz.compiler.compengine.validator.Validator;
 import com.pretz.compiler.tokenizer.token.Token;
@@ -51,5 +52,10 @@ public class Op implements Construct, Validator {
         return "Op{" +
                 "op=" + op +
                 '}';
+    }
+
+    @Override
+    public String toVm(SymbolTable symbolTable) {
+        return op.toVm(symbolTable);
     }
 }

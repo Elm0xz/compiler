@@ -16,13 +16,13 @@ public class SubroutineSymbolTableFactory implements SymbolTableFactory {
     @Override
     public SymbolTable create(Identifier identifier, List<Construct> declarations) {
         var parameters = asParameter(declarations.filter(it -> it instanceof Parameter));
-        Map<SymbolId, Identifier> parametersTable =
+        Map<Identifier, Symbol> parametersTable =
                 parameters
                         .zipWithIndex()
                         .map(this::from)
                         .toMap(it -> it);
         var varDecs = asVarDec(declarations.filter(it -> it instanceof VarDec));
-        Map<SymbolId, Identifier> varDecsTable =
+        Map<Identifier, Symbol> varDecsTable =
                 varDecs
                         .flatMap(it -> from(it, varDecs))
                         .toMap(it -> it);
@@ -33,19 +33,19 @@ public class SubroutineSymbolTableFactory implements SymbolTableFactory {
         return declarations.map(it -> (Parameter) it);
     }
 
-    private Tuple2<SymbolId, Identifier> from(Tuple2<Parameter, Integer> parameterWithIndex) {
-        return new Tuple2<>(new SymbolId(parameterWithIndex._1.type(),
-                Kind.ARGUMENT, parameterWithIndex._2), parameterWithIndex._1.varName());
+    private Tuple2<Identifier, Symbol> from(Tuple2<Parameter, Integer> parameterWithIndex) {
+        return new Tuple2<>(parameterWithIndex._1.varName(), new Symbol(parameterWithIndex._1.type(),
+                Kind.ARGUMENT, parameterWithIndex._2));
     }
 
     private List<VarDec> asVarDec(List<Construct> declarations) {
         return declarations.map(it -> (VarDec) it);
     }
 
-    private List<Tuple2<SymbolId, Identifier>> from(VarDec varDec, List<VarDec> declarations) {
+    private List<Tuple2<Identifier, Symbol>> from(VarDec varDec, List<VarDec> declarations) {
         return varDec.varNames().varNames()
                 .zipWithIndex()
-                .map(it -> new Tuple2<>(symbolId(varDec, nextId(it, varDec, declarations)), it._1));
+                .map(it -> new Tuple2<>(it._1, symbolId(varDec, nextId(it, varDec, declarations))));
     }
 
     //TODO maybe it could be simplified by first grouping variable declarations by type and kind and then indexing
@@ -65,7 +65,7 @@ public class SubroutineSymbolTableFactory implements SymbolTableFactory {
         return it -> it.equals(classVarDec);
     }
 
-    private SymbolId symbolId(VarDec varDec, int index) {
-        return new SymbolId(varDec.type(), varDec.startingKeyword().keywordType(), index);
+    private Symbol symbolId(VarDec varDec, int index) {
+        return new Symbol(varDec.type(), varDec.startingKeyword().keywordType(), index);
     }
 }

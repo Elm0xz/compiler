@@ -5,7 +5,7 @@ import com.pretz.compiler.compengine.construct.Construct;
 import com.pretz.compiler.compengine.symboltable.ClassSymbolTableFactory;
 import com.pretz.compiler.compengine.symboltable.Kind;
 import com.pretz.compiler.compengine.symboltable.SubroutineSymbolTableFactory;
-import com.pretz.compiler.compengine.symboltable.SymbolId;
+import com.pretz.compiler.compengine.symboltable.Symbol;
 import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
@@ -28,8 +28,9 @@ public class SymbolTableTest {
         Assertions.assertThat(symbolTable.size()).isEqualTo(1);
         Assertions.assertThat(symbolTable).isEqualTo(new SymbolTable($_.defIdentifier("testClass"),
                 HashMap.of(
-                        symbolId("int", Kind.FIELD, 0),
-                        $_.defIdentifier("x"))));
+                        $_.defIdentifier("x"),
+                        symbolId("int", Kind.FIELD, 0))
+        ));
     }
 
     @Test
@@ -42,10 +43,11 @@ public class SymbolTableTest {
         Assertions.assertThat(symbolTable.size()).isEqualTo(2);
         Assertions.assertThat(symbolTable).isEqualTo(new SymbolTable($_.defIdentifier("testClass"),
                 HashMap.of(
-                        symbolId("int", Kind.FIELD, 0),
                         $_.defIdentifier("x"),
-                        symbolId("boolean", Kind.STATIC, 0),
-                        $_.defIdentifier("y"))));
+                        symbolId("int", Kind.FIELD, 0),
+                        $_.defIdentifier("y"),
+                        symbolId("boolean", Kind.STATIC, 0))
+        ));
     }
 
     @Test
@@ -57,10 +59,12 @@ public class SymbolTableTest {
         Assertions.assertThat(symbolTable.size()).isEqualTo(2);
         Assertions.assertThat(symbolTable).isEqualTo(new SymbolTable($_.defIdentifier("testClass"),
                 HashMap.of(
-                        symbolId("int", Kind.FIELD, 0),
                         $_.defIdentifier("x"),
-                        symbolId("int", Kind.FIELD, 1),
-                        $_.defIdentifier("y"))));
+                        symbolId("int", Kind.FIELD, 0),
+                        $_.defIdentifier("y"),
+                        symbolId("int", Kind.FIELD, 1)
+                )
+        ));
     }
 
     @Test
@@ -73,14 +77,15 @@ public class SymbolTableTest {
         Assertions.assertThat(symbolTable.size()).isEqualTo(2);
         Assertions.assertThat(symbolTable).isEqualTo(new SymbolTable($_.defIdentifier("testClass"),
                 HashMap.of(
-                        symbolId("int", Kind.FIELD, 0),
                         $_.defIdentifier("x"),
-                        symbolId("int", Kind.FIELD, 1),
-                        $_.defIdentifier("y"))));
+                        symbolId("int", Kind.FIELD, 0),
+                        $_.defIdentifier("y"),
+                        symbolId("int", Kind.FIELD, 1))
+        ));
     }
 
-    private SymbolId symbolId(String type, Kind kind, int id) {
-        return new SymbolId($_.type(type), kind, id);
+    private Symbol symbolId(String type, Kind kind, int id) {
+        return new Symbol($_.type(type), kind, id);
     }
 
     @Test
@@ -96,37 +101,39 @@ public class SymbolTableTest {
         Assertions.assertThat(symbolTable.size()).isEqualTo(5);
         Assertions.assertThat(symbolTable).isEqualTo(new SymbolTable($_.defIdentifier("testClass"),
                 HashMap.of(
-                        symbolId("int", Kind.FIELD, 0),
                         $_.defIdentifier("x"),
-                        symbolId("int", Kind.FIELD, 1),
+                        symbolId("int", Kind.FIELD, 0),
                         $_.defIdentifier("y"),
-                        symbolId("int", Kind.FIELD, 2),
+                        symbolId("int", Kind.FIELD, 1),
                         $_.defIdentifier("z"),
-                        symbolId("int", Kind.STATIC, 0),
+                        symbolId("int", Kind.FIELD, 2),
                         $_.defIdentifier("a"),
-                        symbolId("Dog", Kind.FIELD, 0),
-                        $_.defIdentifier("dog"))));
+                        symbolId("int", Kind.STATIC, 0),
+                        $_.defIdentifier("dog"),
+                        symbolId("Dog", Kind.FIELD, 0))
+        ));
     }
 
     @Test
     public void shouldAddSubroutineIdentifiers() {
         List<Construct> declarations = List.of(
-                $_.parameter( "int", "x"),
-                $_.parameter( "int", "a"),
-                $_.varDec( "int", $_.varNames("y", "z")));
+                $_.parameter("int", "x"),
+                $_.parameter("int", "a"),
+                $_.varDec("int", $_.varNames("y", "z")));
 
         SymbolTable symbolTable = subroutineFactory.create($_.defIdentifier("testClass"), declarations);
 
         Assertions.assertThat(symbolTable.size()).isEqualTo(4);
         Assertions.assertThat(symbolTable).isEqualTo(new SymbolTable($_.defIdentifier("testClass"),
                 HashMap.of(
-                        symbolId("int", Kind.ARGUMENT, 0),
                         $_.defIdentifier("x"),
-                        symbolId("int", Kind.ARGUMENT, 1),
+                        symbolId("int", Kind.ARGUMENT, 0),
                         $_.defIdentifier("a"),
-                        symbolId("int", Kind.VAR, 0),
+                        symbolId("int", Kind.ARGUMENT, 1),
                         $_.defIdentifier("y"),
-                        symbolId("int", Kind.VAR, 1),
-                        $_.defIdentifier("z"))));
+                        symbolId("int", Kind.VAR, 0),
+                        $_.defIdentifier("z"),
+                        symbolId("int", Kind.VAR, 1))
+        ));
     }
 }

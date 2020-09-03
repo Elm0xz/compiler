@@ -5,18 +5,19 @@ import com.pretz.compiler.compengine.terminal.TerminalKeywordType;
 
 import java.util.Objects;
 
-public class SymbolId {
+//TODO!! what about arrays?
+public class Symbol {
     private final Type type;
     private final Kind kind;
     private final int id;
 
-    public SymbolId(Type type, Kind kind, int id) {
+    public Symbol(Type type, Kind kind, int id) {
         this.type = type;
         this.kind = kind;
         this.id = id;
     }
 
-    public SymbolId(Type type, TerminalKeywordType kind, int id) {
+    public Symbol(Type type, TerminalKeywordType kind, int id) {
         this.type = type;
         this.kind = map(kind);
         this.id = id;
@@ -40,10 +41,10 @@ public class SymbolId {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SymbolId symbolId = (SymbolId) o;
-        return id == symbolId.id &&
-                type.equals(symbolId.type) &&
-                kind == symbolId.kind;
+        Symbol symbol = (Symbol) o;
+        return id == symbol.id &&
+                type.equals(symbol.type) &&
+                kind == symbol.kind;
     }
 
     @Override
@@ -53,5 +54,9 @@ public class SymbolId {
 
     public Kind kind() {
         return kind;
+    }
+
+    public String toVm() {
+        return kind.toVm() + " " + id + "\n";
     }
 }

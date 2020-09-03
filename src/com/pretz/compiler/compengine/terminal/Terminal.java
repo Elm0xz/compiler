@@ -1,6 +1,7 @@
 package com.pretz.compiler.compengine.terminal;
 
 import com.pretz.compiler.compengine.Element;
+import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import com.pretz.compiler.compengine.validator.Validator;
 import com.pretz.compiler.tokenizer.token.KeywordType;
 import com.pretz.compiler.tokenizer.token.Token;
@@ -16,7 +17,7 @@ import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 
 public class Terminal implements Element {
-    private final String token;
+    protected final String token;
     private final TerminalType type;
 
     private final TerminalKeywordType keywordType;
@@ -106,6 +107,7 @@ public class Terminal implements Element {
     }
 
     //TODO this constructor is only used in test, should be handled by factory method instead
+
     public Terminal(String token, TerminalType type) {
         this.token = token;
         this.type = type;
@@ -114,7 +116,6 @@ public class Terminal implements Element {
         else
             this.keywordType = setKeywordType(token);
     }
-
     @Override
     public String toString() {
         return "Terminal{" +
@@ -126,5 +127,22 @@ public class Terminal implements Element {
 
     public String token() {
         return token;
+    }
+
+    @Override
+    public String toVm(SymbolTable symbolTable) {
+        return Match(type).of(
+                Case($(TerminalType.KEYWORD), "NOT YET IMPLEMENTED"),
+                Case($(TerminalType.SYMBOL), opToVm()),
+                Case($(TerminalType.INT_CONST), "constant " + token),
+                Case($(TerminalType.STRING_CONST), "NOT YET IMPLEMENTED"),
+                Case($(), "NOT YET IMPLEMENTED")
+        );
+    }
+
+    private String opToVm() {
+        return Match(token).of(
+                Case($("+"), "add"),
+                Case($(), "NOT YET IMPLEMEMENTED"));
     }
 }

@@ -84,7 +84,7 @@ public class StatementCompilationEngine {
 
     private Statement compileLetStatement(Tokens tokens) {
         consumeStartingStatementKeyword(tokens);
-        Terminal varName = consumeIdentifier(tokens, IdentifierMeaning.DEFINITION);
+        Identifier varName = consumeIdentifier(tokens, IdentifierMeaning.DEFINITION);
         Expression arrayExpression = null;
         if (matcher.isNotEqualsSign(tokens.current())) {
             consumeArrayOpeningSquareBracket(tokens);
@@ -176,8 +176,8 @@ public class StatementCompilationEngine {
         return new Term(TermType.VAR_ARRAY, List.of(varName, expression));
     }
 
-    private Terminal consumeIdentifier(Tokens tokens, IdentifierMeaning meaning) {
-        Terminal identifier = new Identifier(tokens.current(), meaning);
+    private Identifier consumeIdentifier(Tokens tokens, IdentifierMeaning meaning) {
+        Identifier identifier = new Identifier(tokens.current(), meaning);
         tokens.advance();
         return identifier;
     }
