@@ -47,6 +47,6 @@ public class OpTerm implements Construct {
     public String toVm(SymbolTable symbolTable) {
         return List.of(term.toVm(symbolTable),
                 op.toVm(symbolTable))
-                .mkString("\n");
+                .mkString("");
     }
 }

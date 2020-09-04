@@ -80,7 +80,7 @@ public class LetStatement implements Statement {
     public String toVm(SymbolTable symbolTable) {
         return List.of(rightSideToVm(symbolTable),
                 leftSideToVm(symbolTable))
-                .mkString("\n");
+                .mkString("");
     }
 
     //TODO handle array expressions here too

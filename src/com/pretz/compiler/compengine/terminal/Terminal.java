@@ -132,17 +132,20 @@ public class Terminal implements Element {
     @Override
     public String toVm(SymbolTable symbolTable) {
         return Match(type).of(
-                Case($(TerminalType.KEYWORD), "NOT YET IMPLEMENTED"),
+                Case($(TerminalType.KEYWORD), "NOT YET IMPLEMENTED\n"),
                 Case($(TerminalType.SYMBOL), opToVm()),
-                Case($(TerminalType.INT_CONST), "constant " + token),
-                Case($(TerminalType.STRING_CONST), "NOT YET IMPLEMENTED"),
-                Case($(), "NOT YET IMPLEMENTED")
+                Case($(TerminalType.INT_CONST), "constant " + token + "\n"),
+                Case($(TerminalType.STRING_CONST), "NOT YET IMPLEMENTED\n"),
+                Case($(), "NOT YET IMPLEMENTED\n")
         );
     }
 
     private String opToVm() {
         return Match(token).of(
-                Case($("+"), "add"),
-                Case($(), "NOT YET IMPLEMEMENTED"));
+                Case($("+"), "add" + "\n"),
+                Case($("-"), "sub" + "\n"),
+                Case($("&"), "and" + "\n"),
+                Case($("|"), "or" + "\n"),
+                Case($(), "NOT YET IMPLEMEMENTED\n"));
     }
 }

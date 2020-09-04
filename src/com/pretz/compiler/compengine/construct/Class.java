@@ -94,6 +94,6 @@ public class Class implements Construct, Scope {
         return declarations
                 .filter(it -> it instanceof SubroutineDec)
                 .map(it -> it.toVm(symbolTable))
-                .mkString("\n");
+                .mkString("");
     }
 }
