@@ -130,11 +130,16 @@ public class Term implements Construct {
                 '}';
     }
 
+    //TODO how to check if subroutine is function or method?
+    //TODO this.termParts.size() isn't a good solution here
     @Override
     public String toVm(SymbolTable symbolTable) {
         return Match(termType).of(
                 Case($(TermType.CONSTANT), () -> "push " + termParts.get(0).toVm(symbolTable)),
                 Case($(TermType.VAR), () -> "push " + termParts.get(0).toVm(symbolTable)),
+                Case($(TermType.UNARY_OP), () -> termParts.get(1).toVm(symbolTable) + termParts.get(0).toVm(symbolTable)),
+                Case($(TermType.SUBROUTINE_CALL), () -> termParts.drop(1).map(it -> it.toVm(symbolTable)).mkString()
+                        + termParts.get(0).toVm(symbolTable) + this.termParts.size() + "\n"),
                 Case($(), () -> "NOT YET IMPLEMENTED!"));
     }
 }

@@ -1,6 +1,7 @@
 package com.pretz.compiler.util;
 
-public enum VmKeywords {
+//TODO refactor other vm keywords to this file
+public enum VmKeyword {
     FUNCTION("function");
 
     private final String keyword;
@@ -9,7 +10,7 @@ public enum VmKeywords {
         return keyword;
     }
 
-    VmKeywords(String keyword) {
+    VmKeyword(String keyword) {
         this.keyword = keyword;
     }
 }

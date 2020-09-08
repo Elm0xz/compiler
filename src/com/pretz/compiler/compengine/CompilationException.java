@@ -25,4 +25,6 @@ public class CompilationException extends RuntimeException {
     public static final String NOT_AN_OPENING_SQUARE_BRACKET = "Opening square bracket expected when there wasn't any";
     public static final String NOT_A_CLOSING_SQUARE_BRACKET = "Opening square bracket expected when there wasn't any";
     public static final String NOT_A_CLOSING_ROUND_BRACKET = "Opening round bracket expected when there wasn't any";
+    public static final String ILLEGAL_OP = "Unrecognized op symbol";
+    public static final String INVALID_TOKEN_MAPPING = "This token is not allowed to by mapped";
 }

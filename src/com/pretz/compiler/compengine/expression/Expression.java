@@ -68,6 +68,6 @@ public class Expression implements Construct {
         return List.of(term.toVm(symbolTable),
                 opTerms.map(it -> it.toVm(symbolTable))
                         .mkString(""))
-                .mkString("");
+                .mkString();
     }
 }

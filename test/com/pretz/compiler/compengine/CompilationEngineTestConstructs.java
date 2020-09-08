@@ -5,7 +5,6 @@ import com.pretz.compiler.compengine.construct.ParameterList;
 import com.pretz.compiler.compengine.construct.SubroutineBody;
 import com.pretz.compiler.compengine.statement.LetStatement;
 import com.pretz.compiler.compengine.statement.ReturnStatement;
-import com.pretz.compiler.compengine.terminal.IdentifierMeaning;
 import com.pretz.compiler.compengine.terminal.TerminalType;
 import com.pretz.compiler.tokenizer.token.TokenType;
 import io.vavr.collection.List;
@@ -59,7 +58,7 @@ public class CompilationEngineTestConstructs {
                         $.varDec("int", $.varNames("x", "y")),
                         $.varDec("Dog", $.oneVarName("dog")),
                         new LetStatement(
-                                $.identifier("x", IdentifierMeaning.DEFINITION),
+                                $.varUsageIdentifier("x"),
                                 null,
                                 $.expression($.constantTerm("5", TerminalType.INT_CONST))
                         ),

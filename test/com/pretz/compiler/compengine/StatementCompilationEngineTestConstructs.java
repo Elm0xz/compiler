@@ -32,7 +32,7 @@ public class StatementCompilationEngineTestConstructs {
     }
 
     protected ReturnStatement returnStatementWithKeywordConstant(String keyword) {
-        return $.returnStatement($.expression($.constantTerm(keyword, TerminalType.KEYWORD)));
+        return $.returnStatement($.expression($.constantTerm(keyword, TerminalType.KEYWORD_CONST)));
     }
 
     protected ReturnStatement returnStatementWithVarName() {
@@ -41,7 +41,7 @@ public class StatementCompilationEngineTestConstructs {
 
     protected ReturnStatement returnStatementWithOperators() {
         return $.returnStatement($.expression(
-                $.unaryOpTerm("duck"),
+                $.unaryOpTerm("duck", "-"),
                 List.of(
                         $.opTerm("+", $.varNameTerm("dog")),
                         $.opTerm("+", $.constantTerm("3", TerminalType.INT_CONST)))));
@@ -78,9 +78,9 @@ public class StatementCompilationEngineTestConstructs {
 
     protected WhileStatement whileStatement() {
         return new WhileStatement(
-                $.expression($.constantTerm("true", TerminalType.KEYWORD)),
+                $.expression($.constantTerm("true", TerminalType.KEYWORD_CONST)),
                 List.of($.doStatement($.subroutineCallTerm("doStuff", $.expression($.constantTerm("3", TerminalType.INT_CONST)))),
-                        $.doStatement($.subroutineCallTerm("doAnotherStuff", $.expression($.constantTerm("false", TerminalType.KEYWORD))))
+                        $.doStatement($.subroutineCallTerm("doAnotherStuff", $.expression($.constantTerm("false", TerminalType.KEYWORD_CONST))))
                 )
         );
     }
@@ -90,13 +90,13 @@ public class StatementCompilationEngineTestConstructs {
                 $.expression($.varNameTerm("x"), List.of($.opTerm("=", $.constantTerm("3", TerminalType.INT_CONST))
                 )),
                 List.of($.doStatement($.subroutineCallTerm("doStuff", $.expression($.constantTerm("3", TerminalType.INT_CONST))))),
-                List.of($.doStatement($.subroutineCallTerm("doAnotherStuff", $.expression($.constantTerm("false", TerminalType.KEYWORD)))))
+                List.of($.doStatement($.subroutineCallTerm("doAnotherStuff", $.expression($.constantTerm("false", TerminalType.KEYWORD_CONST)))))
         );
     }
 
     protected LetStatement letStatement() {
         return new LetStatement(
-                $.identifier("x", IdentifierMeaning.DEFINITION),
+                $.varUsageIdentifier("x"),
                 $.expression($.constantTerm("5", TerminalType.INT_CONST)),
                 $.expression($.subroutineCallTerm("doStuff", $.expression($.constantTerm("3", TerminalType.INT_CONST))))
         );
@@ -117,7 +117,7 @@ public class StatementCompilationEngineTestConstructs {
                 Arguments.of(
                         List.of($.token("-", TokenType.SYMBOL),
                                 $.token("a", TokenType.IDENTIFIER)),
-                        $.expression($.unaryOpTerm("a"))),
+                        $.expression($.unaryOpTerm("a", "-"))),
                 Arguments.of(
                         List.of($.token("y", TokenType.IDENTIFIER),
                                 $.token("[", TokenType.SYMBOL),

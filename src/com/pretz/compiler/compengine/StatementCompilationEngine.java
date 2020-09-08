@@ -13,6 +13,7 @@ import com.pretz.compiler.compengine.statement.Statement;
 import com.pretz.compiler.compengine.statement.WhileStatement;
 import com.pretz.compiler.compengine.terminal.Identifier;
 import com.pretz.compiler.compengine.terminal.IdentifierMeaning;
+import com.pretz.compiler.compengine.terminal.IdentifierType;
 import com.pretz.compiler.compengine.terminal.Terminal;
 import com.pretz.compiler.compengine.validator.Validation;
 import com.pretz.compiler.compengine.validator.ValidatorFactory;
@@ -84,7 +85,7 @@ public class StatementCompilationEngine {
 
     private Statement compileLetStatement(Tokens tokens) {
         consumeStartingStatementKeyword(tokens);
-        Identifier varName = consumeIdentifier(tokens, IdentifierMeaning.DEFINITION);
+        Identifier varName = consumeIdentifier(tokens, IdentifierMeaning.DEFINITION, IdentifierType.VAR);
         Expression arrayExpression = null;
         if (matcher.isNotEqualsSign(tokens.current())) {
             consumeArrayOpeningSquareBracket(tokens);
@@ -150,7 +151,7 @@ public class StatementCompilationEngine {
     private Term consumeSimpleTerm(Tokens tokens, TermType termType) {
         Term simpleTerm;
         if (tokens.current().is(TokenType.IDENTIFIER)) {
-            simpleTerm = new Term(termType, new Identifier(tokens.current(), IdentifierMeaning.USAGE));
+            simpleTerm = new Term(termType, new Identifier(tokens.current(), IdentifierMeaning.USAGE, IdentifierType.VAR));
         }
         else {
             //TODO there is no validation here, why?
@@ -169,15 +170,15 @@ public class StatementCompilationEngine {
     }
 
     private Term consumeVarNameArray(Tokens tokens) {
-        Terminal varName = consumeIdentifier(tokens, IdentifierMeaning.USAGE);
+        Terminal varName = consumeIdentifier(tokens, IdentifierMeaning.USAGE, IdentifierType.VAR);
         consumeArrayOpeningSquareBracket(tokens);
         Expression expression = compileExpression(tokens);
         consumeArrayClosingSquareBracket(tokens);
         return new Term(TermType.VAR_ARRAY, List.of(varName, expression));
     }
 
-    private Identifier consumeIdentifier(Tokens tokens, IdentifierMeaning meaning) {
-        Identifier identifier = new Identifier(tokens.current(), meaning);
+    private Identifier consumeIdentifier(Tokens tokens, IdentifierMeaning meaning, IdentifierType identifierType) {
+        Identifier identifier = new Identifier(tokens.current(), meaning, identifierType);
         tokens.advance();
         return identifier;
     }
@@ -192,10 +193,13 @@ public class StatementCompilationEngine {
 
     private List<Element> consumeSubroutineCallIdentifier(Tokens tokens) {//TODO ugly types
         ArrayList<Element> identifiers = new ArrayList<>(); //TODO refactor into something better
-        identifiers.add(consumeIdentifier(tokens, IdentifierMeaning.USAGE));
-        if (matcher.isDot(tokens.current())) {
+        if (matcher.isDot(tokens.ll1())) {
+            identifiers.add(consumeIdentifier(tokens, IdentifierMeaning.USAGE, IdentifierType.CLASS));
             consumeDot(tokens);
-            identifiers.add(consumeIdentifier(tokens, IdentifierMeaning.USAGE));
+            identifiers.add(consumeIdentifier(tokens, IdentifierMeaning.USAGE, IdentifierType.SUBROUTINE));
+        }
+        else {
+            identifiers.add(consumeIdentifier(tokens, IdentifierMeaning.USAGE, IdentifierType.SUBROUTINE));
         }
         return List.ofAll(identifiers);
     }

@@ -23,7 +23,7 @@ public class VmCodeGenerationTest {
     @Test
     public void shouldTranslateSimpleLetStatement() {
         LetStatement testLetStatement = new LetStatement(
-                $.identifier("x", IdentifierMeaning.DEFINITION),
+                $.varUsageIdentifier("x"),
                 null,
                 $.expression(
                         $.varNameTerm("x"),
@@ -31,9 +31,9 @@ public class VmCodeGenerationTest {
                 )
         );
 
-        SymbolTable symbolTable = new SymbolTable($.identifier("doStuff", IdentifierMeaning.DEFINITION),
+        SymbolTable symbolTable = new SymbolTable($.subroutineUsageIdentifier("doStuff"),
                 HashMap.of(
-                        $.identifier("x", IdentifierMeaning.DEFINITION),
+                        $.varDefIdentifier("x"),
                         new Symbol($.type("int"), Kind.VAR, 0))
         );
 
@@ -45,11 +45,11 @@ public class VmCodeGenerationTest {
         );
     }
 
-    @ParameterizedTest()
+    @ParameterizedTest
     @MethodSource("operators")
-    public void shouldTranslateLetStatementWithOperand(String op, String opVm, String type) {
+    public void shouldTranslateLetStatementWithOperator(String op, String opVm, String type) {
         LetStatement testLetStatement = new LetStatement(
-                $.identifier("x", IdentifierMeaning.DEFINITION),
+                $.varUsageIdentifier("x"),
                 null,
                 $.expression(
                         $.varNameTerm("x"),
@@ -57,11 +57,11 @@ public class VmCodeGenerationTest {
                 )
         );
 
-        SymbolTable symbolTable = new SymbolTable($.identifier("doStuff", IdentifierMeaning.DEFINITION),
+        SymbolTable symbolTable = new SymbolTable($.subroutineUsageIdentifier("doStuff"),
                 HashMap.of(
-                        $.identifier("x", IdentifierMeaning.DEFINITION),
+                        $.varDefIdentifier("x"),
                         new Symbol($.type(type), Kind.VAR, 0),
-                        $.identifier("y", IdentifierMeaning.DEFINITION),
+                        $.varDefIdentifier("y"),
                         new Symbol($.type(type), Kind.VAR, 1))
         );
 
@@ -73,21 +73,80 @@ public class VmCodeGenerationTest {
         );
     }
 
-    //TODO test for unary ops (both types)
+    @ParameterizedTest
+    @MethodSource("unaryOperators")
+    public void shouldTranslateLetStatementWithUnaryOp(String unaryOp, String unaryOpVm, String type) {
+        LetStatement testLetStatement = new LetStatement(
+                $.varUsageIdentifier("x"),
+                null,
+                $.expression(
+                        $.unaryOpTerm("x", unaryOp))
+        );
+
+        SymbolTable symbolTable = new SymbolTable($.subroutineUsageIdentifier("doStuff"),
+                HashMap.of(
+                        $.varDefIdentifier("x"),
+                        new Symbol($.type(type), Kind.VAR, 0))
+        );
+
+        Assertions.assertThat(testLetStatement.toVm(symbolTable)).isEqualTo(
+                "push local 0\n" +
+                        unaryOpVm + "\n" +
+                        "pop local 0\n"
+        );
+    }
+
+    //TODO we should differentiate between various types of subroutines!
+    //TODO subroutine call with function instead of method
+    //TODO implementation for this test does not work properly
+    @Test
+    public void shouldTranslateLetStatementWithSubroutineCall() {
+        LetStatement testLetStatement = new LetStatement(
+                $.varUsageIdentifier("x"),
+                null,
+                $.expression(
+                        $.subroutineCallTerm("doAnotherStuff",
+                                List.of(
+                                        $.expression($.varNameTerm("x")),
+                                        $.expression($.constantTerm("5", TerminalType.INT_CONST))
+                                ))
+        ));
+
+        SymbolTable symbolTable = new SymbolTable($.subroutineUsageIdentifier("doStuff"),
+                HashMap.of(
+                        $.varDefIdentifier("x"),
+                        new Symbol($.type("int"), Kind.VAR, 0))
+        );
+
+        Assertions.assertThat(testLetStatement.toVm(symbolTable)).isEqualTo(
+                "push local 0\n" +
+                        "push constant 5\n" +
+                        "call doAnotherStuff 3\n" +
+                        "pop local 0\n"
+        );
+    }
+
+    //TODO fix mappings of TerminalType... !
+    //TODO expression in brackets
 
     //TODO test for comparison operators (with if statement, probably)
     //TODO string constant, keyword constant
-    //TODO array term
-    //TODO subroutine call
-    //TODO expression in brackets
+    //TODO array term (and array left-side)
+
+    //TODO test of using class scope symbol table in subroutines
 
     //TODO if, while, do, return statements
-
     private static Stream<Arguments> operators() {
         return Stream.of(
                 Arguments.of("+", "add", "int"),
                 Arguments.of("-", "sub", "int"),
                 Arguments.of("&", "and", "boolean"),
                 Arguments.of("|", "or", "boolean"));
+    }
+
+    private static Stream<Arguments> unaryOperators() {
+        return Stream.of(
+                Arguments.of("-", "neg", "int"),
+                Arguments.of("~", "not", "boolean"));
     }
 }

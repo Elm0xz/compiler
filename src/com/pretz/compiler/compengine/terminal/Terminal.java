@@ -1,5 +1,6 @@
 package com.pretz.compiler.compengine.terminal;
 
+import com.pretz.compiler.compengine.CompilationException;
 import com.pretz.compiler.compengine.Element;
 import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import com.pretz.compiler.compengine.validator.Validator;
@@ -36,7 +37,7 @@ public class Terminal implements Element {
     }
 
     private static TerminalType map(TokenType type) {
-        return Enum.valueOf(TerminalType.class, type.toString().toUpperCase());
+        return new TerminalTypeMapper().from(type);
     }
 
     private static TerminalKeywordType map(KeywordType type) {
@@ -60,8 +61,9 @@ public class Terminal implements Element {
     private String toTag() {
         return Match(type).of(
                 Case($(TerminalType.IDENTIFIER), "identifier"),
-                Case($(TerminalType.KEYWORD), "keyword"),
-                Case($(TerminalType.SYMBOL), "symbol"),
+                Case($(TerminalType.KEYWORD_CONST), "keyword"),
+                Case($(TerminalType.OP), "symbol"),
+                Case($(TerminalType.UNARY_OP), "symbol"),
                 Case($(TerminalType.INT_CONST), "integerConstant"),
                 Case($(TerminalType.STRING_CONST), "stringConstant")
         );
@@ -111,11 +113,12 @@ public class Terminal implements Element {
     public Terminal(String token, TerminalType type) {
         this.token = token;
         this.type = type;
-        if (type != TerminalType.KEYWORD)
+        if (type != TerminalType.KEYWORD_CONST)
             this.keywordType = TerminalKeywordType.NOT_A_KEYWORD;
         else
             this.keywordType = setKeywordType(token);
     }
+
     @Override
     public String toString() {
         return "Terminal{" +
@@ -132,8 +135,9 @@ public class Terminal implements Element {
     @Override
     public String toVm(SymbolTable symbolTable) {
         return Match(type).of(
-                Case($(TerminalType.KEYWORD), "NOT YET IMPLEMENTED\n"),
-                Case($(TerminalType.SYMBOL), opToVm()),
+                Case($(TerminalType.KEYWORD_CONST), "NOT YET IMPLEMENTED\n"),
+                Case($(TerminalType.OP), this::opToVm),
+                Case($(TerminalType.UNARY_OP), this::unaryOpToVm),
                 Case($(TerminalType.INT_CONST), "constant " + token + "\n"),
                 Case($(TerminalType.STRING_CONST), "NOT YET IMPLEMENTED\n"),
                 Case($(), "NOT YET IMPLEMENTED\n")
@@ -147,5 +151,16 @@ public class Terminal implements Element {
                 Case($("&"), "and" + "\n"),
                 Case($("|"), "or" + "\n"),
                 Case($(), "NOT YET IMPLEMEMENTED\n"));
+    }
+
+    private String unaryOpToVm() {
+        return Match(token).of(
+                Case($("-"), "neg" + "\n"),
+                Case($("~"), "not" + "\n"),
+                Case($(), this::throwIllegalOpException));
+    }
+
+    private String throwIllegalOpException() {
+        throw new CompilationException(CompilationException.ILLEGAL_OP);
     }
 }

@@ -2,6 +2,7 @@ package com.pretz.compiler.compengine.construct;
 
 import com.pretz.compiler.compengine.terminal.Identifier;
 import com.pretz.compiler.compengine.terminal.IdentifierMeaning;
+import com.pretz.compiler.compengine.terminal.IdentifierType;
 import com.pretz.compiler.compengine.terminal.Terminal;
 import com.pretz.compiler.compengine.validator.Validator;
 import com.pretz.compiler.tokenizer.token.Token;
@@ -16,7 +17,7 @@ public class Type implements Construct {
         if (type.is(TokenType.KEYWORD))
             this.type = new Terminal(type, validator);
         else {
-            this.type = new Identifier(type, validator, IdentifierMeaning.USAGE);
+            this.type = new Identifier(type, validator, IdentifierMeaning.USAGE, IdentifierType.CLASS);
         }
     }
 

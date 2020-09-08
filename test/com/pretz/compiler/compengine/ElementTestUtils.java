@@ -19,6 +19,7 @@ import com.pretz.compiler.compengine.statement.DoStatement;
 import com.pretz.compiler.compengine.statement.ReturnStatement;
 import com.pretz.compiler.compengine.terminal.Identifier;
 import com.pretz.compiler.compengine.terminal.IdentifierMeaning;
+import com.pretz.compiler.compengine.terminal.IdentifierType;
 import com.pretz.compiler.compengine.terminal.Terminal;
 import com.pretz.compiler.compengine.terminal.TerminalType;
 import com.pretz.compiler.tokenizer.token.Token;
@@ -31,20 +32,36 @@ public class ElementTestUtils {
         return new Token(token, identifier);
     }
 
-    protected Identifier defIdentifier(Token newClassToken) {
-        return new Identifier(newClassToken, IdentifierMeaning.DEFINITION);
+    protected Identifier classDefIdentifier(Token token) {
+        return new Identifier(token, IdentifierMeaning.DEFINITION, IdentifierType.CLASS);
     }
 
-    protected Identifier defIdentifier(String token) {
-        return new Identifier(token, TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION);
+    protected Identifier classDefIdentifier(String token) {
+        return new Identifier(token, TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION, IdentifierType.CLASS);
     }
 
-    protected Identifier identifier(String token, IdentifierMeaning meaning) {
-        return new Identifier(token, TerminalType.IDENTIFIER, meaning);
+    protected Identifier classUsageIdentifier(String token) {
+        return new Identifier(token, TerminalType.IDENTIFIER, IdentifierMeaning.USAGE, IdentifierType.CLASS);
+    }
+
+    protected Identifier subroutineDefIdentifier(String token) {
+        return new Identifier(token, TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION, IdentifierType.SUBROUTINE);
+    }
+
+    protected Identifier subroutineUsageIdentifier(String token) {
+        return new Identifier(token, TerminalType.IDENTIFIER, IdentifierMeaning.USAGE, IdentifierType.SUBROUTINE);
+    }
+
+    protected Identifier varDefIdentifier(String token) {
+        return new Identifier(token, TerminalType.IDENTIFIER, IdentifierMeaning.DEFINITION, IdentifierType.VAR);
+    }
+
+    protected Identifier varUsageIdentifier(String token) {
+        return new Identifier(token, TerminalType.IDENTIFIER, IdentifierMeaning.USAGE, IdentifierType.VAR);
     }
 
     protected Class classC(Token className, List<Construct> constructs) {
-        return new Class(defIdentifier(className), constructs);
+        return new Class(classDefIdentifier(className), constructs);
     }
 
     protected Terminal terminal(String token, TerminalType keyword) {
@@ -52,18 +69,18 @@ public class ElementTestUtils {
     }
 
     protected VarNames oneVarName(String varName) {
-        return new VarNames(List.of(identifier(varName, IdentifierMeaning.DEFINITION)));
+        return new VarNames(List.of(varDefIdentifier(varName)));
     }
 
     protected VarNames varNames(String... varNames) {
-        return new VarNames(List.of(varNames).map(it -> identifier(it, IdentifierMeaning.DEFINITION)));
+        return new VarNames(List.of(varNames).map(this::varDefIdentifier));
     }
 
     protected Type type(String type) {
         if (isPrimitive(type)) {
-            return new Type(terminal(type, TerminalType.KEYWORD));
+            return new Type(terminal(type, TerminalType.KEYWORD_CONST));
         } else {
-            return new Type(identifier(type, IdentifierMeaning.USAGE));
+            return new Type(varUsageIdentifier(type));
         }
     }
 
@@ -73,22 +90,22 @@ public class ElementTestUtils {
     }
 
     protected ClassVarDec classVarDec(String keyword, String type, VarNames varNames) {
-        return new ClassVarDec(terminal(keyword, TerminalType.KEYWORD), type(type), varNames);
+        return new ClassVarDec(terminal(keyword, TerminalType.KEYWORD_CONST), type(type), varNames);
     }
 
     protected VarDec varDec(String type, VarNames varNames) {
-        return new VarDec(terminal("var", TerminalType.KEYWORD), type(type), varNames);
+        return new VarDec(terminal("var", TerminalType.KEYWORD_CONST), type(type), varNames);
     }
 
     protected Parameter parameter(String type, String varName) {
-        return new Parameter(type(type), identifier(varName, IdentifierMeaning.DEFINITION));
+        return new Parameter(type(type), varDefIdentifier(varName));
     }
 
-    protected  SubroutineDec subroutineDec(String method, String s, String doStuff,
-                                           ParameterList parameterList, SubroutineBody subroutineBody) {
-        return new SubroutineDec(terminal(method, TerminalType.KEYWORD),
+    protected SubroutineDec subroutineDec(String method, String s, String doStuff,
+                                          ParameterList parameterList, SubroutineBody subroutineBody) {
+        return new SubroutineDec(terminal(method, TerminalType.KEYWORD_CONST),
                 type(s),
-                identifier(doStuff, IdentifierMeaning.DEFINITION),
+                varDefIdentifier(doStuff),
                 parameterList,
                 subroutineBody);
     }
@@ -98,30 +115,34 @@ public class ElementTestUtils {
     }
 
     protected Term varNameTerm(String token) {
-        return new Term(TermType.VAR, identifier(token, IdentifierMeaning.USAGE));
+        return new Term(TermType.VAR, varUsageIdentifier(token));
     }
 
     protected Term varArrayTerm(String token, Expression expression) {
-        return new Term(TermType.VAR_ARRAY, List.of(identifier(token, IdentifierMeaning.USAGE), expression));
+        return new Term(TermType.VAR_ARRAY, List.of(varUsageIdentifier(token), expression));
     }
 
     protected Term subroutineCallTerm(String token, Expression expression) {
-        return new Term(TermType.SUBROUTINE_CALL, identifier(token, IdentifierMeaning.USAGE), expression);
+        return new Term(TermType.SUBROUTINE_CALL, varUsageIdentifier(token), expression);
+    }
+
+    protected Term subroutineCallTerm(String token, List<Expression> expressions) {
+        return new Term(TermType.SUBROUTINE_CALL, List.of((Element) subroutineUsageIdentifier(token)).appendAll(expressions));
     }
 
     protected Term classSubroutineCallTerm(String classToken, String subrToken, Expression expression) {
         return new Term(TermType.SUBROUTINE_CALL,
                 List.of(
-                        identifier(classToken, IdentifierMeaning.USAGE),
-                        identifier(subrToken, IdentifierMeaning.USAGE),
+                        classUsageIdentifier(classToken),
+                        subroutineUsageIdentifier(subrToken),
                         expression));
     }
 
     //it does not take into account other possible nested terms apart from variable
-    protected Term unaryOpTerm(String token) {
+    protected Term unaryOpTerm(String token, String unaryOp) {
         return new Term(TermType.UNARY_OP,
                 List.of(
-                        terminal("-", TerminalType.SYMBOL),
+                        terminal(unaryOp, TerminalType.UNARY_OP),
                         varNameTerm(token)
                 ));
     }
@@ -131,7 +152,7 @@ public class ElementTestUtils {
     }
 
     protected Op op(String symbol) {
-        return new Op(terminal(symbol, TerminalType.SYMBOL));
+        return new Op(terminal(symbol, TerminalType.OP));
     }
 
     protected OpTerm opTerm(String symbol, Term term) {

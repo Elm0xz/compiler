@@ -6,7 +6,7 @@ import com.pretz.compiler.compengine.symboltable.SubroutineSymbolTableFactory;
 import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import com.pretz.compiler.compengine.terminal.Identifier;
 import com.pretz.compiler.compengine.terminal.Terminal;
-import com.pretz.compiler.util.VmKeywords;
+import com.pretz.compiler.util.VmKeyword;
 import io.vavr.collection.List;
 
 import java.util.Objects;
@@ -93,13 +93,15 @@ public class SubroutineDec implements Construct, Scope {
         return subroutineSymbolTable;
     }
 
+    //TODO?????
     @Override
     public String toVm(SymbolTable symbolTable) {
         return functionKeyword(symbolTable);
     }
 
+    //TODO is it tested? is it ok?
     private String functionKeyword(SymbolTable symbolTable) {
-        return List.of(VmKeywords.FUNCTION.keyword(),
+        return List.of(VmKeyword.FUNCTION.keyword(),
                 symbolTable.scope() + "." + subroutineName.token(),
                 subroutineSymbolTable.numberByKind(Kind.VAR))
                 .mkString(" ");
