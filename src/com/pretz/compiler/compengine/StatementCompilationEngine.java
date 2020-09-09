@@ -3,6 +3,7 @@ package com.pretz.compiler.compengine;
 import com.pretz.compiler.compengine.expression.Expression;
 import com.pretz.compiler.compengine.expression.Op;
 import com.pretz.compiler.compengine.expression.OpTerm;
+import com.pretz.compiler.compengine.expression.OpType;
 import com.pretz.compiler.compengine.expression.Term;
 import com.pretz.compiler.compengine.expression.TermType;
 import com.pretz.compiler.compengine.statement.DoStatement;
@@ -261,7 +262,7 @@ public class StatementCompilationEngine {
         Token unaryOp = tokens.current();
         tokens.advance();
         Term term = consumeTerm(tokens);
-        return new Term(TermType.UNARY_OP, List.of(new Terminal(unaryOp), term));
+        return new Term(TermType.UNARY_OP, List.of(new Op(unaryOp, OpType.UNARY_OP), term));
     }
 
     private OpTerm consumeOpTerm(Tokens tokens) {
@@ -271,7 +272,7 @@ public class StatementCompilationEngine {
     }
 
     private Op consumeOp(Tokens tokens) {
-        Op op = new Op(tokens.current());
+        Op op = new Op(tokens.current(), OpType.OP);
         tokens.advance();
         return op;
     }

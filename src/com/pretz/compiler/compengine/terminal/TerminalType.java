@@ -1,6 +1,7 @@
 package com.pretz.compiler.compengine.terminal;
 
 import com.pretz.compiler.compengine.CompilationException;
+import com.pretz.compiler.compengine.expression.OpType;
 import com.pretz.compiler.tokenizer.token.TokenType;
 
 import static io.vavr.API.$;
@@ -18,13 +19,19 @@ public enum TerminalType {
 
 class TerminalTypeMapper {
 
-    public TerminalType from(TokenType tokenType) {
+    public TerminalType fromNonSymbol(TokenType tokenType) {
         return Match(tokenType).of(
                 Case($(TokenType.KEYWORD), TerminalType.KEYWORD_CONST),
                 Case($(TokenType.IDENTIFIER), TerminalType.IDENTIFIER),
-                Case($(TokenType.SYMBOL), TerminalType.OP),
                 Case($(TokenType.INT_CONST), TerminalType.INT_CONST),
                 Case($(TokenType.STRING_CONST), TerminalType.STRING_CONST),
+                Case($(), this::throwMappingException));
+    }
+
+    public TerminalType fromSymbol(OpType opType) {
+        return Match(opType).of(
+                Case($(OpType.OP), TerminalType.OP),
+                Case($(OpType.UNARY_OP), TerminalType.UNARY_OP),
                 Case($(), this::throwMappingException));
     }
 

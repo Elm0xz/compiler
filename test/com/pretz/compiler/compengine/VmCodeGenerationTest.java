@@ -4,7 +4,6 @@ import com.pretz.compiler.compengine.statement.LetStatement;
 import com.pretz.compiler.compengine.symboltable.Kind;
 import com.pretz.compiler.compengine.symboltable.Symbol;
 import com.pretz.compiler.compengine.symboltable.SymbolTable;
-import com.pretz.compiler.compengine.terminal.IdentifierMeaning;
 import com.pretz.compiler.compengine.terminal.TerminalType;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
@@ -99,7 +98,6 @@ public class VmCodeGenerationTest {
     //TODO(H) we should differentiate between various types of subroutines!
     //TODO(H) subroutine call with function instead of method
     //TODO(H) implementation for this test does not work properly
-    //TODO(H) fix unary ops
     @Test
     public void shouldTranslateLetStatementWithSubroutineCall() {
         LetStatement testLetStatement = new LetStatement(
@@ -111,7 +109,7 @@ public class VmCodeGenerationTest {
                                         $.expression($.varNameTerm("x")),
                                         $.expression($.constantTerm("5", TerminalType.INT_CONST))
                                 ))
-        ));
+                ));
 
         SymbolTable symbolTable = new SymbolTable($.subroutineUsageIdentifier("doStuff"),
                 HashMap.of(

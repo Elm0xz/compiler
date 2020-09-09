@@ -2,6 +2,7 @@ package com.pretz.compiler.compengine.terminal;
 
 import com.pretz.compiler.compengine.CompilationException;
 import com.pretz.compiler.compengine.Element;
+import com.pretz.compiler.compengine.expression.OpType;
 import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import com.pretz.compiler.compengine.validator.Validator;
 import com.pretz.compiler.tokenizer.token.KeywordType;
@@ -20,24 +21,34 @@ import static io.vavr.API.Match;
 public class Terminal implements Element {
     protected final String token;
     private final TerminalType type;
-
     private final TerminalKeywordType keywordType;
+
+    public Terminal(Token token, Validator validator, OpType opType) {
+        validator.validate(token);
+        this.token = token.token();
+        this.type = mapOpFromSymbol(opType);
+        this.keywordType = map(token.keyword());
+    }
 
     public Terminal(Token token, Validator validator) {
         validator.validate(token);
         this.token = token.token();
-        this.type = map(token.type());
+        this.type = mapFromNonSymbol(token.type());
         this.keywordType = map(token.keyword());
     }
 
     public Terminal(Token token) {
         this.token = token.token();
-        this.type = map(token.type());
+        this.type = mapFromNonSymbol(token.type());
         this.keywordType = map(token.keyword());
     }
 
-    private static TerminalType map(TokenType type) {
-        return new TerminalTypeMapper().from(type);
+    private TerminalType mapOpFromSymbol(OpType opType) {
+        return new TerminalTypeMapper().fromSymbol(opType);
+    }
+
+    private static TerminalType mapFromNonSymbol(TokenType type) {
+        return new TerminalTypeMapper().fromNonSymbol(type);
     }
 
     private static TerminalKeywordType map(KeywordType type) {
@@ -52,6 +63,10 @@ public class Terminal implements Element {
 
     public String toXml(int indLvl) {
         return indent(indLvl) + "<" + toTag() + "> " + translateToken() + " </" + toTag() + ">\n";
+    }
+
+    public TerminalType type() {
+        return type;
     }
 
     public TerminalKeywordType keywordType() {

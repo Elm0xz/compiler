@@ -142,9 +142,13 @@ public class ElementTestUtils {
     protected Term unaryOpTerm(String token, String unaryOp) {
         return new Term(TermType.UNARY_OP,
                 List.of(
-                        terminal(unaryOp, TerminalType.UNARY_OP),
+                        unaryOp(unaryOp),
                         varNameTerm(token)
                 ));
+    }
+
+    private Op unaryOp(String unaryOp) {
+        return new Op(terminal(unaryOp, TerminalType.UNARY_OP));
     }
 
     protected Term expressionInBracketsTerm(Expression expression) {
