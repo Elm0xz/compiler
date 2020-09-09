@@ -12,7 +12,7 @@ import java.util.function.Predicate;
 
 public class SubroutineSymbolTableFactory implements SymbolTableFactory {
 
-    //TODO ugly as hell
+    //TODO(L) ugly as hell
     @Override
     public SymbolTable create(Identifier identifier, List<Construct> declarations) {
         var parameters = asParameter(declarations.filter(it -> it instanceof Parameter));
@@ -48,7 +48,7 @@ public class SubroutineSymbolTableFactory implements SymbolTableFactory {
                 .map(it -> new Tuple2<>(it._1, symbolId(varDec, nextId(it, varDec, declarations))));
     }
 
-    //TODO maybe it could be simplified by first grouping variable declarations by type and kind and then indexing
+    //TODO(L) maybe it could be simplified by first grouping variable declarations by type and kind and then indexing
     private Integer nextId(Tuple2<Identifier, Integer> varNameWithIndex, VarDec varDec, List<VarDec> declarations) {
         return declarations
                 .filter(isSameTypeAndKind(varDec))

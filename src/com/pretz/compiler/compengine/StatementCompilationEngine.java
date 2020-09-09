@@ -107,7 +107,7 @@ public class StatementCompilationEngine {
 
     private List<Statement> consumeNestedStatements(Tokens tokens) {
         consumeStatementBodyOpeningCurlyBracket(tokens);
-        ArrayList<Statement> statements = new ArrayList<>();//TODO refactor to sth nicer
+        ArrayList<Statement> statements = new ArrayList<>();//TODO(L) refactor to sth nicer
         while (matcher.isNotClosingCurlyBracket(tokens.current())) {
             statements.add(compileStatement(tokens));
         }
@@ -120,7 +120,7 @@ public class StatementCompilationEngine {
     }
 
     private void consumeSemicolon(Tokens tokens) {
-        //TODO some validation on this?
+        //TODO(L) some validation on this?
         tokens.advance();
     }
 
@@ -130,7 +130,7 @@ public class StatementCompilationEngine {
 
     private Expression compileExpression(Tokens tokens) {
         Term term = consumeTerm(tokens);
-        ArrayList<OpTerm> opTerms = new ArrayList<>(); //todo refactor to something better
+        ArrayList<OpTerm> opTerms = new ArrayList<>(); //todo(L) refactor to something better
         while (!matcher.isNonOpSymbol(tokens.current())) {
             opTerms.add(consumeOpTerm(tokens));
         }
@@ -143,18 +143,18 @@ public class StatementCompilationEngine {
                 Case($(matcher.isVarNameOrSubroutineCall()), () -> consumeVarNameTerm(tokens)),
                 Case($(matcher.isUnaryOp()), () -> consumeUnaryOpTerm(tokens)),
                 Case($(matcher.isExpressionInBrackets()), () -> consumeExpressionInBrackets(tokens)),
-                Case($(), this::throwInvalidTermException) //todo think of some test cases for this
+                Case($(), this::throwInvalidTermException) //todo(L) think of some test cases for this
         );
     }
 
-    //TODO maybe two separate methods?
+    //TODO(L) maybe two separate methods?
     private Term consumeSimpleTerm(Tokens tokens, TermType termType) {
         Term simpleTerm;
         if (tokens.current().is(TokenType.IDENTIFIER)) {
             simpleTerm = new Term(termType, new Identifier(tokens.current(), IdentifierMeaning.USAGE, IdentifierType.VAR));
         }
         else {
-            //TODO there is no validation here, why?
+            //TODO(L) there is no validation here, why?
             simpleTerm = new Term(termType, new Terminal(tokens.current()));
         }
         tokens.advance();
@@ -184,23 +184,20 @@ public class StatementCompilationEngine {
     }
 
     private Term consumeSubroutineCall(Tokens tokens) {
-        List<Element> subroutineCallIdentifier = consumeSubroutineCallIdentifier(tokens); //TODO refactor into something better
+        List<Element> subroutineCallIdentifier = consumeSubroutineCallIdentifier(tokens); //TODO(L) refactor into something better
         consumeOpeningRoundBracket(tokens);
         List<? extends Element> expressionList = consumeExpressionList(tokens);
         consumeClosingRoundBracket(tokens);
         return new Term(TermType.SUBROUTINE_CALL, subroutineCallIdentifier.appendAll(expressionList)); //TODO quite ugly conversion
     }
 
-    private List<Element> consumeSubroutineCallIdentifier(Tokens tokens) {//TODO ugly types
-        ArrayList<Element> identifiers = new ArrayList<>(); //TODO refactor into something better
+    private List<Element> consumeSubroutineCallIdentifier(Tokens tokens) {//TODO(L) ugly types
+        ArrayList<Element> identifiers = new ArrayList<>(); //TODO(L) refactor into something better
         if (matcher.isDot(tokens.ll1())) {
             identifiers.add(consumeIdentifier(tokens, IdentifierMeaning.USAGE, IdentifierType.CLASS));
             consumeDot(tokens);
-            identifiers.add(consumeIdentifier(tokens, IdentifierMeaning.USAGE, IdentifierType.SUBROUTINE));
         }
-        else {
-            identifiers.add(consumeIdentifier(tokens, IdentifierMeaning.USAGE, IdentifierType.SUBROUTINE));
-        }
+        identifiers.add(consumeIdentifier(tokens, IdentifierMeaning.USAGE, IdentifierType.SUBROUTINE));
         return List.ofAll(identifiers);
     }
 

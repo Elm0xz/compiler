@@ -130,8 +130,8 @@ public class Term implements Construct {
                 '}';
     }
 
-    //TODO how to check if subroutine is function or method?
-    //TODO this.termParts.size() isn't a good solution here
+    //TODO(H) how to check if subroutine is function or method?
+    //TODO(H) this.termParts.size() isn't a good solution here
     @Override
     public String toVm(SymbolTable symbolTable) {
         return Match(termType).of(

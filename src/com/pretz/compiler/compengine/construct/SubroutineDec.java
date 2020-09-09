@@ -93,13 +93,12 @@ public class SubroutineDec implements Construct, Scope {
         return subroutineSymbolTable;
     }
 
-    //TODO?????
     @Override
     public String toVm(SymbolTable symbolTable) {
         return functionKeyword(symbolTable);
     }
 
-    //TODO is it tested? is it ok?
+    //TODO(M) Unit test this
     private String functionKeyword(SymbolTable symbolTable) {
         return List.of(VmKeyword.FUNCTION.keyword(),
                 symbolTable.scope() + "." + subroutineName.token(),

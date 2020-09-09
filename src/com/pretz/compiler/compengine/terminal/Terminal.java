@@ -108,8 +108,7 @@ public class Terminal implements Element {
         return Objects.hash(token, type);
     }
 
-    //TODO this constructor is only used in test, should be handled by factory method instead
-
+    //TODO(L) this constructor is only used in test, should be handled by factory method instead
     public Terminal(String token, TerminalType type) {
         this.token = token;
         this.type = type;

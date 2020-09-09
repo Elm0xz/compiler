@@ -13,7 +13,7 @@ public class DoStatement implements Statement {
     private static final String CONSTRUCT_NAME = "doStatement";
     private static final String KEYWORD = "do";
 
-    private final Term subroutineCall; //TODO this should be only subroutinecall, not any other expression - maybe use enum?
+    private final Term subroutineCall; //TODO(L) this should be only subroutinecall, not any other expression - maybe use enum?
 
     public DoStatement(Term subroutineCall) {
         this.subroutineCall = subroutineCall;

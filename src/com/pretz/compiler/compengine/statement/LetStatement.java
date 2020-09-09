@@ -83,7 +83,7 @@ public class LetStatement implements Statement {
                 .mkString();
     }
 
-    //TODO handle array expressions here too
+    //TODO(M) handle array expressions here too
     private String leftSideToVm(SymbolTable symbolTable) {
         return "pop " + (symbolTable.get(varName).toVm());
     }

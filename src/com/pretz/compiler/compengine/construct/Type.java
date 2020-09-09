@@ -39,7 +39,7 @@ public class Type implements Construct {
         return Objects.hash(type);
     }
 
-    //TODO these constructors are only used in test, should be handled by factory method instead
+    //TODO(L) these constructors are only used in test, should be handled by factory method instead
     public Type(Terminal type) {
         this.type = type;
     }

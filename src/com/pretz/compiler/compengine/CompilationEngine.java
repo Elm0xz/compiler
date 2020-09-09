@@ -73,7 +73,7 @@ public class CompilationEngine {
     }
 
     private List<Construct> compileDeclarations(Tokens tokens) {
-        ArrayList<Construct> declarations = new ArrayList<>(); //TODO refactor to something cleaner?
+        ArrayList<Construct> declarations = new ArrayList<>(); //TODO(L) refactor to something cleaner?
         while (!tokens.isLast()) {
             declarations.add(Match(tokens.current()).of(
                     Case($(matcher.isClassVarDec()), () -> compileClassVarDec(tokens)),
@@ -136,7 +136,7 @@ public class CompilationEngine {
     }
 
     private List<Identifier> consumeVarNames(Tokens tokens) {
-        ArrayList<Identifier> varNames = new ArrayList<>(); //TODO refactor to something cleaner
+        ArrayList<Identifier> varNames = new ArrayList<>(); //TODO(L) refactor to something cleaner
         while (matcher.isNotSemicolon(tokens.current())) {
             varNames.add(consumeVarName(tokens));
             consumeVarDecComma(tokens);
@@ -176,7 +176,7 @@ public class CompilationEngine {
     }
 
     private ParameterList compileParameterList(Tokens tokens) {
-        ArrayList<Parameter> parameters = new ArrayList<>(); //TODO refactor to something cleaner
+        ArrayList<Parameter> parameters = new ArrayList<>(); //TODO(L) refactor to something cleaner
         while (matcher.isNotClosingRoundBracket(tokens.current())) {
             parameters.add(consumeParameter(tokens));
             consumeParameterListComma(tokens);
@@ -203,7 +203,7 @@ public class CompilationEngine {
 
     private SubroutineBody compileSubroutineBody(Tokens tokens) {
         consumeClassOrSubroutineBodyOpeningBracket(tokens);
-        ArrayList<Construct> subroutineBody = new ArrayList<>(); //TODO refactor to something cleaner
+        ArrayList<Construct> subroutineBody = new ArrayList<>(); //TODO(L) refactor to something cleaner
         while (matcher.isNotClosingCurlyBracket(tokens.current())) {
             subroutineBody.add(Match(tokens.current()).of(
                     Case($(matcher.isVarDec()), () -> compileVarDec(tokens)),

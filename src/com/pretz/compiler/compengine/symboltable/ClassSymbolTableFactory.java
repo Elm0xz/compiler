@@ -26,13 +26,13 @@ public class ClassSymbolTableFactory implements SymbolTableFactory {
     }
 
     private List<Tuple2<Identifier, Symbol>> from(ClassVarDec classVarDec, List<ClassVarDec> declarations) {
-        //TODO validation
+        //TODO(L) validation
         return classVarDec.varNames().varNames()
                 .zipWithIndex()
                 .map(it -> new Tuple2<>(it._1, symbolId(classVarDec, nextId(it, classVarDec, declarations))));
     }
 
-    //TODO maybe it could be simplified by first grouping variable declarations by type and kind and then indexing
+    //TODO(L) maybe it could be simplified by first grouping variable declarations by type and kind and then indexing
     private Integer nextId(Tuple2<Identifier, Integer> varNameWithIndex, ClassVarDec classVarDec, List<ClassVarDec> declarations) {
         return declarations
                 .filter(isSameTypeAndKind(classVarDec))

@@ -84,7 +84,7 @@ public class TokenizingAccumulator {
         return removeLastFrom(tokens).append(tokens.last().add(ch));
     }
 
-    //TODO maybe it would be better to just remove "empty new" tokens?
+    //TODO(L) maybe it would be better to just remove "empty new" tokens?
     private List<Token> addCharacterToCurrentTokenAndChangeType(Character ch, TokenType newType) {
         if (tokens.isEmpty()) {
             return tokens.append(new Token("" + ch, newType));

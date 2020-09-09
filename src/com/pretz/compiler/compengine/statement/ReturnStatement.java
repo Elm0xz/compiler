@@ -13,7 +13,7 @@ public class ReturnStatement implements Statement {
     private static final String CONSTRUCT_NAME = "returnStatement";
     private static final String KEYWORD = "return";
 
-    private final Expression expression; //TODO this can be empty
+    private final Expression expression; //TODO(L) this can be empty
 
     public ReturnStatement(Expression expression) {
         this.expression = expression;

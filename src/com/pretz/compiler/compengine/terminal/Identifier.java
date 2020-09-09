@@ -24,7 +24,7 @@ public class Identifier extends Terminal {
         this.identifierType = identifierType;
     }
 
-    //TODO this constructor is used only for tests
+    //TODO(L) this constructor is used only for tests
     public Identifier(String token, TerminalType type, IdentifierMeaning identifierMeaning, IdentifierType identifierType) {
         super(token, type);
         this.identifierMeaning = identifierMeaning;

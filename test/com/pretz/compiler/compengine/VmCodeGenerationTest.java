@@ -96,9 +96,10 @@ public class VmCodeGenerationTest {
         );
     }
 
-    //TODO we should differentiate between various types of subroutines!
-    //TODO subroutine call with function instead of method
-    //TODO implementation for this test does not work properly
+    //TODO(H) we should differentiate between various types of subroutines!
+    //TODO(H) subroutine call with function instead of method
+    //TODO(H) implementation for this test does not work properly
+    //TODO(H) fix unary ops
     @Test
     public void shouldTranslateLetStatementWithSubroutineCall() {
         LetStatement testLetStatement = new LetStatement(
@@ -126,16 +127,15 @@ public class VmCodeGenerationTest {
         );
     }
 
-    //TODO fix mappings of TerminalType... !
-    //TODO expression in brackets
+    //TODO(H) expression in brackets
 
-    //TODO test for comparison operators (with if statement, probably)
-    //TODO string constant, keyword constant
-    //TODO array term (and array left-side)
+    //TODO(H) test for comparison operators (with if statement, probably)
+    //TODO(H) string constant, keyword constant
+    //TODO(H) array term (and array left-side)
 
-    //TODO test of using class scope symbol table in subroutines
+    //TODO(H) test of using class scope symbol table in subroutines
 
-    //TODO if, while, do, return statements
+    //TODO(H) if, while, do, return statements
     private static Stream<Arguments> operators() {
         return Stream.of(
                 Arguments.of("+", "add", "int"),

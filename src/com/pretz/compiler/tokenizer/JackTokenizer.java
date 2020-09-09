@@ -18,7 +18,6 @@ import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 import static io.vavr.Predicates.anyOf;
 
-//TODO a little cleanup
 public class JackTokenizer {
 
     public Tokens tokenize(File file) {
@@ -28,7 +27,6 @@ public class JackTokenizer {
                 .tokens().toStream()
                 .foldLeft(new TokenizingAccumulator(), this::tokenize)
                 .tokens().dropRight(1);
-        //tokens.forEach(System.out::println);
         return new Tokens(tokens);
     }
 

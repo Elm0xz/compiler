@@ -12,7 +12,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import static com.pretz.compiler.compengine.CompilationException.NOT_A_CLASS;
 
-//TODO maybe split "integration" (using statement) and unit (basic test cases) tests
+//TODO(L) maybe split "integration" (using statement) and unit (basic test cases) tests
 public class CompilationEngineTest {
 
     private final ElementTestUtils $_ = new ElementTestUtils();
@@ -214,7 +214,7 @@ public class CompilationEngineTest {
         Assertions.assertThatThrownBy(() -> engine.compileClass(tokens))
                 .isInstanceOf(CompilationException.class)
                 .hasMessage(CompilationException.INVALID_SUBROUTINE_BODY_KEYWORD);
-        //TODO this should be checked by statement validator instead as we assume that
+        //TODO(L) this should be checked by statement validator instead as we assume that
         // if beginning token does not have "var" keyword then it's statement (maybe refactor to pattern matching?)
     }
 

@@ -5,7 +5,7 @@ import com.pretz.compiler.compengine.terminal.TerminalKeywordType;
 
 import java.util.Objects;
 
-//TODO!! what about arrays?
+//TODO(M) what about arrays?
 public class Symbol {
     private final Type type;
     private final Kind kind;
@@ -23,7 +23,7 @@ public class Symbol {
         this.id = id;
     }
 
-    //TODO some validation of possible mappings?
+    //TODO(L) some validation of possible mappings?
     private Kind map(TerminalKeywordType kind) {
         return Kind.valueOf(kind.name());
     }
