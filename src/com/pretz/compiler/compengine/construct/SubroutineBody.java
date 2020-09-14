@@ -35,15 +35,23 @@ public class SubroutineBody implements Construct {
     }
 
     public String varDecToXml(int indLvl) {
-        return subroutineBody.filter(it -> it instanceof VarDec)
+        return varDecs()
                 .map(it -> it.toXml(indLvl))
                 .collect(Collectors.joining());
     }
 
+    private List<Construct> varDecs() {
+        return subroutineBody.filter(it -> it instanceof VarDec);
+    }
+
     private String statementsToXml(int indLvl) {
-        return subroutineBody.filter(it -> it instanceof Statement)
+        return statements()
                 .map(it -> it.toXml(indLvl))
                 .collect(Collectors.joining());
+    }
+
+    private List<Construct> statements() {
+        return subroutineBody.filter(it -> it instanceof Statement);
     }
 
     @Override

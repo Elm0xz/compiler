@@ -1,5 +1,6 @@
 package com.pretz.compiler.compengine.construct;
 
+import com.pretz.compiler.compengine.VmContext;
 import com.pretz.compiler.compengine.VmKeyword;
 import com.pretz.compiler.compengine.symboltable.Kind;
 import com.pretz.compiler.compengine.symboltable.Scope;
@@ -27,7 +28,8 @@ public class SubroutineDec implements Construct, Scope {
     private final Identifier subroutineName;
     private final ParameterList parameterList;
     private final SubroutineBody subroutineBody;
-    private final SymbolTable subroutineSymbolTable;
+
+    private final VmContext subroutineSymbolTableAndScope;
 
     public SubroutineDec(Terminal startingKeyword, Type type, Identifier subroutineName,
                          ParameterList parameterList, SubroutineBody subroutineBody, Identifier classIdentifier) {
@@ -36,8 +38,14 @@ public class SubroutineDec implements Construct, Scope {
         this.subroutineName = subroutineName;
         this.parameterList = parameterList;
         this.subroutineBody = subroutineBody;
-        this.subroutineSymbolTable = new SubroutineSymbolTableFactory()
-                .create(subroutineName, filterParametersAndVarDecs(parameterList, subroutineBody, classIdentifier));
+        this.subroutineSymbolTableAndScope = new VmContext(
+                subroutineSymbolTable(parameterList, subroutineBody, classIdentifier),
+                subroutineScope(subroutineName, classIdentifier));
+    }
+
+    private SymbolTable subroutineSymbolTable(ParameterList parameterList, SubroutineBody subroutineBody, Identifier classIdentifier) {
+        return new SubroutineSymbolTableFactory()
+                .create(filterParametersAndVarDecs(parameterList, subroutineBody, classIdentifier));
     }
 
     private List<Construct> filterParametersAndVarDecs(ParameterList parameterList, SubroutineBody subroutineBody, Identifier classIdentifier) {
@@ -57,6 +65,10 @@ public class SubroutineDec implements Construct, Scope {
         } else return null;
     }
 
+    private String subroutineScope(Identifier subroutineName, Identifier classIdentifier) {
+        return classIdentifier.token() + "." + subroutineName.token();
+    }
+
     @Override
     public String toXml(int indLvl) {
         indLvl++;
@@ -72,6 +84,34 @@ public class SubroutineDec implements Construct, Scope {
     }
 
     @Override
+    public SymbolTable symbolTable() {
+        return subroutineSymbolTableAndScope.symbolTable();
+    }
+
+    @Override
+    public String toVm(VmContext classSymbolTableAndScope) {
+        return function() + "\n" +
+                subroutineBody.subroutineBody().zipWithIndex()
+                        .map(it -> it._1().toVm(
+                                classSymbolTableAndScope.mergeTablesAddingStatementId(
+                                        this.subroutineSymbolTableAndScope, it._2())))
+                        .mkString();
+    }
+
+    //TODO(M) Unit test this
+    private String function() {
+        return List.of(VmKeyword.FUNCTION,
+                subroutineSymbolTableAndScope.label(),
+                symbolTable().numberByKind(Kind.VAR))
+                .mkString(" ");
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(startingKeyword, type, subroutineName, parameterList, subroutineBody);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -84,11 +124,6 @@ public class SubroutineDec implements Construct, Scope {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(startingKeyword, type, subroutineName, parameterList, subroutineBody);
-    }
-
-    @Override
     public String toString() {
         return "SubroutineDec{" +
                 "startingKeyword=" + startingKeyword +
@@ -97,23 +132,5 @@ public class SubroutineDec implements Construct, Scope {
                 ", parameterList=" + parameterList +
                 ", subroutineBody=" + subroutineBody +
                 '}';
-    }
-
-    @Override
-    public SymbolTable symbolTable() {
-        return subroutineSymbolTable;
-    }
-
-    @Override
-    public String toVm(SymbolTable symbolTable) {
-        return functionKeyword(symbolTable);
-    }
-
-    //TODO(M) Unit test this
-    private String functionKeyword(SymbolTable symbolTable) {
-        return List.of(VmKeyword.FUNCTION,
-                symbolTable.scope() + "." + subroutineName.token(),
-                subroutineSymbolTable.numberByKind(Kind.VAR))
-                .mkString(" ");
     }
 }

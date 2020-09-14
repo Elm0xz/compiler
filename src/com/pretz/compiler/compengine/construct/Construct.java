@@ -1,7 +1,7 @@
 package com.pretz.compiler.compengine.construct;
 
 import com.pretz.compiler.compengine.Element;
-import com.pretz.compiler.compengine.symboltable.SymbolTable;
+import com.pretz.compiler.compengine.VmContext;
 
 import static com.pretz.compiler.util.XmlUtils.indent;
 
@@ -12,7 +12,7 @@ public interface Construct extends Element {
         return indent(indLvl) + "NOT YET IMPLEMENTED\n";
     }
 
-    default String toVm(SymbolTable symbolTable) {
+    default String toVm(VmContext vmContext) {
         return "NOT YET IMPLEMENTED\n";
     }
 }

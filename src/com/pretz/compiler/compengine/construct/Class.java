@@ -1,5 +1,6 @@
 package com.pretz.compiler.compengine.construct;
 
+import com.pretz.compiler.compengine.VmContext;
 import com.pretz.compiler.compengine.symboltable.ClassSymbolTableFactory;
 import com.pretz.compiler.compengine.symboltable.Scope;
 import com.pretz.compiler.compengine.symboltable.SymbolTable;
@@ -20,12 +21,13 @@ public class Class implements Construct, Scope {
 
     private final Identifier identifier;
     private final List<Construct> declarations;
+
     private final SymbolTable classSymbolTable;
 
     public Class(Identifier identifier, List<Construct> declarations) {
         this.identifier = identifier;
         this.declarations = declarations;
-        this.classSymbolTable = new ClassSymbolTableFactory().create(identifier, filterClassVariableDeclarations(declarations));
+        this.classSymbolTable = new ClassSymbolTableFactory().create(filterClassVariableDeclarations(declarations));
     }
 
     private List<Construct> filterClassVariableDeclarations(List<Construct> declarations) {
@@ -49,6 +51,27 @@ public class Class implements Construct, Scope {
                 .collect(Collectors.joining());
     }
 
+    public String label() {
+        return identifier.token();
+    }
+
+    @Override
+    public SymbolTable symbolTable() {
+        return classSymbolTable;
+    }
+
+    public String toVm() {
+        return this.toVm(new VmContext(classSymbolTable, identifier.token()));
+    }
+
+    @Override
+    public String toVm(VmContext vmContext) {
+        return declarations
+                .filter(it -> it instanceof SubroutineDec)
+                .map(it -> it.toVm(vmContext))
+                .mkString();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -70,30 +93,5 @@ public class Class implements Construct, Scope {
                 ", declarations=" + declarations +
                 ", classSymbolTable=" + classSymbolTable +
                 '}';
-    }
-
-    public Identifier identifier() {
-        return identifier;
-    }
-
-    public List<Construct> declarations() {
-        return declarations;
-    }
-
-    @Override
-    public SymbolTable symbolTable() {
-        return classSymbolTable;
-    }
-
-    public String toVm() {
-        return this.toVm(classSymbolTable);
-    }
-
-    @Override
-    public String toVm(SymbolTable symbolTable) {
-        return declarations
-                .filter(it -> it instanceof SubroutineDec)
-                .map(it -> it.toVm(symbolTable))
-                .mkString();
     }
 }

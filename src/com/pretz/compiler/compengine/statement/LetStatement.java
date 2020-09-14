@@ -1,5 +1,6 @@
 package com.pretz.compiler.compengine.statement;
 
+import com.pretz.compiler.compengine.VmContext;
 import com.pretz.compiler.compengine.expression.Expression;
 import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import com.pretz.compiler.compengine.terminal.Identifier;
@@ -7,6 +8,7 @@ import io.vavr.collection.List;
 
 import java.util.Objects;
 
+import static com.pretz.compiler.compengine.VmKeyword.POP;
 import static com.pretz.compiler.util.XmlUtils.basicClosingTag;
 import static com.pretz.compiler.util.XmlUtils.basicOpeningTag;
 import static com.pretz.compiler.util.XmlUtils.closingSquareBracket;
@@ -77,18 +79,18 @@ public class LetStatement implements Statement {
     }
 
     @Override
-    public String toVm(SymbolTable symbolTable) {
-        return List.of(rightSideToVm(symbolTable),
-                leftSideToVm(symbolTable))
+    public String toVm(VmContext vmContext) {
+        return List.of(rightSideToVm(vmContext),
+                leftSideToVm(vmContext.symbolTable()))
                 .mkString();
     }
 
     //TODO(M) handle array expressions here too
     private String leftSideToVm(SymbolTable symbolTable) {
-        return "pop " + (symbolTable.get(varName).toVm());
+        return POP + " " + (symbolTable.get(varName).toVm());
     }
 
-    private String rightSideToVm(SymbolTable symbolTable) {
-        return assignedExpression.toVm(symbolTable);
+    private String rightSideToVm(VmContext vmContext) {
+        return assignedExpression.toVm(vmContext);
     }
 }

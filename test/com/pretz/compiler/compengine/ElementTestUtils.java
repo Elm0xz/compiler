@@ -101,20 +101,20 @@ public class ElementTestUtils {
         return new Parameter(type(type), varDefIdentifier(varName));
     }
 
-    protected SubroutineDec subroutineDec(String method, String s, String doStuff, String classIdentifier,
+    protected SubroutineDec subroutineDec(String method, String type, String subroutineName, String classIdentifier,
                                           ParameterList parameterList, SubroutineBody subroutineBody) {
         return new SubroutineDec(terminal(method, TerminalType.KEYWORD_CONST),
-                type(s),
-                varDefIdentifier(doStuff),
+                type(type),
+                subroutineDefIdentifier(subroutineName),
                 parameterList,
                 subroutineBody, classDefIdentifier(classIdentifier));
     }
 
-    protected SubroutineDec subroutineDec(String method, String s, String doStuff,
+    protected SubroutineDec subroutineDec(String method, String type, String subroutineName,
                                           ParameterList parameterList, SubroutineBody subroutineBody) {
         return new SubroutineDec(terminal(method, TerminalType.KEYWORD_CONST),
-                type(s),
-                varDefIdentifier(doStuff),
+                type(type),
+                subroutineDefIdentifier(subroutineName),
                 parameterList,
                 subroutineBody, classDefIdentifier("dummyClass"));
     }

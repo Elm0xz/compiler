@@ -1,8 +1,8 @@
 package com.pretz.compiler.compengine.expression;
 
 import com.pretz.compiler.compengine.CompilationException;
+import com.pretz.compiler.compengine.VmContext;
 import com.pretz.compiler.compengine.construct.Construct;
-import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import com.pretz.compiler.compengine.terminal.Terminal;
 import com.pretz.compiler.compengine.terminal.TerminalType;
 import com.pretz.compiler.compengine.validator.Validator;
@@ -71,6 +71,11 @@ public class Op implements Construct, Validator {
     }
 
     @Override
+    public String toVm(VmContext vmContext) {
+        return op.toVm(vmContext);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -88,10 +93,5 @@ public class Op implements Construct, Validator {
         return "Op{" +
                 "op=" + op +
                 '}';
-    }
-
-    @Override
-    public String toVm(SymbolTable symbolTable) {
-        return op.toVm(symbolTable);
     }
 }

@@ -1,5 +1,6 @@
 package com.pretz.compiler.compengine.terminal;
 
+import com.pretz.compiler.compengine.VmContext;
 import com.pretz.compiler.compengine.VmKeyword;
 import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import com.pretz.compiler.compengine.validator.Validator;
@@ -40,10 +41,11 @@ public class Identifier extends Terminal {
     }
 
     @Override
-    public String toVm(SymbolTable symbolTable) {
+    public String toVm(VmContext vmContext) {
         return Match(identifierType).of(
-                Case($(IdentifierType.VAR), () -> varToVm(symbolTable)),
-                Case($(IdentifierType.SUBROUTINE), this::subroutineToVm)
+                Case($(IdentifierType.VAR), () -> varToVm(vmContext.symbolTable())),
+                Case($(IdentifierType.SUBROUTINE), this::subroutineToVm),
+                Case($(), () -> "NOT YET IMPLEMENTED!")
         );
     }
 

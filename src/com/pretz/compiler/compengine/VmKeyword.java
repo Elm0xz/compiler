@@ -8,14 +8,22 @@ public enum VmKeyword {
     OR("or"),
     NEG("neg"),
     NOT("not"),
+    EQ("eq"),
+    GT("gt"),
+    LT("lt"),
     VAR("local"),
     ARGUMENT("argument"),
     STATIC("static"),
     FIELD("this"),
     CONSTANT("constant"),
     PUSH("push"),
+    POP("pop"),
+    IF_GOTO("if-goto"),
+    GOTO("goto"),
+    LABEL("label"),
     FUNCTION("function"),
-    CALL("call");
+    CALL("call"),
+    RETURN("return");
 
     private final String keyword;
 

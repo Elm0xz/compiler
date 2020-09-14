@@ -14,7 +14,7 @@ public class SubroutineSymbolTableFactory implements SymbolTableFactory {
 
     //TODO(L) ugly as hell
     @Override
-    public SymbolTable create(Identifier identifier, List<Construct> declarations) {
+    public SymbolTable create(List<Construct> declarations) {
         var parameters = asParameter(declarations.filter(it -> it instanceof Parameter));
         Map<Identifier, Symbol> parametersTable =
                 parameters
@@ -26,7 +26,7 @@ public class SubroutineSymbolTableFactory implements SymbolTableFactory {
                 varDecs
                         .flatMap(it -> from(it, varDecs))
                         .toMap(it -> it);
-        return new SymbolTable(identifier, parametersTable.merge(varDecsTable));
+        return new SymbolTable(parametersTable.merge(varDecsTable));
     }
 
     private List<Parameter> asParameter(List<Construct> declarations) {

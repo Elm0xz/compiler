@@ -5,8 +5,6 @@ import com.pretz.compiler.compengine.construct.Construct;
 import com.pretz.compiler.compengine.construct.Parameter;
 import com.pretz.compiler.compengine.construct.ParameterList;
 import com.pretz.compiler.compengine.construct.SubroutineBody;
-import com.pretz.compiler.compengine.construct.SubroutineDec;
-import com.pretz.compiler.compengine.construct.VarDec;
 import com.pretz.compiler.compengine.symboltable.ClassSymbolTableFactory;
 import com.pretz.compiler.compengine.symboltable.Kind;
 import com.pretz.compiler.compengine.symboltable.SubroutineSymbolTableFactory;
@@ -14,7 +12,6 @@ import com.pretz.compiler.compengine.symboltable.Symbol;
 import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
-import io.vavr.collection.Seq;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -29,10 +26,10 @@ public class SymbolTableTest {
     public void shouldAddOneClassVariableIdentifier() {
         ClassVarDec classVarDec = $_.classVarDec("field", "int", $_.varNames("x"));
 
-        SymbolTable symbolTable = classFactory.create($_.classUsageIdentifier("testClass"), List.of(classVarDec));
+        SymbolTable symbolTable = classFactory.create(List.of(classVarDec));
 
         Assertions.assertThat(symbolTable.size()).isEqualTo(1);
-        Assertions.assertThat(symbolTable).isEqualTo(new SymbolTable($_.classUsageIdentifier("testClass"),
+        Assertions.assertThat(symbolTable).isEqualTo(new SymbolTable(
                 HashMap.of(
                         $_.varDefIdentifier("x"),
                         symbolId("int", Kind.FIELD, 0))
@@ -44,10 +41,10 @@ public class SymbolTableTest {
         ClassVarDec classVarDec1 = $_.classVarDec("field", "int", $_.varNames("x"));
         ClassVarDec classVarDec2 = $_.classVarDec("static", "boolean", $_.varNames("y"));
 
-        SymbolTable symbolTable = classFactory.create($_.classUsageIdentifier("testClass"), List.of(classVarDec1, classVarDec2));
+        SymbolTable symbolTable = classFactory.create(List.of(classVarDec1, classVarDec2));
 
         Assertions.assertThat(symbolTable.size()).isEqualTo(2);
-        Assertions.assertThat(symbolTable).isEqualTo(new SymbolTable($_.classUsageIdentifier("testClass"),
+        Assertions.assertThat(symbolTable).isEqualTo(new SymbolTable(
                 HashMap.of(
                         $_.varDefIdentifier("x"),
                         symbolId("int", Kind.FIELD, 0),
@@ -60,10 +57,10 @@ public class SymbolTableTest {
     public void shouldAddTwoInlinedClassVariableIdentifiers() {
         ClassVarDec classVarDec = $_.classVarDec("field", "int", $_.varNames("x", "y"));
 
-        SymbolTable symbolTable = classFactory.create($_.classUsageIdentifier("testClass"), List.of(classVarDec));
+        SymbolTable symbolTable = classFactory.create(List.of(classVarDec));
 
         Assertions.assertThat(symbolTable.size()).isEqualTo(2);
-        Assertions.assertThat(symbolTable).isEqualTo(new SymbolTable($_.classUsageIdentifier("testClass"),
+        Assertions.assertThat(symbolTable).isEqualTo(new SymbolTable(
                 HashMap.of(
                         $_.varDefIdentifier("x"),
                         symbolId("int", Kind.FIELD, 0),
@@ -78,10 +75,10 @@ public class SymbolTableTest {
         ClassVarDec classVarDec1 = $_.classVarDec("field", "int", $_.varNames("x"));
         ClassVarDec classVarDec2 = $_.classVarDec("field", "int", $_.varNames("y"));
 
-        SymbolTable symbolTable = classFactory.create($_.classUsageIdentifier("testClass"), List.of(classVarDec1, classVarDec2));
+        SymbolTable symbolTable = classFactory.create(List.of(classVarDec1, classVarDec2));
 
         Assertions.assertThat(symbolTable.size()).isEqualTo(2);
-        Assertions.assertThat(symbolTable).isEqualTo(new SymbolTable($_.classUsageIdentifier("testClass"),
+        Assertions.assertThat(symbolTable).isEqualTo(new SymbolTable(
                 HashMap.of(
                         $_.varDefIdentifier("x"),
                         symbolId("int", Kind.FIELD, 0),
@@ -102,10 +99,10 @@ public class SymbolTableTest {
                 $_.classVarDec("field", "Dog", $_.varNames("dog")),
                 $_.classVarDec("static", "int", $_.varNames("a")));
 
-        SymbolTable symbolTable = classFactory.create($_.classUsageIdentifier("testClass"), classVarDecs);
+        SymbolTable symbolTable = classFactory.create(classVarDecs);
 
         Assertions.assertThat(symbolTable.size()).isEqualTo(5);
-        Assertions.assertThat(symbolTable).isEqualTo(new SymbolTable($_.classUsageIdentifier("testClass"),
+        Assertions.assertThat(symbolTable).isEqualTo(new SymbolTable(
                 HashMap.of(
                         $_.varDefIdentifier("x"),
                         symbolId("int", Kind.FIELD, 0),
@@ -126,11 +123,11 @@ public class SymbolTableTest {
                 $_.parameter("int", "x"),
                 $_.parameter("int", "a"));
         List<Construct> declarations = List.of($_.varDec("int", $_.varNames("y", "z")));
-        SymbolTable symbolTable = $_.subroutineDec("method", "void", "doStuff", "Dog",
+        SymbolTable symbolTable = $_.subroutineDec("method", "void", "doStuff","Dog",
                 new ParameterList(parameters), new SubroutineBody(declarations)).symbolTable();
 
         Assertions.assertThat(symbolTable.size()).isEqualTo(5);
-        Assertions.assertThat(symbolTable).isEqualTo(new SymbolTable($_.subroutineUsageIdentifier("doStuff"),
+        Assertions.assertThat(symbolTable).isEqualTo(new SymbolTable(
                 HashMap.of(
                         $_.varDefIdentifier("this"),
                         symbolId("Dog", Kind.ARGUMENT, 0),
@@ -151,11 +148,11 @@ public class SymbolTableTest {
                 $_.parameter("int", "x"),
                 $_.parameter("int", "a"));
         List<Construct> declarations = List.of($_.varDec("int", $_.varNames("y", "z")));
-        SymbolTable symbolTable = $_.subroutineDec("function", "void", "doStuff", "Dog",
+        SymbolTable symbolTable = $_.subroutineDec("function", "void", "doStuff","Dog",
                 new ParameterList(parameters), new SubroutineBody(declarations)).symbolTable();
 
         Assertions.assertThat(symbolTable.size()).isEqualTo(4);
-        Assertions.assertThat(symbolTable).isEqualTo(new SymbolTable($_.subroutineUsageIdentifier("doStuff"),
+        Assertions.assertThat(symbolTable).isEqualTo(new SymbolTable(
                 HashMap.of(
                         $_.varDefIdentifier("x"),
                         symbolId("int", Kind.ARGUMENT, 0),

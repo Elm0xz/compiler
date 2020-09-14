@@ -12,13 +12,13 @@ import java.util.function.Predicate;
 public class ClassSymbolTableFactory implements SymbolTableFactory {
 
     @Override
-    public SymbolTable create(Identifier identifier, List<Construct> declarations) {
+    public SymbolTable create(List<Construct> declarations) {
         var classVarDeclarations = asClassVarDec(declarations);
         Map<Identifier, Symbol> symbolTable =
                 classVarDeclarations
                         .flatMap(it -> from(it, classVarDeclarations))
                         .toMap(it -> it);
-        return new SymbolTable(identifier, symbolTable);
+        return new SymbolTable(symbolTable);
     }
 
     private List<ClassVarDec> asClassVarDec(List<Construct> declarations) {

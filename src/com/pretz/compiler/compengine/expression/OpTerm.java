@@ -1,7 +1,7 @@
 package com.pretz.compiler.compengine.expression;
 
+import com.pretz.compiler.compengine.VmContext;
 import com.pretz.compiler.compengine.construct.Construct;
-import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import io.vavr.collection.List;
 
 import java.util.Objects;
@@ -44,9 +44,9 @@ public class OpTerm implements Construct {
     }
 
     @Override
-    public String toVm(SymbolTable symbolTable) {
-        return List.of(term.toVm(symbolTable),
-                op.toVm(symbolTable))
+    public String toVm(VmContext vmContext) {
+        return List.of(term.toVm(vmContext),
+                op.toVm(vmContext))
                 .mkString();
     }
 }

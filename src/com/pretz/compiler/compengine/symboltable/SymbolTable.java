@@ -6,20 +6,14 @@ import io.vavr.collection.Map;
 import java.util.Objects;
 
 public class SymbolTable {
-    private final Identifier scope;
-
     private final Map<Identifier, Symbol> symbols;
-    public SymbolTable(Identifier scope, Map<Identifier, Symbol> symbols) {
-        this.scope = scope;
+
+    public SymbolTable(Map<Identifier, Symbol> symbols) {
         this.symbols = symbols;
     }
 
     public int size() {
         return symbols.size();
-    }
-
-    public String scope() {
-        return scope.token();
     }
 
     public Integer numberByKind(Kind kind) {
@@ -32,12 +26,13 @@ public class SymbolTable {
                 .getOrElseThrow(() -> new NonExistentSymbolException("Nonexistent symbol!"));
     }
 
-    @Override
-    public String toString() {
-        return "SymbolTable{" +
-                "scope=" + scope +
-                ", symbols=" + symbols +
-                '}';
+    /**
+     * Used to merge class symbol table with subroutine symbol table when needed
+     * @param other subroutine symbol table to be merged
+     * @return merged symbol table
+     */
+    public SymbolTable merge(SymbolTable other) {
+        return new SymbolTable(this.symbols.merge(other.symbols));
     }
 
     @Override
@@ -45,22 +40,19 @@ public class SymbolTable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SymbolTable that = (SymbolTable) o;
-        return scope.equals(that.scope) &&
-                symbols.equals(that.symbols);
+        return Objects.equals(symbols, that.symbols);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(scope, symbols);
+        return Objects.hash(symbols);
     }
 
-    /**
-     * Used to merge class symbol table with subroutine symbol table when needed
-     * @param other subroutine symbol table to be merged
-     * @return merged symbol table
-     */
-    public SymbolTable merge(SymbolTable other) {
-        return new SymbolTable(this.scope, this.symbols.merge(other.symbols));
+    @Override
+    public String toString() {
+        return "SymbolTable{" +
+                "symbols=" + symbols +
+                '}';
     }
 
     class NonExistentSymbolException extends RuntimeException {

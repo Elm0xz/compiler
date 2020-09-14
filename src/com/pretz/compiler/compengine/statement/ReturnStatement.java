@@ -1,9 +1,11 @@
 package com.pretz.compiler.compengine.statement;
 
+import com.pretz.compiler.compengine.VmContext;
 import com.pretz.compiler.compengine.expression.Expression;
 
 import java.util.Objects;
 
+import static com.pretz.compiler.compengine.VmKeyword.RETURN;
 import static com.pretz.compiler.util.XmlUtils.basicClosingTag;
 import static com.pretz.compiler.util.XmlUtils.basicOpeningTag;
 import static com.pretz.compiler.util.XmlUtils.semicolon;
@@ -35,6 +37,14 @@ public class ReturnStatement implements Statement {
         } else {
             return expression.toXml(indLvl);
         }
+    }
+
+    @Override
+    public String toVm(VmContext vmContext) {
+        if (expression == null) {
+            return RETURN + "\n";
+        } else return expression.toVm(vmContext)
+                + RETURN + "\n";
     }
 
     @Override

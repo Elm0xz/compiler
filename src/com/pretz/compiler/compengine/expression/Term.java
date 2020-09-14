@@ -1,6 +1,7 @@
 package com.pretz.compiler.compengine.expression;
 
 import com.pretz.compiler.compengine.Element;
+import com.pretz.compiler.compengine.VmContext;
 import com.pretz.compiler.compengine.construct.Construct;
 import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import com.pretz.compiler.compengine.VmKeyword;
@@ -134,26 +135,26 @@ public class Term implements Construct {
     }
 
     @Override
-    public String toVm(SymbolTable symbolTable) {
+    public String toVm(VmContext vmContext) {
         return Match(termType).of(
-                Case($(anyOf(is(TermType.CONSTANT), is(TermType.VAR))), () -> simpleTermToVm(symbolTable)),
-                Case($(TermType.UNARY_OP), () -> unaryOpToVm(symbolTable)),
-                Case($(TermType.SUBROUTINE_CALL), () -> subroutineCallToVm(symbolTable)),
+                Case($(anyOf(is(TermType.CONSTANT), is(TermType.VAR))), () -> simpleTermToVm(vmContext)),
+                Case($(TermType.UNARY_OP), () -> unaryOpToVm(vmContext)),
+                Case($(TermType.SUBROUTINE_CALL), () -> subroutineCallToVm(vmContext)),
                 Case($(), () -> "NOT YET IMPLEMENTED!"));
     }
 
-    private String simpleTermToVm(SymbolTable symbolTable) {
-        return VmKeyword.PUSH + " " + termParts.get(0).toVm(symbolTable);
+    private String simpleTermToVm(VmContext vmContext) {
+        return VmKeyword.PUSH + " " + termParts.get(0).toVm(vmContext);
     }
 
-    private String unaryOpToVm(SymbolTable symbolTable) {
-        return termParts.get(1).toVm(symbolTable) + termParts.get(0).toVm(symbolTable);
+    private String unaryOpToVm(VmContext vmContext) {
+        return termParts.get(1).toVm(vmContext) + termParts.get(0).toVm(vmContext);
     }
 
     //TODO(H) how to check if subroutine is function or method?
     //TODO(H) this.termParts.size() isn't a good solution here
-    private String subroutineCallToVm(SymbolTable symbolTable) {
-        return termParts.drop(1).map(it -> it.toVm(symbolTable)).mkString()
-                + termParts.get(0).toVm(symbolTable) + this.termParts.size() + "\n";
+    private String subroutineCallToVm(VmContext vmContext) {
+        return termParts.drop(1).map(it -> it.toVm(vmContext)).mkString()
+                + termParts.get(0).toVm(vmContext) + this.termParts.size() + "\n";
     }
 }
