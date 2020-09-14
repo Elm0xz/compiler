@@ -2,6 +2,7 @@ package com.pretz.compiler.compengine.terminal;
 
 import com.pretz.compiler.compengine.CompilationException;
 import com.pretz.compiler.compengine.Element;
+import com.pretz.compiler.compengine.VmKeyword;
 import com.pretz.compiler.compengine.expression.OpType;
 import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import com.pretz.compiler.compengine.validator.Validator;
@@ -146,31 +147,33 @@ public class Terminal implements Element {
         return token;
     }
 
+    //TODO implement other terminal types
     @Override
     public String toVm(SymbolTable symbolTable) {
         return Match(type).of(
                 Case($(TerminalType.KEYWORD_CONST), "NOT YET IMPLEMENTED\n"),
                 Case($(TerminalType.OP), this::opToVm),
                 Case($(TerminalType.UNARY_OP), this::unaryOpToVm),
-                Case($(TerminalType.INT_CONST), "constant " + token + "\n"),
+                Case($(TerminalType.INT_CONST), VmKeyword.CONSTANT + " " + token + "\n"),
                 Case($(TerminalType.STRING_CONST), "NOT YET IMPLEMENTED\n"),
                 Case($(), "NOT YET IMPLEMENTED\n")
         );
     }
 
+    //TODO implement comparison operators
     private String opToVm() {
         return Match(token).of(
-                Case($("+"), "add" + "\n"),
-                Case($("-"), "sub" + "\n"),
-                Case($("&"), "and" + "\n"),
-                Case($("|"), "or" + "\n"),
+                Case($("+"), VmKeyword.ADD + "\n"),
+                Case($("-"), VmKeyword.SUB + "\n"),
+                Case($("&"), VmKeyword.AND + "\n"),
+                Case($("|"), VmKeyword.OR + "\n"),
                 Case($(), "NOT YET IMPLEMEMENTED\n"));
     }
 
     private String unaryOpToVm() {
         return Match(token).of(
-                Case($("-"), "neg" + "\n"),
-                Case($("~"), "not" + "\n"),
+                Case($("-"), VmKeyword.NEG + "\n"),
+                Case($("~"), VmKeyword.NOT + "\n"),
                 Case($(), this::throwIllegalOpException));
     }
 

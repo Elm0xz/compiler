@@ -1,5 +1,6 @@
 package com.pretz.compiler.compengine.construct;
 
+import com.pretz.compiler.compengine.VmKeyword;
 import com.pretz.compiler.compengine.symboltable.Kind;
 import com.pretz.compiler.compengine.symboltable.Scope;
 import com.pretz.compiler.compengine.symboltable.SubroutineSymbolTableFactory;
@@ -9,7 +10,6 @@ import com.pretz.compiler.compengine.terminal.IdentifierMeaning;
 import com.pretz.compiler.compengine.terminal.IdentifierType;
 import com.pretz.compiler.compengine.terminal.Terminal;
 import com.pretz.compiler.compengine.terminal.TerminalType;
-import com.pretz.compiler.util.VmKeyword;
 import io.vavr.collection.List;
 
 import java.util.Objects;
@@ -54,8 +54,7 @@ public class SubroutineDec implements Construct, Scope {
             Type thisType = new Type(classIdentifier);
             Identifier thisVarName = new Identifier("this", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE, IdentifierType.CLASS);
             return new Parameter(thisType, thisVarName);
-        }
-        else return null;
+        } else return null;
     }
 
     @Override
@@ -112,7 +111,7 @@ public class SubroutineDec implements Construct, Scope {
 
     //TODO(M) Unit test this
     private String functionKeyword(SymbolTable symbolTable) {
-        return List.of(VmKeyword.FUNCTION.keyword(),
+        return List.of(VmKeyword.FUNCTION,
                 symbolTable.scope() + "." + subroutineName.token(),
                 subroutineSymbolTable.numberByKind(Kind.VAR))
                 .mkString(" ");

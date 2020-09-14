@@ -1,5 +1,6 @@
 package com.pretz.compiler.compengine.terminal;
 
+import com.pretz.compiler.compengine.VmKeyword;
 import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import com.pretz.compiler.compengine.validator.Validator;
 import com.pretz.compiler.tokenizer.token.Token;
@@ -52,6 +53,6 @@ public class Identifier extends Terminal {
     }
 
     private String subroutineToVm() {
-        return "call " + token + " ";
+        return VmKeyword.CALL + " " + token + " ";
     }
 }

@@ -3,6 +3,7 @@ package com.pretz.compiler.compengine.expression;
 import com.pretz.compiler.compengine.Element;
 import com.pretz.compiler.compengine.construct.Construct;
 import com.pretz.compiler.compengine.symboltable.SymbolTable;
+import com.pretz.compiler.compengine.VmKeyword;
 import io.vavr.collection.List;
 
 import java.util.Objects;
@@ -19,6 +20,8 @@ import static com.pretz.compiler.util.XmlUtils.openingSquareBracket;
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.API.Match;
+import static io.vavr.Predicates.anyOf;
+import static io.vavr.Predicates.is;
 
 public class Term implements Construct {
     private static final String CONSTRUCT_NAME = "term";
@@ -130,16 +133,27 @@ public class Term implements Construct {
                 '}';
     }
 
-    //TODO(H) how to check if subroutine is function or method?
-    //TODO(H) this.termParts.size() isn't a good solution here
     @Override
     public String toVm(SymbolTable symbolTable) {
         return Match(termType).of(
-                Case($(TermType.CONSTANT), () -> "push " + termParts.get(0).toVm(symbolTable)),
-                Case($(TermType.VAR), () -> "push " + termParts.get(0).toVm(symbolTable)),
-                Case($(TermType.UNARY_OP), () -> termParts.get(1).toVm(symbolTable) + termParts.get(0).toVm(symbolTable)),
-                Case($(TermType.SUBROUTINE_CALL), () -> termParts.drop(1).map(it -> it.toVm(symbolTable)).mkString()
-                        + termParts.get(0).toVm(symbolTable) + this.termParts.size() + "\n"),
+                Case($(anyOf(is(TermType.CONSTANT), is(TermType.VAR))), () -> simpleTermToVm(symbolTable)),
+                Case($(TermType.UNARY_OP), () -> unaryOpToVm(symbolTable)),
+                Case($(TermType.SUBROUTINE_CALL), () -> subroutineCallToVm(symbolTable)),
                 Case($(), () -> "NOT YET IMPLEMENTED!"));
+    }
+
+    private String simpleTermToVm(SymbolTable symbolTable) {
+        return VmKeyword.PUSH + " " + termParts.get(0).toVm(symbolTable);
+    }
+
+    private String unaryOpToVm(SymbolTable symbolTable) {
+        return termParts.get(1).toVm(symbolTable) + termParts.get(0).toVm(symbolTable);
+    }
+
+    //TODO(H) how to check if subroutine is function or method?
+    //TODO(H) this.termParts.size() isn't a good solution here
+    private String subroutineCallToVm(SymbolTable symbolTable) {
+        return termParts.drop(1).map(it -> it.toVm(symbolTable)).mkString()
+                + termParts.get(0).toVm(symbolTable) + this.termParts.size() + "\n";
     }
 }
