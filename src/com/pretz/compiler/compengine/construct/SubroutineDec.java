@@ -5,7 +5,10 @@ import com.pretz.compiler.compengine.symboltable.Scope;
 import com.pretz.compiler.compengine.symboltable.SubroutineSymbolTableFactory;
 import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import com.pretz.compiler.compengine.terminal.Identifier;
+import com.pretz.compiler.compengine.terminal.IdentifierMeaning;
+import com.pretz.compiler.compengine.terminal.IdentifierType;
 import com.pretz.compiler.compengine.terminal.Terminal;
+import com.pretz.compiler.compengine.terminal.TerminalType;
 import com.pretz.compiler.util.VmKeyword;
 import io.vavr.collection.List;
 
@@ -26,24 +29,33 @@ public class SubroutineDec implements Construct, Scope {
     private final SubroutineBody subroutineBody;
     private final SymbolTable subroutineSymbolTable;
 
-
     public SubroutineDec(Terminal startingKeyword, Type type, Identifier subroutineName,
-                         ParameterList parameterList, SubroutineBody subroutineBody) {
+                         ParameterList parameterList, SubroutineBody subroutineBody, Identifier classIdentifier) {
         this.startingKeyword = startingKeyword;
         this.type = type;
         this.subroutineName = subroutineName;
         this.parameterList = parameterList;
         this.subroutineBody = subroutineBody;
         this.subroutineSymbolTable = new SubroutineSymbolTableFactory()
-                .create(subroutineName, filterParametersAndVarDecs(parameterList, subroutineBody));
+                .create(subroutineName, filterParametersAndVarDecs(parameterList, subroutineBody, classIdentifier));
     }
 
-    private List<Construct> filterParametersAndVarDecs(ParameterList parameterList, SubroutineBody subroutineBody) {
+    private List<Construct> filterParametersAndVarDecs(ParameterList parameterList, SubroutineBody subroutineBody, Identifier classIdentifier) {
         return parameterList.parameters()
+                .prepend(addThisArgument(startingKeyword, classIdentifier))
                 .map(it -> (Construct) it)
                 .appendAll(subroutineBody.subroutineBody()
                         .filter(it -> it instanceof VarDec)
                 );
+    }
+
+    private Parameter addThisArgument(Terminal startingKeyword, Identifier classIdentifier) {
+        if (startingKeyword.token().equals("method")) {
+            Type thisType = new Type(classIdentifier);
+            Identifier thisVarName = new Identifier("this", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE, IdentifierType.CLASS);
+            return new Parameter(thisType, thisVarName);
+        }
+        else return null;
     }
 
     @Override

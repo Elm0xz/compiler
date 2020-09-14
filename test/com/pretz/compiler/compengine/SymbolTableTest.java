@@ -2,6 +2,11 @@ package com.pretz.compiler.compengine;
 
 import com.pretz.compiler.compengine.construct.ClassVarDec;
 import com.pretz.compiler.compengine.construct.Construct;
+import com.pretz.compiler.compengine.construct.Parameter;
+import com.pretz.compiler.compengine.construct.ParameterList;
+import com.pretz.compiler.compengine.construct.SubroutineBody;
+import com.pretz.compiler.compengine.construct.SubroutineDec;
+import com.pretz.compiler.compengine.construct.VarDec;
 import com.pretz.compiler.compengine.symboltable.ClassSymbolTableFactory;
 import com.pretz.compiler.compengine.symboltable.Kind;
 import com.pretz.compiler.compengine.symboltable.SubroutineSymbolTableFactory;
@@ -9,6 +14,7 @@ import com.pretz.compiler.compengine.symboltable.Symbol;
 import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
+import io.vavr.collection.Seq;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -115,13 +121,38 @@ public class SymbolTableTest {
     }
 
     @Test
-    public void shouldAddSubroutineIdentifiers() {
-        List<Construct> declarations = List.of(
+    public void shouldAddMethodIdentifiersIncludingThisParameter() {
+        List<Parameter> parameters = List.of(
                 $_.parameter("int", "x"),
-                $_.parameter("int", "a"),
-                $_.varDec("int", $_.varNames("y", "z")));
+                $_.parameter("int", "a"));
+        List<Construct> declarations = List.of($_.varDec("int", $_.varNames("y", "z")));
+        SymbolTable symbolTable = $_.subroutineDec("method", "void", "doStuff", "Dog",
+                new ParameterList(parameters), new SubroutineBody(declarations)).symbolTable();
 
-        SymbolTable symbolTable = subroutineFactory.create($_.subroutineUsageIdentifier("doStuff"), declarations);
+        Assertions.assertThat(symbolTable.size()).isEqualTo(5);
+        Assertions.assertThat(symbolTable).isEqualTo(new SymbolTable($_.subroutineUsageIdentifier("doStuff"),
+                HashMap.of(
+                        $_.varDefIdentifier("this"),
+                        symbolId("Dog", Kind.ARGUMENT, 0),
+                        $_.varDefIdentifier("x"),
+                        symbolId("int", Kind.ARGUMENT, 1),
+                        $_.varDefIdentifier("a"),
+                        symbolId("int", Kind.ARGUMENT, 2),
+                        $_.varDefIdentifier("y"),
+                        symbolId("int", Kind.VAR, 0),
+                        $_.varDefIdentifier("z"),
+                        symbolId("int", Kind.VAR, 1))
+        ));
+    }
+
+    @Test
+    public void shouldAddFunctionIdentifiersWithoutThisParameter() {
+        List<Parameter> parameters = List.of(
+                $_.parameter("int", "x"),
+                $_.parameter("int", "a"));
+        List<Construct> declarations = List.of($_.varDec("int", $_.varNames("y", "z")));
+        SymbolTable symbolTable = $_.subroutineDec("function", "void", "doStuff", "Dog",
+                new ParameterList(parameters), new SubroutineBody(declarations)).symbolTable();
 
         Assertions.assertThat(symbolTable.size()).isEqualTo(4);
         Assertions.assertThat(symbolTable).isEqualTo(new SymbolTable($_.subroutineUsageIdentifier("doStuff"),

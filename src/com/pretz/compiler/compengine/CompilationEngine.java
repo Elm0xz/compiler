@@ -50,7 +50,7 @@ public class CompilationEngine {
         consumeClassKeyword(tokens);
         Identifier identifier = consumeClassIdentifier(tokens);
         consumeClassOrSubroutineBodyOpeningBracket(tokens);
-        List<Construct> declarations = compileDeclarations(tokens);
+        List<Construct> declarations = compileDeclarations(tokens, identifier);
         consumeClassOrSubroutineBodyClosingBracket(tokens);
         return new Class(identifier, declarations);
     }
@@ -72,12 +72,12 @@ public class CompilationEngine {
         tokens.advance();
     }
 
-    private List<Construct> compileDeclarations(Tokens tokens) {
+    private List<Construct> compileDeclarations(Tokens tokens, Identifier identifier) {
         ArrayList<Construct> declarations = new ArrayList<>(); //TODO(L) refactor to something cleaner?
         while (!tokens.isLast()) {
             declarations.add(Match(tokens.current()).of(
                     Case($(matcher.isClassVarDec()), () -> compileClassVarDec(tokens)),
-                    Case($(matcher.isSubroutineDec()), () -> compileSubroutine(tokens)),
+                    Case($(matcher.isSubroutineDec()), () -> compileSubroutine(tokens, identifier)),
                     Case($(), this::throwInvalidDeclarationException)
             ));
         }
@@ -97,7 +97,7 @@ public class CompilationEngine {
         tokens.advance();
     }
 
-    private SubroutineDec compileSubroutine(Tokens tokens) {
+    private SubroutineDec compileSubroutine(Tokens tokens, Identifier classIdentifier) {
         Terminal startingKeyword = consumeStartingKeyword(tokens);
         Type type = consumeSubroutineType(tokens);
         Identifier subroutineName = consumeSubroutineName(tokens);
@@ -105,7 +105,7 @@ public class CompilationEngine {
         ParameterList parameterList = compileParameterList(tokens);
         consumeSubroutineParametersClosingBracket(tokens);
         SubroutineBody subroutineBody = compileSubroutineBody(tokens);
-        return new SubroutineDec(startingKeyword, type, subroutineName, parameterList, subroutineBody);
+        return new SubroutineDec(startingKeyword, type, subroutineName, parameterList, subroutineBody, classIdentifier);
     }
 
     private Construct throwInvalidDeclarationException() {

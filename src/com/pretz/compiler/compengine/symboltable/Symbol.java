@@ -30,7 +30,7 @@ public class Symbol {
 
     @Override
     public String toString() {
-        return "SymbolId{" +
+        return "Symbol{" +
                 "type=" + type +
                 ", kind=" + kind +
                 ", id=" + id +

@@ -95,9 +95,19 @@ public class VmCodeGenerationTest {
         );
     }
 
-    //TODO(H) we should differentiate between various types of subroutines!
-    //TODO(H) subroutine call with function instead of method
-    //TODO(H) implementation for this test does not work properly
+    //TODO(H) Follow the slides!
+
+    //TODO(H) expression in brackets
+
+    //TODO(H) test for comparison operators (with if statement, probably)
+    //TODO(H) string constant, keyword constant
+    //TODO(H) array term (and array left-side)
+
+    //TODO(H) test of using class scope symbol table in subroutines
+
+    //TODO(H) if, while, do, return statements
+
+    //TODO(H) implementation for this test does not work properly??
     @Test
     public void shouldTranslateLetStatementWithSubroutineCall() {
         LetStatement testLetStatement = new LetStatement(
@@ -125,15 +135,6 @@ public class VmCodeGenerationTest {
         );
     }
 
-    //TODO(H) expression in brackets
-
-    //TODO(H) test for comparison operators (with if statement, probably)
-    //TODO(H) string constant, keyword constant
-    //TODO(H) array term (and array left-side)
-
-    //TODO(H) test of using class scope symbol table in subroutines
-
-    //TODO(H) if, while, do, return statements
     private static Stream<Arguments> operators() {
         return Stream.of(
                 Arguments.of("+", "add", "int"),
