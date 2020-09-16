@@ -3,7 +3,9 @@ package com.pretz.compiler.util;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.Set;
 
-public class Lexicals {
+public final class Lexicals {
+
+    private Lexicals() {};
 
     private static final Set<Character> nonOps = HashSet.of(
             '{', '}',

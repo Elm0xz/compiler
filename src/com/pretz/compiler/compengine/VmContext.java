@@ -20,15 +20,16 @@ public class VmContext {
     }
 
     /**Merges class symbol table with subroutine symbol table and creates label used for if/while statements.*/
-    public VmContext mergeTablesAddingStatementId(VmContext subroutineVmContext, Integer statementId) {
+    public VmContext mergeTablesAddingStatementId(VmContext subroutineVmContext, String statementId) {
         return new VmContext(this.symbolTable().merge(subroutineVmContext.symbolTable()), "L" + subroutineVmContext.label() + statementId(statementId));
     }
 
-    public VmContext addStatementId(Integer statementId) {
-        return new VmContext(this.symbolTable(), this.label + statementId(statementId));
+    /**Adds additional statement id to nested statements inside if/while statements. */
+    public VmContext addStatementId(String statementId) {
+        return new VmContext(this.symbolTable(), this.label + statementId);
     }
 
-    private String statementId(Integer statementId) {
+    private String statementId(String statementId) {
         return statementId + "_";
     }
 }

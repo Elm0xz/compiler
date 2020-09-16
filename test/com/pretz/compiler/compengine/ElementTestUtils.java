@@ -16,6 +16,7 @@ import com.pretz.compiler.compengine.expression.OpTerm;
 import com.pretz.compiler.compengine.expression.Term;
 import com.pretz.compiler.compengine.expression.TermType;
 import com.pretz.compiler.compengine.statement.DoStatement;
+import com.pretz.compiler.compengine.statement.LetStatement;
 import com.pretz.compiler.compengine.statement.ReturnStatement;
 import com.pretz.compiler.compengine.terminal.Identifier;
 import com.pretz.compiler.compengine.terminal.IdentifierMeaning;
@@ -132,7 +133,7 @@ public class ElementTestUtils {
     }
 
     protected Term subroutineCallTerm(String token, Expression expression) {
-        return new Term(TermType.SUBROUTINE_CALL, varUsageIdentifier(token), expression);
+        return new Term(TermType.SUBROUTINE_CALL, subroutineUsageIdentifier(token), expression);
     }
 
     protected Term subroutineCallTerm(String token, List<Expression> expressions) {
@@ -189,5 +190,16 @@ public class ElementTestUtils {
 
     protected ReturnStatement returnStatement(Expression expression) {
         return new ReturnStatement(expression);
+    }
+
+    protected LetStatement letStatement(String var, Expression expression) {
+        return letStatement(var, null, expression);
+    }
+
+    protected LetStatement letStatement(String var, Expression arrayExpression, Expression expression) {
+        return new LetStatement(
+                varUsageIdentifier(var),
+                arrayExpression,
+                expression);
     }
 }

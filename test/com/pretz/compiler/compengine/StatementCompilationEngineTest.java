@@ -150,6 +150,6 @@ public class StatementCompilationEngineTest {
     public void shouldCompileLetStatement() {
         Tokens tokens = $$.letStatementTokens();
 
-        Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo($.letStatement());
+        Assertions.assertThat(engine.compileStatement(tokens)).isEqualTo($.letStatementWithArray());
     }
 }

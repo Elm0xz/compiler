@@ -53,6 +53,21 @@ public class LetStatement implements Statement {
                     closingSquareBracket(indLvl);
         }
     }
+    @Override
+    public String toVm(VmContext vmContext) {
+        return List.of(rightSideToVm(vmContext),
+                leftSideToVm(vmContext.symbolTable()))
+                .mkString();
+    }
+
+    //TODO(M) handle array expressions here too
+    private String leftSideToVm(SymbolTable symbolTable) {
+        return POP + " " + (symbolTable.get(varName).toVm());
+    }
+
+    private String rightSideToVm(VmContext vmContext) {
+        return assignedExpression.toVm(vmContext);
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -76,21 +91,5 @@ public class LetStatement implements Statement {
                 ", arrayExpression=" + arrayExpression +
                 ", assignedExpression=" + assignedExpression +
                 '}';
-    }
-
-    @Override
-    public String toVm(VmContext vmContext) {
-        return List.of(rightSideToVm(vmContext),
-                leftSideToVm(vmContext.symbolTable()))
-                .mkString();
-    }
-
-    //TODO(M) handle array expressions here too
-    private String leftSideToVm(SymbolTable symbolTable) {
-        return POP + " " + (symbolTable.get(varName).toVm());
-    }
-
-    private String rightSideToVm(VmContext vmContext) {
-        return assignedExpression.toVm(vmContext);
     }
 }

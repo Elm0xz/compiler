@@ -94,7 +94,7 @@ public class SubroutineDec implements Construct, Scope {
                 subroutineBody.subroutineBody().zipWithIndex()
                         .map(it -> it._1().toVm(
                                 classSymbolTableAndScope.mergeTablesAddingStatementId(
-                                        this.subroutineSymbolTableAndScope, it._2())))
+                                        this.subroutineSymbolTableAndScope, it._2().toString())))
                         .mkString();
     }
 

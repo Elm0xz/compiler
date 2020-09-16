@@ -6,7 +6,6 @@ import com.pretz.compiler.compengine.statement.IfStatement;
 import com.pretz.compiler.compengine.statement.LetStatement;
 import com.pretz.compiler.compengine.statement.ReturnStatement;
 import com.pretz.compiler.compengine.statement.WhileStatement;
-import com.pretz.compiler.compengine.terminal.IdentifierMeaning;
 import com.pretz.compiler.compengine.terminal.TerminalType;
 import com.pretz.compiler.tokenizer.token.TokenType;
 import io.vavr.collection.List;
@@ -94,12 +93,8 @@ public class StatementCompilationEngineTestConstructs {
         );
     }
 
-    protected LetStatement letStatement() {
-        return new LetStatement(
-                $.varUsageIdentifier("x"),
-                $.expression($.constantTerm("5", TerminalType.INT_CONST)),
-                $.expression($.subroutineCallTerm("doStuff", $.expression($.constantTerm("3", TerminalType.INT_CONST))))
-        );
+    protected LetStatement letStatementWithArray() {
+        return $.letStatement("x", $.expression($.constantTerm("5", TerminalType.INT_CONST)), $.expression($.subroutineCallTerm("doStuff", $.expression($.constantTerm("3", TerminalType.INT_CONST)))));
     }
 
     static Stream<Arguments> arrayIndexTokensExpressions() {

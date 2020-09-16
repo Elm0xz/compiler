@@ -1,11 +1,18 @@
 package com.pretz.compiler.compengine.statement;
 
+import com.pretz.compiler.compengine.VmContext;
 import com.pretz.compiler.compengine.expression.Expression;
 import io.vavr.collection.List;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.pretz.compiler.compengine.VmKeyword.NOT;
+import static com.pretz.compiler.compengine.statement.ConditionalUtils.falseToGotoVm;
+import static com.pretz.compiler.compengine.statement.ConditionalUtils.falseToLabelVm;
+import static com.pretz.compiler.compengine.statement.ConditionalUtils.statementsToVm;
+import static com.pretz.compiler.compengine.statement.ConditionalUtils.trueToGotoVm;
+import static com.pretz.compiler.compengine.statement.ConditionalUtils.trueToLabelVm;
 import static com.pretz.compiler.util.XmlUtils.basicClosingTag;
 import static com.pretz.compiler.util.XmlUtils.basicOpeningTag;
 import static com.pretz.compiler.util.XmlUtils.closingCurlyBracket;
@@ -46,6 +53,17 @@ public class WhileStatement implements Statement {
     private String statementsToXml(int indLvl) {
         return statements.map(it -> it.toXml(indLvl))
                 .collect(Collectors.joining());
+    }
+
+    @Override
+    public String toVm(VmContext vmContext) {
+        return trueToLabelVm(vmContext.label()) +
+                condition.toVm(vmContext) +
+                NOT + "\n" +
+                falseToGotoVm(vmContext.label()) +
+                statementsToVm(vmContext, statements, "") +
+                trueToGotoVm(vmContext.label()) +
+                falseToLabelVm(vmContext.label());
     }
 
     @Override

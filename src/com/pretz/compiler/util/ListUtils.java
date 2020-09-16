@@ -2,7 +2,9 @@ package com.pretz.compiler.util;
 
 import io.vavr.collection.List;
 
-public class ListUtils {
+public final class ListUtils {
+
+    private ListUtils() {};
 
     public static <T> List<T> appendTo(List<T> list, T el) {
         return list.append(el);

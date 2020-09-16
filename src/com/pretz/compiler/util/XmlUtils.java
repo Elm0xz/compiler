@@ -1,6 +1,8 @@
 package com.pretz.compiler.util;
 
-public class XmlUtils {
+public final class XmlUtils {
+
+    private XmlUtils() {};
 
     public static String indent(int indLvl) {
         String indent = "";

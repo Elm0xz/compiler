@@ -11,6 +11,11 @@ import static com.pretz.compiler.compengine.VmKeyword.GOTO;
 import static com.pretz.compiler.compengine.VmKeyword.IF_GOTO;
 import static com.pretz.compiler.compengine.VmKeyword.LABEL;
 import static com.pretz.compiler.compengine.VmKeyword.NOT;
+import static com.pretz.compiler.compengine.statement.ConditionalUtils.falseToGotoVm;
+import static com.pretz.compiler.compengine.statement.ConditionalUtils.falseToLabelVm;
+import static com.pretz.compiler.compengine.statement.ConditionalUtils.statementsToVm;
+import static com.pretz.compiler.compengine.statement.ConditionalUtils.trueToGotoVm;
+import static com.pretz.compiler.compengine.statement.ConditionalUtils.trueToLabelVm;
 import static com.pretz.compiler.util.XmlUtils.basicClosingTag;
 import static com.pretz.compiler.util.XmlUtils.basicOpeningTag;
 import static com.pretz.compiler.util.XmlUtils.closingCurlyBracket;
@@ -79,42 +84,13 @@ public class IfStatement implements Statement {
     public String toVm(VmContext vmContext) {
         return condition.toVm(vmContext) +
                 NOT + "\n" +
-                elseToGotoVm(vmContext.label()) +
-                statementsToVm(vmContext, ifStatements) +
-                ifToGotoVm(vmContext.label()) +
-                elseToLabelVm(vmContext.label()) +
-                statementsToVm(vmContext, elseStatements) +
-                ifToLabelVm(vmContext.label());
+                falseToGotoVm(vmContext.label()) +
+                statementsToVm(vmContext, ifStatements, "true") +
+                trueToGotoVm(vmContext.label()) +
+                falseToLabelVm(vmContext.label()) +
+                statementsToVm(vmContext, elseStatements, "false") +
+                trueToLabelVm(vmContext.label());
 
-    }
-
-    private String statementsToVm(VmContext vmContext, List<Statement> statements) {
-        return statements.zipWithIndex()
-                .map(it -> it._1().toVm(vmContext.addStatementId(it._2()))).mkString();
-    }
-
-    private String elseToGotoVm(String label) {
-        return IF_GOTO + " " + elseLabel(label);
-    }
-
-    private String ifToGotoVm(String label) {
-        return GOTO + " " + ifLabel(label);
-    }
-
-    private String elseToLabelVm(String label) {
-        return LABEL + " " + elseLabel(label);
-    }
-
-    private String ifToLabelVm(String label) {
-        return LABEL + " " + ifLabel(label);
-    }
-
-    private String elseLabel(String label) {
-        return label + "b\n";
-    }
-
-    private String ifLabel(String label) {
-        return label + "a\n";
     }
 
     @Override

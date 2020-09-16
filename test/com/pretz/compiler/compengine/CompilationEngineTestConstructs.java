@@ -57,11 +57,7 @@ public class CompilationEngineTestConstructs {
                 List.of(
                         $.varDec("int", $.varNames("x", "y")),
                         $.varDec("Dog", $.oneVarName("dog")),
-                        new LetStatement(
-                                $.varUsageIdentifier("x"),
-                                null,
-                                $.expression($.constantTerm("5", TerminalType.INT_CONST))
-                        ),
+                        $.letStatement("x", $.expression($.constantTerm("5", TerminalType.INT_CONST))),
                         new ReturnStatement(
                                 $.expression($.varNameTerm("x")))
                 )

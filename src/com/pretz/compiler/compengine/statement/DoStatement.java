@@ -1,5 +1,6 @@
 package com.pretz.compiler.compengine.statement;
 
+import com.pretz.compiler.compengine.VmContext;
 import com.pretz.compiler.compengine.expression.Term;
 
 import java.util.Objects;
@@ -27,6 +28,11 @@ public class DoStatement implements Statement {
                 subroutineCall.subroutineCallToXml(indLvl) +
                 semicolon(indLvl) +
                 basicClosingTag(indLvl - 1, CONSTRUCT_NAME);
+    }
+
+    @Override
+    public String toVm(VmContext vmContext) {
+        return subroutineCall.toVm(vmContext);
     }
 
     @Override
