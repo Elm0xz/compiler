@@ -13,6 +13,6 @@ public interface Construct extends Element {
     }
 
     default String toVm(VmContext vmContext) {
-        return "NOT YET IMPLEMENTED\n";
+        return "Generic Construct - NOT YET IMPLEMENTED\n";
     }
 }

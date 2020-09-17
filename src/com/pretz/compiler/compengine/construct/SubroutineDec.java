@@ -91,7 +91,9 @@ public class SubroutineDec implements Construct, Scope {
     @Override
     public String toVm(VmContext classSymbolTableAndScope) {
         return function() + "\n" +
-                subroutineBody.subroutineBody().zipWithIndex()
+                subroutineBody.subroutineBody()
+                        .filterNot(it -> it instanceof VarDec)
+                        .zipWithIndex()
                         .map(it -> it._1().toVm(
                                 classSymbolTableAndScope.mergeTablesAddingStatementId(
                                         this.subroutineSymbolTableAndScope, it._2().toString())))

@@ -17,6 +17,7 @@ import java.util.function.Predicate;
 import static com.pretz.compiler.compengine.terminal.TerminalKeywordType.FALSE;
 import static com.pretz.compiler.compengine.terminal.TerminalKeywordType.THIS;
 import static com.pretz.compiler.compengine.terminal.TerminalKeywordType.TRUE;
+import static com.pretz.compiler.compengine.terminal.TerminalType.STRING_CONST;
 import static com.pretz.compiler.util.XmlUtils.indent;
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
@@ -84,7 +85,7 @@ public class Terminal implements Element {
                 Case($(TerminalType.OP), "symbol"),
                 Case($(TerminalType.UNARY_OP), "symbol"),
                 Case($(TerminalType.INT_CONST), "integerConstant"),
-                Case($(TerminalType.STRING_CONST), "stringConstant")
+                Case($(STRING_CONST), "stringConstant")
         );
     }
 
@@ -135,8 +136,8 @@ public class Terminal implements Element {
                 Case($(TerminalType.OP), this::opToVm),
                 Case($(TerminalType.UNARY_OP), this::unaryOpToVm),
                 Case($(TerminalType.INT_CONST), VmKeyword.CONSTANT + " " + token + "\n"),
-                Case($(TerminalType.STRING_CONST), "NOT YET IMPLEMENTED\n"),
-                Case($(), "NOT YET IMPLEMENTED\n")
+                Case($(STRING_CONST), STRING_CONST + " NOT YET IMPLEMENTED\n"),
+                Case($(), "Generic Terminal - NOT YET IMPLEMENTED\n")
         );
     }
 
@@ -144,7 +145,7 @@ public class Terminal implements Element {
         return Match(keywordType).of(
                 Case($(TRUE), VmKeyword.CONSTANT + " 1\n"),
                 Case($(FALSE), VmKeyword.CONSTANT + " 0\n"),
-                Case($(THIS), "NOT YET IMPLEMENTED\n"), //TODO is it needed here?
+                Case($(THIS), THIS.toString() + " NOT YET IMPLEMENTED\n"), //TODO is it needed here?
                 Case($(), this::throwIllegalKeywordException));
     }
 
@@ -158,7 +159,7 @@ public class Terminal implements Element {
                 Case($(">"), VmKeyword.GT + "\n"),
                 Case($("<"), VmKeyword.LT + "\n"),
                 Case($("="), VmKeyword.EQ + "\n"),
-                Case($(), "NOT YET IMPLEMEMENTED\n"));
+                Case($(), "Generic Op - NOT YET IMPLEMEMENTED\n"));
     }
 
     private String unaryOpToVm() {

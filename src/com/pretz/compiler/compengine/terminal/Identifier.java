@@ -44,7 +44,8 @@ public class Identifier extends Terminal {
     public String toVm(VmContext vmContext) {
         return Match(identifierType).of(
                 Case($(IdentifierType.VAR), () -> varToVm(vmContext.symbolTable())),
-                Case($(IdentifierType.SUBROUTINE), this::subroutineToVm),
+                Case($(IdentifierType.SUBROUTINE), this::token),
+                Case($(IdentifierType.CLASS), this::token),
                 Case($(), () -> "NOT YET IMPLEMENTED!")
         );
     }
@@ -54,7 +55,7 @@ public class Identifier extends Terminal {
         return symbol.toVm();
     }
 
-    private String subroutineToVm() {
-        return VmKeyword.CALL + " " + token + " ";
+    public IdentifierType identifierType() {
+        return identifierType;
     }
 }
