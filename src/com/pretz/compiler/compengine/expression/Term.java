@@ -5,6 +5,7 @@ import com.pretz.compiler.compengine.VmContext;
 import com.pretz.compiler.compengine.VmKeyword;
 import com.pretz.compiler.compengine.construct.Construct;
 import com.pretz.compiler.compengine.terminal.Identifier;
+import com.pretz.compiler.compengine.terminal.IdentifierMeaning;
 import com.pretz.compiler.compengine.terminal.IdentifierType;
 import io.vavr.collection.List;
 
@@ -164,8 +165,22 @@ public class Term implements Construct {
 
     private List<Element> subroutineCallParameters() {
         if (isClassSubroutineCall()) {
-            return termParts.drop(2);
+            return classSubroutineCallParameters();
         } else return termParts.drop(1);
+    }
+
+    /**Checks if subroutine is function or method and pushes reference to method's 'this' on stack in the second case.*/
+    private List<Element> classSubroutineCallParameters() {
+        if (isStaticFunctionCall()) {
+            return termParts.drop(2);
+        } else {
+            return termParts.drop(2).prepend(thisReference());
+        }
+    }
+
+    private Term thisReference() {
+        Identifier identifier = (Identifier) termParts.head();
+        return new Term(TermType.VAR, new Identifier(identifier.token(), identifier.type(), IdentifierMeaning.USAGE, IdentifierType.VAR));
     }
 
     private String subroutineCallIdentifierToVm(VmContext vmContext) {
@@ -174,17 +189,42 @@ public class Term implements Construct {
 
     private List<Element> subroutineCallIdentifier() {
         if (isClassSubroutineCall()) {
-            return termParts.take(2);
+            return classSubroutineCallIdentifier();
         } else return List.of(termParts.get(0));
+    }
+
+    private List<Element> classSubroutineCallIdentifier() {
+        if (isStaticFunctionCall()) {
+            return termParts.take(2);
+        } else {
+            return List.of(objectReference(), termParts.get(1));
+        }
+    }
+
+    private Identifier objectReference() {
+        Identifier identifier = (Identifier) termParts.head();
+        return new Identifier(identifier.token(), identifier.type(), IdentifierMeaning.USAGE, IdentifierType.OBJECT);
     }
 
     private int subroutineCallParametersNumber() {
         if (isClassSubroutineCall()) {
-            return termParts.size() - 2;
+            return classSubroutineCallParametersNumber();
         } else return termParts.size() - 1;
+    }
+
+    private int classSubroutineCallParametersNumber() {
+        if (isStaticFunctionCall()) {
+            return termParts.size() - 2;
+        } else {
+            return termParts.size() - 1;
+        }
     }
 
     private boolean isClassSubroutineCall() {
         return termParts.head() instanceof Identifier && ((Identifier) termParts.head()).identifierType().equals(IdentifierType.CLASS);
+    }
+
+    private boolean isStaticFunctionCall() {
+        return (termParts.head() instanceof Identifier && Character.isUpperCase(((Identifier) termParts.head()).token().charAt(0)));
     }
 }

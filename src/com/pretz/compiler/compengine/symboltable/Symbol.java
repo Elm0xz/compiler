@@ -59,4 +59,8 @@ public class Symbol {
     public String toVm() {
         return kind.toVm() + " " + id + "\n";
     }
+
+    public String type() {
+        return type.type();
+    }
 }

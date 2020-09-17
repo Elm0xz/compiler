@@ -5,6 +5,8 @@ import com.pretz.compiler.compengine.expression.Term;
 
 import java.util.Objects;
 
+import static com.pretz.compiler.compengine.VmKeyword.POP;
+import static com.pretz.compiler.compengine.VmKeyword.TEMP;
 import static com.pretz.compiler.util.XmlUtils.basicClosingTag;
 import static com.pretz.compiler.util.XmlUtils.basicOpeningTag;
 import static com.pretz.compiler.util.XmlUtils.semicolon;
@@ -32,7 +34,8 @@ public class DoStatement implements Statement {
 
     @Override
     public String toVm(VmContext vmContext) {
-        return subroutineCall.toVm(vmContext);
+        return subroutineCall.toVm(vmContext) +
+                POP + " " + TEMP + " 0\n";
     }
 
     @Override

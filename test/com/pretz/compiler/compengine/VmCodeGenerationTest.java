@@ -187,7 +187,8 @@ public class VmCodeGenerationTest {
 
         Assertions.assertThat(testDoStatement.toVm(vmContext)).isEqualTo(
                         "push local 0\n" +
-                        "call TestClass.doAnotherStuff 1\n"
+                        "call TestClass.doAnotherStuff 1\n" +
+                        "pop temp 0\n"
         );
     }
 

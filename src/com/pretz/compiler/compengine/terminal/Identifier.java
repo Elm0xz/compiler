@@ -45,6 +45,7 @@ public class Identifier extends Terminal {
                 Case($(IdentifierType.VAR), () -> varToVm(vmContext.symbolTable())),
                 Case($(IdentifierType.SUBROUTINE), this::token),
                 Case($(IdentifierType.CLASS), this::token),
+                Case($(IdentifierType.OBJECT), () -> objectVarToVm(vmContext.symbolTable())),
                 Case($(), () -> "Generic Identifier - NOT YET IMPLEMENTED!")
         );
     }
@@ -52,6 +53,11 @@ public class Identifier extends Terminal {
     private String varToVm(SymbolTable symbolTable) {
         var symbol = symbolTable.get(this);
         return symbol.toVm();
+    }
+
+    private String objectVarToVm(SymbolTable symbolTable) {
+        var symbol = symbolTable.get(this);
+        return symbol.type();
     }
 
     public IdentifierType identifierType() {

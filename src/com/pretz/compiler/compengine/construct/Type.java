@@ -50,4 +50,8 @@ public class Type implements Construct {
                 "type=" + type +
                 '}';
     }
+
+    public String type() {
+        return type.token();
+    }
 }
