@@ -98,7 +98,7 @@ public class SubroutineDec implements Construct, Scope {
     @Override
     public String toVm(VmContext classSymbolTableAndScope) {
         return function() + "\n" +
-                constructorInit() +
+                constructorInit(classSymbolTableAndScope) +
                 subroutineBody.subroutineBody()
                         .filterNot(it -> it instanceof VarDec)
                         .zipWithIndex()
@@ -119,12 +119,16 @@ public class SubroutineDec implements Construct, Scope {
     /**
      * Adds additional memory allocation command when calling constructor.
      */
-    private String constructorInit() {
+    private String constructorInit(VmContext classSymbolTableAndScope) {
         if (startingKeyword.keywordType().equals(CONSTRUCTOR)) {
-            return PUSH + " " + CONSTANT + " " + parameterList.size() + "\n" +
+            return PUSH + " " + CONSTANT + " " + numberOfVariablesToInitialize(classSymbolTableAndScope.symbolTable()) + "\n" +
                     callAlloc() +
                     popNewObjectReference();
         } else return "";
+    }
+
+    private Integer numberOfVariablesToInitialize(SymbolTable classSymTab) {
+        return classSymTab.numberByKind(Kind.FIELD) + classSymTab.numberByKind(Kind.STATIC);
     }
 
     private String callAlloc() {
