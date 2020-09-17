@@ -15,6 +15,13 @@ import io.vavr.collection.List;
 
 import java.util.Objects;
 
+import static com.pretz.compiler.compengine.VmKeyword.ALLOC;
+import static com.pretz.compiler.compengine.VmKeyword.CALL;
+import static com.pretz.compiler.compengine.VmKeyword.CONSTANT;
+import static com.pretz.compiler.compengine.VmKeyword.POINTER;
+import static com.pretz.compiler.compengine.VmKeyword.POP;
+import static com.pretz.compiler.compengine.VmKeyword.PUSH;
+import static com.pretz.compiler.compengine.terminal.TerminalKeywordType.CONSTRUCTOR;
 import static com.pretz.compiler.util.XmlUtils.basicClosingTag;
 import static com.pretz.compiler.util.XmlUtils.basicOpeningTag;
 import static com.pretz.compiler.util.XmlUtils.closingRoundBracket;
@@ -91,6 +98,7 @@ public class SubroutineDec implements Construct, Scope {
     @Override
     public String toVm(VmContext classSymbolTableAndScope) {
         return function() + "\n" +
+                constructorInit() +
                 subroutineBody.subroutineBody()
                         .filterNot(it -> it instanceof VarDec)
                         .zipWithIndex()
@@ -106,6 +114,25 @@ public class SubroutineDec implements Construct, Scope {
                 subroutineSymbolTableAndScope.label(),
                 symbolTable().numberByKind(Kind.VAR))
                 .mkString(" ");
+    }
+
+    /**
+     * Adds additional memory allocation command when calling constructor.
+     */
+    private String constructorInit() {
+        if (startingKeyword.keywordType().equals(CONSTRUCTOR)) {
+            return PUSH + " " + CONSTANT + " " + parameterList.size() + "\n" +
+                    callAlloc() +
+                    popNewObjectReference();
+        } else return "";
+    }
+
+    private String callAlloc() {
+        return CALL + " " + ALLOC + " 1\n";
+    }
+
+    private String popNewObjectReference() {
+        return POP + " " + POINTER + " 0\n";
     }
 
     @Override

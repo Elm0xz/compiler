@@ -1,7 +1,6 @@
 package com.pretz.compiler.compengine.terminal;
 
 import com.pretz.compiler.compengine.VmContext;
-import com.pretz.compiler.compengine.VmKeyword;
 import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import com.pretz.compiler.compengine.validator.Validator;
 import com.pretz.compiler.tokenizer.token.Token;
@@ -46,7 +45,7 @@ public class Identifier extends Terminal {
                 Case($(IdentifierType.VAR), () -> varToVm(vmContext.symbolTable())),
                 Case($(IdentifierType.SUBROUTINE), this::token),
                 Case($(IdentifierType.CLASS), this::token),
-                Case($(), () -> "NOT YET IMPLEMENTED!")
+                Case($(), () -> "Generic Identifier - NOT YET IMPLEMENTED!")
         );
     }
 

@@ -16,6 +16,7 @@ public enum VmKeyword {
     STATIC("static"),
     FIELD("this"),
     CONSTANT("constant"),
+    POINTER("pointer"),
     PUSH("push"),
     POP("pop"),
     IF_GOTO("if-goto"),
@@ -23,7 +24,8 @@ public enum VmKeyword {
     LABEL("label"),
     FUNCTION("function"),
     CALL("call"),
-    RETURN("return");
+    RETURN("return"),
+    ALLOC("Memory.alloc");
 
     private final String keyword;
 

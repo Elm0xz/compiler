@@ -5,6 +5,8 @@ import com.pretz.compiler.compengine.expression.Expression;
 
 import java.util.Objects;
 
+import static com.pretz.compiler.compengine.VmKeyword.CONSTANT;
+import static com.pretz.compiler.compengine.VmKeyword.PUSH;
 import static com.pretz.compiler.compengine.VmKeyword.RETURN;
 import static com.pretz.compiler.util.XmlUtils.basicClosingTag;
 import static com.pretz.compiler.util.XmlUtils.basicOpeningTag;
@@ -42,9 +44,14 @@ public class ReturnStatement implements Statement {
     @Override
     public String toVm(VmContext vmContext) {
         if (expression == null) {
-            return RETURN + "\n";
+            return voidReturn() +
+                    RETURN + "\n";
         } else return expression.toVm(vmContext)
                 + RETURN + "\n";
+    }
+
+    private String voidReturn() {
+        return PUSH + " " + CONSTANT + " 0\n";
     }
 
     @Override

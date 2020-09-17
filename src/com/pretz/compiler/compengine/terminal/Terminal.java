@@ -14,6 +14,8 @@ import com.pretz.compiler.util.Lexicals;
 import java.util.Objects;
 import java.util.function.Predicate;
 
+import static com.pretz.compiler.compengine.VmKeyword.CONSTANT;
+import static com.pretz.compiler.compengine.VmKeyword.POINTER;
 import static com.pretz.compiler.compengine.terminal.TerminalKeywordType.FALSE;
 import static com.pretz.compiler.compengine.terminal.TerminalKeywordType.THIS;
 import static com.pretz.compiler.compengine.terminal.TerminalKeywordType.TRUE;
@@ -135,7 +137,7 @@ public class Terminal implements Element {
                 Case($(TerminalType.KEYWORD_CONST), this::keywordConstToVm),
                 Case($(TerminalType.OP), this::opToVm),
                 Case($(TerminalType.UNARY_OP), this::unaryOpToVm),
-                Case($(TerminalType.INT_CONST), VmKeyword.CONSTANT + " " + token + "\n"),
+                Case($(TerminalType.INT_CONST), CONSTANT + " " + token + "\n"),
                 Case($(STRING_CONST), STRING_CONST + " NOT YET IMPLEMENTED\n"),
                 Case($(), "Generic Terminal - NOT YET IMPLEMENTED\n")
         );
@@ -143,13 +145,12 @@ public class Terminal implements Element {
 
     private String keywordConstToVm() {
         return Match(keywordType).of(
-                Case($(TRUE), VmKeyword.CONSTANT + " 1\n"),
-                Case($(FALSE), VmKeyword.CONSTANT + " 0\n"),
-                Case($(THIS), THIS.toString() + " NOT YET IMPLEMENTED\n"), //TODO is it needed here?
+                Case($(TRUE), CONSTANT + " 1\n"),
+                Case($(FALSE), CONSTANT + " 0\n"),
+                Case($(THIS), POINTER + " 0\n"),
                 Case($(), this::throwIllegalKeywordException));
     }
 
-    //TODO implement comparison operators
     private String opToVm() {
         return Match(token).of(
                 Case($("+"), VmKeyword.ADD + "\n"),

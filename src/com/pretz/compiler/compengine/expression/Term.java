@@ -153,8 +153,6 @@ public class Term implements Construct {
         return termParts.get(1).toVm(vmContext) + termParts.get(0).toVm(vmContext);
     }
 
-    //TODO(H) how to check if subroutine is function or method?
-    //TODO(H) this.termParts.size() isn't a good solution here
     private String subroutineCallToVm(VmContext vmContext) {
         return subroutineCallParametersToVm(vmContext)
                 + subroutineCallIdentifierToVm(vmContext) + "\n";

@@ -57,4 +57,8 @@ public class ParameterList implements Construct {
     public List<Parameter> parameters() {
         return parameters;
     }
+
+    public int size() {
+        return parameters.size();
+    }
 }
