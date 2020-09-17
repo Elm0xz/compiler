@@ -16,16 +16,21 @@ import io.vavr.collection.List;
 import java.util.Objects;
 
 import static com.pretz.compiler.compengine.VmKeyword.ALLOC;
+import static com.pretz.compiler.compengine.VmKeyword.ARGUMENT;
 import static com.pretz.compiler.compengine.VmKeyword.CALL;
 import static com.pretz.compiler.compengine.VmKeyword.CONSTANT;
 import static com.pretz.compiler.compengine.VmKeyword.POINTER;
 import static com.pretz.compiler.compengine.VmKeyword.POP;
 import static com.pretz.compiler.compengine.VmKeyword.PUSH;
 import static com.pretz.compiler.compengine.terminal.TerminalKeywordType.CONSTRUCTOR;
+import static com.pretz.compiler.compengine.terminal.TerminalKeywordType.METHOD;
 import static com.pretz.compiler.util.XmlUtils.basicClosingTag;
 import static com.pretz.compiler.util.XmlUtils.basicOpeningTag;
 import static com.pretz.compiler.util.XmlUtils.closingRoundBracket;
 import static com.pretz.compiler.util.XmlUtils.openingRoundBracket;
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
 
 public class SubroutineDec implements Construct, Scope {
     private static final String CONSTRUCT_NAME = "subroutineDec";
@@ -98,7 +103,7 @@ public class SubroutineDec implements Construct, Scope {
     @Override
     public String toVm(VmContext classSymbolTableAndScope) {
         return function() + "\n" +
-                constructorInit(classSymbolTableAndScope) +
+                init(classSymbolTableAndScope) +
                 subroutineBody.subroutineBody()
                         .filterNot(it -> it instanceof VarDec)
                         .zipWithIndex()
@@ -116,15 +121,28 @@ public class SubroutineDec implements Construct, Scope {
                 .mkString(" ");
     }
 
+    private String init(VmContext classSymbolTableAndScope) {
+        return Match(startingKeyword.keywordType()).of(
+                Case($(CONSTRUCTOR), () -> initConstructor(classSymbolTableAndScope)),
+                Case($(METHOD), this::initMethod),
+                Case($(), () -> "Init generic subroutine - NOT YET IMPLEMENTED"));
+    }
+
+    /**
+     * Sets 'this' pointer to properly use current object reference (passed as implicit first argument of the method).
+     */
+    private String initMethod() {
+        return PUSH + " " + ARGUMENT + " 0\n" +
+                POP + " " + POINTER + " 0\n";
+    }
+
     /**
      * Adds additional memory allocation command when calling constructor.
      */
-    private String constructorInit(VmContext classSymbolTableAndScope) {
-        if (startingKeyword.keywordType().equals(CONSTRUCTOR)) {
-            return PUSH + " " + CONSTANT + " " + numberOfVariablesToInitialize(classSymbolTableAndScope.symbolTable()) + "\n" +
-                    callAlloc() +
-                    popNewObjectReference();
-        } else return "";
+    private String initConstructor(VmContext classSymbolTableAndScope) {
+        return PUSH + " " + CONSTANT + " " + numberOfVariablesToInitialize(classSymbolTableAndScope.symbolTable()) + "\n" +
+                callAlloc() +
+                popNewObjectReference();
     }
 
     private Integer numberOfVariablesToInitialize(SymbolTable classSymTab) {

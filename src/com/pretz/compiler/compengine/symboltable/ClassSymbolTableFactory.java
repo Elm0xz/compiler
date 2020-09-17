@@ -35,14 +35,14 @@ public class ClassSymbolTableFactory implements SymbolTableFactory {
     //TODO(L) maybe it could be simplified by first grouping variable declarations by type and kind and then indexing
     private Integer nextId(Tuple2<Identifier, Integer> varNameWithIndex, ClassVarDec classVarDec, List<ClassVarDec> declarations) {
         return declarations
-                .filter(isSameTypeAndKind(classVarDec))
+                .filter(isSameKind(classVarDec))
                 .takeUntil(isCurrent(classVarDec))
                 .flatMap(it -> it.varNames().varNames())
                 .length() + varNameWithIndex._2;
     }
 
-    private Predicate<ClassVarDec> isSameTypeAndKind(ClassVarDec classVarDec) {
-        return it -> it.type().equals(classVarDec.type()) && it.startingKeyword().equals(classVarDec.startingKeyword());
+    private Predicate<ClassVarDec> isSameKind(ClassVarDec classVarDec) {
+        return it -> it.startingKeyword().equals(classVarDec.startingKeyword());
     }
 
     private Predicate<ClassVarDec> isCurrent(ClassVarDec classVarDec) {

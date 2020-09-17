@@ -169,7 +169,7 @@ public class Term implements Construct {
         } else return termParts.drop(1);
     }
 
-    /**Checks if subroutine is function or method and pushes reference to method's 'this' on stack in the second case.*/
+    /**Checks if subroutine is function or method and prepends reference to methods' 'this' object in the second case.*/
     private List<Element> classSubroutineCallParameters() {
         if (isStaticFunctionCall()) {
             return termParts.drop(2);
@@ -178,6 +178,7 @@ public class Term implements Construct {
         }
     }
 
+    /**Creates additional Term with dependent object variable on calling any of its methods.*/
     private Term thisReference() {
         Identifier identifier = (Identifier) termParts.head();
         return new Term(TermType.VAR, new Identifier(identifier.token(), identifier.type(), IdentifierMeaning.USAGE, IdentifierType.VAR));

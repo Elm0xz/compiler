@@ -91,6 +91,7 @@ public class SymbolTableTest {
         return new Symbol($_.type(type), kind, id);
     }
 
+    //TODO (H) I found a bug here: ids should be granted per keyword, not per keyword & type pair
     @Test
     public void shouldAddSeveralClassVariableIdentifiersWithDifferentTypesAndKinds() {
         List<Construct> classVarDecs = List.of(
@@ -113,7 +114,7 @@ public class SymbolTableTest {
                         $_.varDefIdentifier("a"),
                         symbolId("int", Kind.STATIC, 0),
                         $_.varDefIdentifier("dog"),
-                        symbolId("Dog", Kind.FIELD, 0))
+                        symbolId("Dog", Kind.FIELD, 3))
         ));
     }
 
