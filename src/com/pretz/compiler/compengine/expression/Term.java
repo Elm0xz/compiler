@@ -3,11 +3,9 @@ package com.pretz.compiler.compengine.expression;
 import com.pretz.compiler.compengine.Element;
 import com.pretz.compiler.compengine.VmContext;
 import com.pretz.compiler.compengine.construct.Construct;
-import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import com.pretz.compiler.compengine.terminal.Identifier;
 import com.pretz.compiler.compengine.terminal.IdentifierMeaning;
 import com.pretz.compiler.compengine.terminal.IdentifierType;
-import com.pretz.compiler.compengine.terminal.Terminal;
 import com.pretz.compiler.compengine.terminal.TerminalType;
 import io.vavr.collection.List;
 
@@ -16,10 +14,11 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.pretz.compiler.compengine.VmKeyword.ADD;
+import static com.pretz.compiler.compengine.VmKeyword.ARRAY;
 import static com.pretz.compiler.compengine.VmKeyword.CALL;
 import static com.pretz.compiler.compengine.VmKeyword.POINTER;
+import static com.pretz.compiler.compengine.VmKeyword.POP;
 import static com.pretz.compiler.compengine.VmKeyword.PUSH;
-import static com.pretz.compiler.compengine.terminal.TerminalType.STRING_CONST;
 import static com.pretz.compiler.util.XmlUtils.basicClosingTag;
 import static com.pretz.compiler.util.XmlUtils.basicOpeningTag;
 import static com.pretz.compiler.util.XmlUtils.closingRoundBracket;
@@ -157,7 +156,7 @@ public class Term implements Construct {
 
     private String simpleTermToVm(VmContext vmContext) {
         //if ((Terminal) termParts.head().type().equals(STRING_CONST))
-            return PUSH + " " + termParts.get(0).toVm(vmContext);
+        return PUSH + " " + termParts.get(0).toVm(vmContext);
     }
 
     private String unaryOpToVm(VmContext vmContext) {
@@ -296,8 +295,10 @@ public class Term implements Construct {
     }
 
     private String varArrayToVm(VmContext vmContext) {
-        return termParts.map(it -> it.toVm(vmContext)).mkString() +
-                ADD + "\n";
+        return PUSH + " " + termParts.map(it -> it.toVm(vmContext)).mkString() +
+                ADD + "\n" +
+                POP + " " + POINTER + " 1\n" +
+                PUSH + " " + ARRAY + " 0\n";
     }
 
     private String expressionInBracketsToVm(VmContext vmContext) {

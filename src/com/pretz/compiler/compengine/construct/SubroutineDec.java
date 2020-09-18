@@ -125,7 +125,7 @@ public class SubroutineDec implements Construct, Scope {
         return Match(startingKeyword.keywordType()).of(
                 Case($(CONSTRUCTOR), () -> initConstructor(classSymbolTableAndScope)),
                 Case($(METHOD), this::initMethod),
-                Case($(), () -> "Init generic subroutine - NOT YET IMPLEMENTED"));
+                Case($(), () -> ""));
     }
 
     /**

@@ -1,6 +1,5 @@
 package com.pretz.compiler.compengine;
 
-//TODO(H) refactor other vm keywords to this file
 public enum VmKeyword {
     ADD("add"),
     SUB("sub"),
@@ -28,7 +27,10 @@ public enum VmKeyword {
     CALL("call"),
     RETURN("return"),
     ALLOC("Memory.alloc"),
-    STRING_APPEND("String.appendChar");
+    STRING_NEW("String.new"),
+    STRING_APPEND("String.appendChar"),
+    MULT("Math.multiply 2"),
+    DIV("Math.divide 2");
 
     private final String keyword;
 

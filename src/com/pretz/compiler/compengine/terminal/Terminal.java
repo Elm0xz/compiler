@@ -15,11 +15,24 @@ import io.vavr.collection.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
+import static com.pretz.compiler.compengine.VmKeyword.ADD;
+import static com.pretz.compiler.compengine.VmKeyword.AND;
 import static com.pretz.compiler.compengine.VmKeyword.CALL;
 import static com.pretz.compiler.compengine.VmKeyword.CONSTANT;
+import static com.pretz.compiler.compengine.VmKeyword.DIV;
+import static com.pretz.compiler.compengine.VmKeyword.EQ;
+import static com.pretz.compiler.compengine.VmKeyword.GT;
+import static com.pretz.compiler.compengine.VmKeyword.LT;
+import static com.pretz.compiler.compengine.VmKeyword.MULT;
+import static com.pretz.compiler.compengine.VmKeyword.NEG;
+import static com.pretz.compiler.compengine.VmKeyword.OR;
 import static com.pretz.compiler.compengine.VmKeyword.POINTER;
+import static com.pretz.compiler.compengine.VmKeyword.PUSH;
 import static com.pretz.compiler.compengine.VmKeyword.STRING_APPEND;
+import static com.pretz.compiler.compengine.VmKeyword.STRING_NEW;
+import static com.pretz.compiler.compengine.VmKeyword.SUB;
 import static com.pretz.compiler.compengine.terminal.TerminalKeywordType.FALSE;
+import static com.pretz.compiler.compengine.terminal.TerminalKeywordType.NULL;
 import static com.pretz.compiler.compengine.terminal.TerminalKeywordType.THIS;
 import static com.pretz.compiler.compengine.terminal.TerminalKeywordType.TRUE;
 import static com.pretz.compiler.compengine.terminal.TerminalType.INT_CONST;
@@ -151,21 +164,25 @@ public class Terminal implements Element {
 
     private String keywordConstToVm() {
         return Match(keywordType).of(
-                Case($(TRUE), CONSTANT + " 1\n"),
+                Case($(TRUE), CONSTANT + " 1\n"
+                        + NEG + "\n"),
                 Case($(FALSE), CONSTANT + " 0\n"),
                 Case($(THIS), POINTER + " 0\n"),
+                Case($(NULL), CONSTANT + " 0\n"),
                 Case($(), this::throwIllegalKeywordException));
     }
 
     private String opToVm() {
         return Match(token).of(
-                Case($("+"), VmKeyword.ADD + "\n"),
-                Case($("-"), VmKeyword.SUB + "\n"),
-                Case($("&"), VmKeyword.AND + "\n"),
-                Case($("|"), VmKeyword.OR + "\n"),
-                Case($(">"), VmKeyword.GT + "\n"),
-                Case($("<"), VmKeyword.LT + "\n"),
-                Case($("="), VmKeyword.EQ + "\n"),
+                Case($("+"), ADD + "\n"),
+                Case($("-"), SUB + "\n"),
+                Case($("&"), AND + "\n"),
+                Case($("|"), OR + "\n"),
+                Case($(">"), GT + "\n"),
+                Case($("<"), LT + "\n"),
+                Case($("="), EQ + "\n"),
+                Case($("*"), CALL + " " + MULT + "\n"),
+                Case($("/"), CALL + " " + DIV + "\n"),
                 Case($(), "Generic Op - NOT YET IMPLEMENTED\n"));
     }
 
@@ -177,14 +194,20 @@ public class Terminal implements Element {
     }
 
     private String stringConstToVm() {
-        return List.ofAll(token.toCharArray())
-                .map(this::characterToVm)
-                .mkString();
+        return createNewString() +
+                List.ofAll(token.toCharArray())
+                        .map(this::characterToVm)
+                        .mkString();
+    }
+
+    private String createNewString() {
+        return CONSTANT + " " + token.length() + "\n" +
+                CALL + " " + STRING_NEW + " 1\n";
     }
 
     //TODO(!!!) Here you need to add String.new etc (Average/Main.jack)
     private String characterToVm(char ch) {
-        return CONSTANT + " " + (int) ch + "\n" +
+        return PUSH + " " + CONSTANT + " " + (int) ch + "\n" +
                 CALL + " " + STRING_APPEND + " 2\n";
     }
 
