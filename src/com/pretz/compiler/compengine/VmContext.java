@@ -19,12 +19,12 @@ public class VmContext {
         return label;
     }
 
-    /**Merges class symbol table with subroutine symbol table and creates label used for if/while statements.*/
+    /** Merges class symbol table with subroutine symbol table and creates label used for if/while statements.*/
     public VmContext mergeTablesAddingStatementId(VmContext subroutineVmContext, String statementId) {
         return new VmContext(this.symbolTable().merge(subroutineVmContext.symbolTable()), "L" + subroutineVmContext.label() + statementId(statementId));
     }
 
-    /**Adds additional statement id to nested statements inside if/while statements. */
+    /** Adds additional statement id to nested statements inside if/while statements. */
     public VmContext addStatementId(String statementId) {
         return new VmContext(this.symbolTable(), this.label + statementId);
     }

@@ -7,6 +7,7 @@ import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import com.pretz.compiler.compengine.terminal.Identifier;
 import com.pretz.compiler.compengine.terminal.IdentifierMeaning;
 import com.pretz.compiler.compengine.terminal.IdentifierType;
+import com.pretz.compiler.compengine.terminal.Terminal;
 import com.pretz.compiler.compengine.terminal.TerminalType;
 import io.vavr.collection.List;
 
@@ -18,6 +19,7 @@ import static com.pretz.compiler.compengine.VmKeyword.ADD;
 import static com.pretz.compiler.compengine.VmKeyword.CALL;
 import static com.pretz.compiler.compengine.VmKeyword.POINTER;
 import static com.pretz.compiler.compengine.VmKeyword.PUSH;
+import static com.pretz.compiler.compengine.terminal.TerminalType.STRING_CONST;
 import static com.pretz.compiler.util.XmlUtils.basicClosingTag;
 import static com.pretz.compiler.util.XmlUtils.basicOpeningTag;
 import static com.pretz.compiler.util.XmlUtils.closingRoundBracket;
@@ -149,17 +151,20 @@ public class Term implements Construct {
                 Case($(TermType.UNARY_OP), () -> unaryOpToVm(vmContext)),
                 Case($(TermType.SUBROUTINE_CALL), () -> subroutineCallToVm(vmContext)),
                 Case($(TermType.VAR_ARRAY), () -> varArrayToVm(vmContext)),
-                Case($(), () -> "Generic Term - NOT YET IMPLEMENTED!"));
+                Case($(TermType.EXPRESSION_IN_BRACKETS), () -> expressionInBracketsToVm(vmContext))
+        );
     }
 
     private String simpleTermToVm(VmContext vmContext) {
-        return PUSH + " " + termParts.get(0).toVm(vmContext);
+        //if ((Terminal) termParts.head().type().equals(STRING_CONST))
+            return PUSH + " " + termParts.get(0).toVm(vmContext);
     }
 
     private String unaryOpToVm(VmContext vmContext) {
         return termParts.get(1).toVm(vmContext) + termParts.get(0).toVm(vmContext);
     }
 
+    //TODO(!!!) some additional work probably needed...
     private String subroutineCallToVm(VmContext vmContext) {
         return Match(termParts.head()).of(
                 Case($(isFunctionCall()), () -> functionCallToVm(vmContext)),
@@ -205,7 +210,7 @@ public class Term implements Construct {
     }
 
     private String thisObjectMethodCallIdentifierToVm(VmContext vmContext) {
-        return CALL + " " + thisObjectIdentifier(vmContext.symbolTable()) + "." +
+        return CALL + " " + thisObjectIdentifier(vmContext) + "." +
                 thisObjectMethodCallIdentifier().toVm(vmContext) + " " + thisObjectMethodCallParametersNumber();
     }
 
@@ -217,9 +222,14 @@ public class Term implements Construct {
         return termParts.drop(1);
     }
 
-    //TODO(L) additional method for symbol table to avoid breaking law of Demeter
-    private String thisObjectIdentifier(SymbolTable symbolTable) {
-        return symbolTable.get(thisIdentifier()).type();
+    private String thisObjectIdentifier(VmContext vmContext) {
+        return objectIdentifierFromLabel(vmContext.label());
+        //return symbolTable.get(thisIdentifier()).type();
+    }
+
+    //ugly regex hack, gods forgive me
+    private String objectIdentifierFromLabel(String label) {
+        return label.substring(1).split("\\.")[0];
     }
 
     private Identifier thisIdentifier() {
@@ -288,5 +298,9 @@ public class Term implements Construct {
     private String varArrayToVm(VmContext vmContext) {
         return termParts.map(it -> it.toVm(vmContext)).mkString() +
                 ADD + "\n";
+    }
+
+    private String expressionInBracketsToVm(VmContext vmContext) {
+        return termParts.head().toVm(vmContext);
     }
 }

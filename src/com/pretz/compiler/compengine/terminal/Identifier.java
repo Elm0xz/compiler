@@ -45,8 +45,7 @@ public class Identifier extends Terminal {
                 Case($(IdentifierType.VAR), () -> varToVm(vmContext.symbolTable())),
                 Case($(IdentifierType.SUBROUTINE), this::token),
                 Case($(IdentifierType.CLASS), this::token),
-                Case($(IdentifierType.OBJECT), () -> objectVarToVm(vmContext.symbolTable())),
-                Case($(), () -> "Generic Identifier - NOT YET IMPLEMENTED!")
+                Case($(IdentifierType.OBJECT), () -> objectVarToVm(vmContext.symbolTable()))
         );
     }
 

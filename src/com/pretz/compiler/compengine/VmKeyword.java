@@ -27,7 +27,8 @@ public enum VmKeyword {
     FUNCTION("function"),
     CALL("call"),
     RETURN("return"),
-    ALLOC("Memory.alloc");
+    ALLOC("Memory.alloc"),
+    STRING_APPEND("String.appendChar");
 
     private final String keyword;
 

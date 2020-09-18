@@ -10,16 +10,23 @@ import com.pretz.compiler.tokenizer.token.KeywordType;
 import com.pretz.compiler.tokenizer.token.Token;
 import com.pretz.compiler.tokenizer.token.TokenType;
 import com.pretz.compiler.util.Lexicals;
+import io.vavr.collection.List;
 
 import java.util.Objects;
 import java.util.function.Predicate;
 
+import static com.pretz.compiler.compengine.VmKeyword.CALL;
 import static com.pretz.compiler.compengine.VmKeyword.CONSTANT;
 import static com.pretz.compiler.compengine.VmKeyword.POINTER;
+import static com.pretz.compiler.compengine.VmKeyword.STRING_APPEND;
 import static com.pretz.compiler.compengine.terminal.TerminalKeywordType.FALSE;
 import static com.pretz.compiler.compengine.terminal.TerminalKeywordType.THIS;
 import static com.pretz.compiler.compengine.terminal.TerminalKeywordType.TRUE;
+import static com.pretz.compiler.compengine.terminal.TerminalType.INT_CONST;
+import static com.pretz.compiler.compengine.terminal.TerminalType.KEYWORD_CONST;
+import static com.pretz.compiler.compengine.terminal.TerminalType.OP;
 import static com.pretz.compiler.compengine.terminal.TerminalType.STRING_CONST;
+import static com.pretz.compiler.compengine.terminal.TerminalType.UNARY_OP;
 import static com.pretz.compiler.util.XmlUtils.indent;
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
@@ -83,10 +90,10 @@ public class Terminal implements Element {
     private String toTag() {
         return Match(type).of(
                 Case($(TerminalType.IDENTIFIER), "identifier"),
-                Case($(TerminalType.KEYWORD_CONST), "keyword"),
-                Case($(TerminalType.OP), "symbol"),
-                Case($(TerminalType.UNARY_OP), "symbol"),
-                Case($(TerminalType.INT_CONST), "integerConstant"),
+                Case($(KEYWORD_CONST), "keyword"),
+                Case($(OP), "symbol"),
+                Case($(UNARY_OP), "symbol"),
+                Case($(INT_CONST), "integerConstant"),
                 Case($(STRING_CONST), "stringConstant")
         );
     }
@@ -120,7 +127,7 @@ public class Terminal implements Element {
     public Terminal(String token, TerminalType type) {
         this.token = token;
         this.type = type;
-        if (type != TerminalType.KEYWORD_CONST)
+        if (type != KEYWORD_CONST)
             this.keywordType = TerminalKeywordType.NOT_A_KEYWORD;
         else
             this.keywordType = setKeywordType(token);
@@ -134,12 +141,11 @@ public class Terminal implements Element {
     @Override
     public String toVm(VmContext vmContext) {
         return Match(type).of(
-                Case($(TerminalType.KEYWORD_CONST), this::keywordConstToVm),
-                Case($(TerminalType.OP), this::opToVm),
-                Case($(TerminalType.UNARY_OP), this::unaryOpToVm),
-                Case($(TerminalType.INT_CONST), CONSTANT + " " + token + "\n"),
-                Case($(STRING_CONST), STRING_CONST + " NOT YET IMPLEMENTED\n"),
-                Case($(), "Generic Terminal - NOT YET IMPLEMENTED\n")
+                Case($(KEYWORD_CONST), this::keywordConstToVm),
+                Case($(OP), this::opToVm),
+                Case($(UNARY_OP), this::unaryOpToVm),
+                Case($(INT_CONST), CONSTANT + " " + token + "\n"),
+                Case($(STRING_CONST), this::stringConstToVm)
         );
     }
 
@@ -160,7 +166,7 @@ public class Terminal implements Element {
                 Case($(">"), VmKeyword.GT + "\n"),
                 Case($("<"), VmKeyword.LT + "\n"),
                 Case($("="), VmKeyword.EQ + "\n"),
-                Case($(), "Generic Op - NOT YET IMPLEMEMENTED\n"));
+                Case($(), "Generic Op - NOT YET IMPLEMENTED\n"));
     }
 
     private String unaryOpToVm() {
@@ -168,6 +174,18 @@ public class Terminal implements Element {
                 Case($("-"), VmKeyword.NEG + "\n"),
                 Case($("~"), VmKeyword.NOT + "\n"),
                 Case($(), this::throwIllegalOpException));
+    }
+
+    private String stringConstToVm() {
+        return List.ofAll(token.toCharArray())
+                .map(this::characterToVm)
+                .mkString();
+    }
+
+    //TODO(!!!) Here you need to add String.new etc (Average/Main.jack)
+    private String characterToVm(char ch) {
+        return CONSTANT + " " + (int) ch + "\n" +
+                CALL + " " + STRING_APPEND + " 2\n";
     }
 
     private String throwIllegalOpException() {
