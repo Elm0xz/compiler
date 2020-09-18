@@ -2,17 +2,22 @@ package com.pretz.compiler.compengine.expression;
 
 import com.pretz.compiler.compengine.Element;
 import com.pretz.compiler.compengine.VmContext;
-import com.pretz.compiler.compengine.VmKeyword;
 import com.pretz.compiler.compengine.construct.Construct;
+import com.pretz.compiler.compengine.symboltable.SymbolTable;
 import com.pretz.compiler.compengine.terminal.Identifier;
 import com.pretz.compiler.compengine.terminal.IdentifierMeaning;
 import com.pretz.compiler.compengine.terminal.IdentifierType;
+import com.pretz.compiler.compengine.terminal.TerminalType;
 import io.vavr.collection.List;
 
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static com.pretz.compiler.compengine.VmKeyword.ADD;
 import static com.pretz.compiler.compengine.VmKeyword.CALL;
+import static com.pretz.compiler.compengine.VmKeyword.POINTER;
+import static com.pretz.compiler.compengine.VmKeyword.PUSH;
 import static com.pretz.compiler.util.XmlUtils.basicClosingTag;
 import static com.pretz.compiler.util.XmlUtils.basicOpeningTag;
 import static com.pretz.compiler.util.XmlUtils.closingRoundBracket;
@@ -143,11 +148,12 @@ public class Term implements Construct {
                 Case($(anyOf(is(TermType.CONSTANT), is(TermType.VAR))), () -> simpleTermToVm(vmContext)),
                 Case($(TermType.UNARY_OP), () -> unaryOpToVm(vmContext)),
                 Case($(TermType.SUBROUTINE_CALL), () -> subroutineCallToVm(vmContext)),
+                Case($(TermType.VAR_ARRAY), () -> varArrayToVm(vmContext)),
                 Case($(), () -> "Generic Term - NOT YET IMPLEMENTED!"));
     }
 
     private String simpleTermToVm(VmContext vmContext) {
-        return VmKeyword.PUSH + " " + termParts.get(0).toVm(vmContext);
+        return PUSH + " " + termParts.get(0).toVm(vmContext);
     }
 
     private String unaryOpToVm(VmContext vmContext) {
@@ -155,51 +161,102 @@ public class Term implements Construct {
     }
 
     private String subroutineCallToVm(VmContext vmContext) {
-        return subroutineCallParametersToVm(vmContext)
-                + subroutineCallIdentifierToVm(vmContext) + "\n";
+        return Match(termParts.head()).of(
+                Case($(isFunctionCall()), () -> functionCallToVm(vmContext)),
+                Case($(isThisObjectMethodCall()), () -> thisObjectMethodCallToVm(vmContext)),
+                Case($(isAnotherObjectMethodCall()), () -> anotherObjectMethodCallToVm(vmContext))
+        );
     }
 
-    private String subroutineCallParametersToVm(VmContext vmContext) {
-        return subroutineCallParameters().map(it -> it.toVm(vmContext)).mkString();
+    /**
+     * Function call has following syntax: Class.doStuff(x,y,z). First two elements of termParts are identifier, following are parameters.
+     */
+    private String functionCallToVm(VmContext vmContext) {
+        return functionCallParametersToVm(vmContext) + functionCallIdentifierToVm(vmContext) + "\n";
     }
 
-    private List<Element> subroutineCallParameters() {
-        if (isClassSubroutineCall()) {
-            return classSubroutineCallParameters();
-        } else return termParts.drop(1);
+    private String functionCallParametersToVm(VmContext vmContext) {
+        return functionCallParameters().map(it -> it.toVm(vmContext)).mkString();
     }
 
-    /**Checks if subroutine is function or method and prepends reference to methods' 'this' object in the second case.*/
-    private List<Element> classSubroutineCallParameters() {
-        if (isStaticFunctionCall()) {
-            return termParts.drop(2);
-        } else {
-            return termParts.drop(2).prepend(thisReference());
-        }
+    private String functionCallIdentifierToVm(VmContext vmContext) {
+        return CALL + " " + functionCallIdentifier().map(it -> it.toVm(vmContext)).mkString(".") + " " + functionCallParameters().size();
     }
 
-    /**Creates additional Term with dependent object variable on calling any of its methods.*/
-    private Term thisReference() {
+    private List<Element> functionCallParameters() {
+        return termParts.drop(2);
+    }
+
+    private List<Element> functionCallIdentifier() {
+        return termParts.take(2);
+    }
+
+    /**
+     * Method call on current object has following syntax: doStuff(x,y,z). First element is identifier, following are parameters.
+     * Current object identifier is implicit.
+     */
+    private String thisObjectMethodCallToVm(VmContext vmContext) {
+        return thisObjectMethodCallParametersToVm(vmContext) + thisObjectMethodCallIdentifierToVm(vmContext) + "\n";
+    }
+
+    private String thisObjectMethodCallParametersToVm(VmContext vmContext) {
+        return PUSH + " " + POINTER + " " + "0\n" +
+                thisObjectMethodCallParameters().map(it -> it.toVm(vmContext)).mkString();
+    }
+
+    private String thisObjectMethodCallIdentifierToVm(VmContext vmContext) {
+        return CALL + " " + thisObjectIdentifier(vmContext.symbolTable()) + "." +
+                thisObjectMethodCallIdentifier().toVm(vmContext) + " " + thisObjectMethodCallParametersNumber();
+    }
+
+    private int thisObjectMethodCallParametersNumber() {
+        return thisObjectMethodCallParameters().size() + 1;
+    }
+
+    private List<Element> thisObjectMethodCallParameters() {
+        return termParts.drop(1);
+    }
+
+    //TODO(L) additional method for symbol table to avoid breaking law of Demeter
+    private String thisObjectIdentifier(SymbolTable symbolTable) {
+        return symbolTable.get(thisIdentifier()).type();
+    }
+
+    private Identifier thisIdentifier() {
+        return new Identifier("this", TerminalType.IDENTIFIER, IdentifierMeaning.USAGE, IdentifierType.CLASS);
+    }
+
+    private Element thisObjectMethodCallIdentifier() {
+        return termParts.head();
+    }
+
+    /**
+     * Method call on another object has following syntax: anotherObject.doStuff(x,y,z).
+     * First two elements of termParts are identifier, following are parameters.
+     */
+    private String anotherObjectMethodCallToVm(VmContext vmContext) {
+        return anotherObjectMethodCallParametersToVm(vmContext) + anotherObjectMethodCallIdentifierToVm(vmContext) + "\n";
+    }
+
+    private String anotherObjectMethodCallParametersToVm(VmContext vmContext) {
+        return anotherObjectMethodCallParameters().map(it -> it.toVm(vmContext)).mkString();
+    }
+
+    private List<Element> anotherObjectMethodCallParameters() {
+        return termParts.drop(2).prepend(anotherObjectReference());
+    }
+
+    private Term anotherObjectReference() {
         Identifier identifier = (Identifier) termParts.head();
         return new Term(TermType.VAR, new Identifier(identifier.token(), identifier.type(), IdentifierMeaning.USAGE, IdentifierType.VAR));
     }
 
-    private String subroutineCallIdentifierToVm(VmContext vmContext) {
-        return CALL + " " + subroutineCallIdentifier().map(it -> it.toVm(vmContext)).mkString(".") + " " + subroutineCallParametersNumber();
+    private String anotherObjectMethodCallIdentifierToVm(VmContext vmContext) {
+        return CALL + " " + anotherObjectMethodCallIdentifier().map(it -> it.toVm(vmContext)).mkString(".") + " " + anotherObjectMethodCallParametersNumber();
     }
 
-    private List<Element> subroutineCallIdentifier() {
-        if (isClassSubroutineCall()) {
-            return classSubroutineCallIdentifier();
-        } else return List.of(termParts.get(0));
-    }
-
-    private List<Element> classSubroutineCallIdentifier() {
-        if (isStaticFunctionCall()) {
-            return termParts.take(2);
-        } else {
-            return List.of(objectReference(), termParts.get(1));
-        }
+    private List<Element> anotherObjectMethodCallIdentifier() {
+        return List.of(objectReference(), termParts.get(1));
     }
 
     private Identifier objectReference() {
@@ -207,25 +264,29 @@ public class Term implements Construct {
         return new Identifier(identifier.token(), identifier.type(), IdentifierMeaning.USAGE, IdentifierType.OBJECT);
     }
 
-    private int subroutineCallParametersNumber() {
-        if (isClassSubroutineCall()) {
-            return classSubroutineCallParametersNumber();
-        } else return termParts.size() - 1;
+    private int anotherObjectMethodCallParametersNumber() {
+        return anotherObjectMethodCallParameters().size();
     }
 
-    private int classSubroutineCallParametersNumber() {
-        if (isStaticFunctionCall()) {
-            return termParts.size() - 2;
-        } else {
-            return termParts.size() - 1;
-        }
+    private Predicate<Element> isFunctionCall() {
+        return it -> it instanceof Identifier
+                && ((Identifier) it).identifierType().equals(IdentifierType.CLASS)
+                && Character.isUpperCase(((Identifier) it).token().charAt(0));
     }
 
-    private boolean isClassSubroutineCall() {
-        return termParts.head() instanceof Identifier && ((Identifier) termParts.head()).identifierType().equals(IdentifierType.CLASS);
+    private Predicate<Element> isThisObjectMethodCall() {
+        return it -> it instanceof Identifier
+                && ((Identifier) it).identifierType().equals(IdentifierType.SUBROUTINE);
     }
 
-    private boolean isStaticFunctionCall() {
-        return (termParts.head() instanceof Identifier && Character.isUpperCase(((Identifier) termParts.head()).token().charAt(0)));
+    private Predicate<Element> isAnotherObjectMethodCall() {
+        return it -> it instanceof Identifier
+                && ((Identifier) it).identifierType().equals(IdentifierType.CLASS)
+                && Character.isLowerCase(((Identifier) it).token().charAt(0));
+    }
+
+    private String varArrayToVm(VmContext vmContext) {
+        return termParts.map(it -> it.toVm(vmContext)).mkString() +
+                ADD + "\n";
     }
 }

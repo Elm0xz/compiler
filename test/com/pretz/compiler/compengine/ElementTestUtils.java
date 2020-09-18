@@ -148,6 +148,14 @@ public class ElementTestUtils {
                         expression));
     }
 
+    protected Term classSubroutineCallTerm(String classToken, String subrToken, List<Expression> expressions) {
+        return new Term(TermType.SUBROUTINE_CALL,
+                List.of(
+                        (Element) classUsageIdentifier(classToken),
+                        subroutineUsageIdentifier(subrToken))
+                        .appendAll(expressions));
+    }
+
     //it does not take into account other possible nested terms apart from variable
     protected Term unaryOpTerm(String token, String unaryOp) {
         return new Term(TermType.UNARY_OP,

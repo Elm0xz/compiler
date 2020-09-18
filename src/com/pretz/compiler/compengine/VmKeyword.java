@@ -17,6 +17,7 @@ public enum VmKeyword {
     FIELD("this"),
     CONSTANT("constant"),
     POINTER("pointer"),
+    ARRAY("that"),
     TEMP("temp"),
     PUSH("push"),
     POP("pop"),

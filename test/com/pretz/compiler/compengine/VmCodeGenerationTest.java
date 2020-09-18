@@ -1,5 +1,6 @@
 package com.pretz.compiler.compengine;
 
+import com.pretz.compiler.compengine.expression.Term;
 import com.pretz.compiler.compengine.statement.DoStatement;
 import com.pretz.compiler.compengine.statement.IfStatement;
 import com.pretz.compiler.compengine.statement.LetStatement;
@@ -84,12 +85,8 @@ public class VmCodeGenerationTest {
         );
     }
 
-
-    //TODO(H) Follow the slides: 1. objects 2. arrays
-
     //TODO(H) expressions: expression in brackets, string constant, keyword constant
 
-    //TODO(H) implementation for this test does not work properly??
     @Test
     public void shouldTranslateLetStatementWithSubroutineCall() {
         String var = "x";
@@ -106,6 +103,7 @@ public class VmCodeGenerationTest {
         ));
 
         Assertions.assertThat(testLetStatement.toVm(vmContext)).isEqualTo(
+                "push pointer 0\n" +
                 "push local 0\n" +
                         "push constant 5\n" +
                         "call doAnotherStuff 3\n" +
@@ -174,7 +172,6 @@ public class VmCodeGenerationTest {
         );
     }
 
-    //TODO (H)code handling objects not implemented yet
     @Test
     public void shouldTranslateDoStatement() {
         String var = "x";
@@ -186,9 +183,94 @@ public class VmCodeGenerationTest {
         DoStatement testDoStatement = $.doStatement($.subroutineCallTerm("doAnotherStuff", $.expression($.varNameTerm(var))));
 
         Assertions.assertThat(testDoStatement.toVm(vmContext)).isEqualTo(
+                "push pointer 0\n" +
                         "push local 0\n" +
                         "call TestClass.doAnotherStuff 1\n" +
                         "pop temp 0\n"
+        );
+    }
+
+    //1. function call (ThisClass.doStuff(x,y,z)) -> call Class.doStuff 3
+    //2. method call on this object (doStuff(x,y,z)) -> call ThisClass.doStuff 4
+    //3. method call on other object (otherClass.doStuff(x,y,z)) -> call otherClass.doStuff(x,y,z))
+
+    @Test
+    public void shouldTranslateFunctionCall() {
+        String type = "int";
+        SymbolTable symbolTable = argSymbolTable(List.of(
+                new TestVariable(type, "x"),
+                new TestVariable(type, "y"),
+                new TestVariable(type, "z")
+        ));
+        VmContext vmContext = new VmContext(symbolTable, null);
+
+        Term functionCall = $.classSubroutineCallTerm("Class", "doStuff",
+                List.of($.expression($.varNameTerm("x")),
+                        $.expression($.varNameTerm("y")),
+                        $.expression($.varNameTerm("z"))
+                )
+        );
+
+        Assertions.assertThat(functionCall.toVm(vmContext)).isEqualTo(
+                "push argument 0\n" +
+                        "push argument 1\n" +
+                        "push argument 2\n" +
+                        "call Class.doStuff 3\n"
+        );
+    }
+
+    @Test
+    public void shouldTranslateThisObjectMethodCall() {
+        String type = "int";
+        SymbolTable symbolTable = argSymbolTable(List.of(
+                new TestVariable(type, "x"),
+                new TestVariable(type, "y"),
+                new TestVariable(type, "z"),
+                new TestVariable("Class", "this")
+        ));
+        VmContext vmContext = new VmContext(symbolTable, null);
+
+        Term functionCall = $.subroutineCallTerm("doStuff",
+                List.of($.expression($.varNameTerm("x")),
+                        $.expression($.varNameTerm("y")),
+                        $.expression($.varNameTerm("z"))
+                )
+        );
+
+        Assertions.assertThat(functionCall.toVm(vmContext)).isEqualTo(
+                "push pointer 0\n" +
+                        "push argument 0\n" +
+                        "push argument 1\n" +
+                        "push argument 2\n" +
+                        "call Class.doStuff 4\n"
+        );
+    }
+
+    @Test
+    public void shouldTranslateAnotherObjectMethodCall() {
+        String type = "int";
+        SymbolTable symbolTable = argSymbolTable(List.of(
+                new TestVariable(type, "x"),
+                new TestVariable(type, "y"),
+                new TestVariable(type, "z")
+        )).merge(fieldSymbolTable(
+                new TestVariable("AnotherClass", "anotherClass")
+        ));
+        VmContext vmContext = new VmContext(symbolTable, null);
+
+        Term functionCall = $.classSubroutineCallTerm("anotherClass", "doStuff",
+                List.of($.expression($.varNameTerm("x")),
+                        $.expression($.varNameTerm("y")),
+                        $.expression($.varNameTerm("z"))
+                )
+        );
+
+        Assertions.assertThat(functionCall.toVm(vmContext)).isEqualTo(
+                        "push this 0\n" +
+                        "push argument 0\n" +
+                        "push argument 1\n" +
+                        "push argument 2\n" +
+                        "call AnotherClass.doStuff 4\n"
         );
     }
 
@@ -208,10 +290,25 @@ public class VmCodeGenerationTest {
         );
     }
 
+    private SymbolTable fieldSymbolTable(TestVariable var) {
+        return new SymbolTable(
+                HashMap.of(
+                        $.varDefIdentifier(var.identifier),
+                        new Symbol($.type(var.type), Kind.FIELD, 0))
+        );
+    }
+
     private SymbolTable symbolTable(List<TestVariable> vars) {
         return new SymbolTable(
                 vars.zipWithIndex().toMap(it -> Tuple.of($.varDefIdentifier(it._1().identifier),
                         new Symbol($.type(it._1().type), Kind.VAR, it._2()))
+                ));
+    }
+
+    private SymbolTable argSymbolTable(List<TestVariable> vars) {
+        return new SymbolTable(
+                vars.zipWithIndex().toMap(it -> Tuple.of($.varDefIdentifier(it._1().identifier),
+                        new Symbol($.type(it._1().type), Kind.ARGUMENT, it._2()))
                 ));
     }
 
