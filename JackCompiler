@@ -1,0 +1,1 @@
+java -Dfile.encoding=UTF-8 -classpath vavr-1.0.0-alpha-3.jar -jar JackCompiler.jar "${1}"

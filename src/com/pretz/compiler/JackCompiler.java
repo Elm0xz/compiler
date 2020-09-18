@@ -10,7 +10,7 @@ import java.util.List;
 
 import static io.vavr.API.Tuple;
 
-public class JackAnalyzer {
+public class JackCompiler {
 
     public static void main(String[] args) {
         if (args.length == 0) {
@@ -18,7 +18,7 @@ public class JackAnalyzer {
         }
         String fileName = args[0];
 
-        new JackAnalyzer().validate(fileName)
+        new JackCompiler().validate(fileName)
                 .stream()
                 .map(file -> Tuple(new JackTokenizer().tokenize(file), file))
                 /*.collect(Collectors.toList())*/

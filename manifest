@@ -1,2 +1,2 @@
-Main-Class: com.pretz.compiler.JackAnalyzer
+Main-Class: com.pretz.compiler.JackCompiler
 Class-Path: vavr-1.0.0-alpha-3.jar

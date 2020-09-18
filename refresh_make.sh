@@ -2,9 +2,9 @@
 
 rm JackAnalyzer
 rm JackAnalyzer.jar
-rm project10.zip
+rm project11.zip
 cd out/production/compiler/
-jar cvfm ../../../JackAnalyzer.jar ../../../manifest .
+jar cvfm ../../../JackCompiler.jar ../../../manifest .
 cd ../../../
 make
-zip project10.zip makefile lang.txt manifest JackAnalyzer JackAnalyzer.jar vavr-1.0.0-alpha-3.jar
+zip project11.zip makefile lang.txt manifest JackCompiler JackCompiler.jar vavr-1.0.0-alpha-3.jar
